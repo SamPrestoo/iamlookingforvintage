@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop - iamlookingforvintage</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Workbench&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header with vintage navigation -->
+        <header class="header">
+            <div class="logo">
+                <h1>iamlookingforvintage</h1>
+                <p class="tagline">~authentic vintage finds~</p>
+            </div>
+            <nav class="navigation">
+                <ul>
+                    <li><a href="index.html" class="nav-link">home</a></li>
+                    <li><a href="shop.html" class="nav-link active">shop</a></li>
+                    <li><a href="about.html" class="nav-link">about</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <!-- Main content area -->
+        <main class="main-content">
+            <div class="shop-header">
+                <h1>Our Collection</h1>
+                <p>Browse our carefully curated selection of vintage items</p>
+            </div>
+
+            <!-- Simple category filter -->
+            <section class="filters">
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-category="all">All Items</button>
+                    <button class="filter-btn" data-category="clothing">Clothing</button>
+                    <button class="filter-btn" data-category="accessories">Accessories</button>
+                    <button class="filter-btn" data-category="collectibles">Collectibles</button>
+                </div>
+            </section>
+
+            <!-- Product grid -->
+            <section class="shop-products">
+                <div class="products-grid" id="products-container">
+                    <!-- Products will be loaded dynamically from products.json -->
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <p>&copy; 2024 iamlookingforvintage. All rights reserved.</p>
+                <p>Contact: hello@iamlookingforvintage.com</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
