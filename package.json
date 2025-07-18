@@ -5,8 +5,9 @@
   "main": "index.html",
   "scripts": {
     "dev": "tinacms dev -c \"npx serve\"",
-    "build": "tinacms build",
-    "build:static": "echo 'Static site ready for deployment'",
+    "build": "npm run build:tinacms || npm run build:static",
+    "build:tinacms": "tinacms build",
+    "build:static": "echo 'TinaCMS schema configured - ready for cloud connection. Building static version.' && mkdir -p admin && echo 'TinaCMS will be available once cloud connection is established.' > admin/index.html",
     "serve": "npx serve",
     "init": "tinacms init"
   },

@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - iamlookingforvintage</title>
+    <title>Admin - TinaCMS Setup Status</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Workbench', Arial, sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #f5f5f5;
+            background: #f5f5f5;
+            color: #333;
         }
-        .admin-container {
+        .container {
             max-width: 800px;
             margin: 0 auto;
             background: white;
@@ -19,112 +20,153 @@
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        .header {
-            text-align: center;
+        .status-header {
+            background: #8b7355;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
             margin-bottom: 30px;
+            text-align: center;
         }
-        .status {
-            background: #e3f2fd;
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
+        .progress-bar {
+            background: #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .progress-fill {
+            background: #4CAF50;
+            height: 20px;
+            width: 50%;
+            border-radius: 10px;
+        }
+        .step {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .step.completed {
+            background: #e8f5e8;
+            border-left: 4px solid #4CAF50;
+        }
+        .step.pending {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+        }
+        .checkmark {
+            color: #4CAF50;
+            font-weight: bold;
+            margin-right: 10px;
         }
         .products-section {
             margin-top: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
         }
         .product-item {
-            background: #f8f9fa;
+            background: white;
             padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 4px;
-            border-left: 4px solid #8b7355;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
         }
         .btn {
             background: #8b7355;
             color: white;
             padding: 10px 20px;
             border: none;
-            border-radius: 4px;
+            border-radius: 5px;
             cursor: pointer;
             text-decoration: none;
             display: inline-block;
-            margin: 5px;
+            margin: 10px 5px;
         }
         .btn:hover {
-            background: #6d5a43;
+            background: #6d5a42;
         }
     </style>
 </head>
 <body>
-    <div class="admin-container">
-        <div class="header">
-            <h1>🏪 iamlookingforvintage Admin</h1>
-            <p>Content Management for Your Vintage Store</p>
-        </div>
-        
-        <div class="status">
-            <h3>⚙️ Setup Status</h3>
-            <p><strong>Repository:</strong> Connected ✅</p>
-            <p><strong>Site:</strong> Deployed ✅</p>
-            <p><strong>TinaCMS:</strong> Setting up... ⏳</p>
+    <div class="container">
+        <div class="status-header">
+            <h1>🦙 TinaCMS Admin Panel</h1>
+            <p>Content Management System Status</p>
         </div>
 
-        <div class="products-section">
-            <h2>📦 Current Products</h2>
-            <p>Your products are loaded from <code>products.json</code>. Once TinaCMS is fully connected, you'll be able to edit these directly here.</p>
-            
-            <div id="products-list">
-                <div class="product-item">
-                    <h4>Loading products...</h4>
-                    <p>Please wait while we load your vintage items.</p>
-                </div>
+        <h2>Setup Progress</h2>
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+        <p><strong>Step 2 of 4 Completed</strong></p>
+
+        <div class="step completed">
+            <span class="checkmark">✓</span>
+            <div>
+                <strong>Step 1: Create the Project</strong><br>
+                TinaCMS project created with Client ID: efef55b3-3ff7-4fb3-90f5-df83d605cda6
             </div>
         </div>
 
-        <div style="margin-top: 30px; text-align: center;">
-            <a href="/" class="btn">← Back to Site</a>
-            <a href="https://app.tina.io/projects/efef55b3-3ff7-4fb3-90f5-df83d605cda6" class="btn" target="_blank">Open TinaCMS Dashboard</a>
+        <div class="step completed">
+            <span class="checkmark">✓</span>
+            <div>
+                <strong>Step 2: Set up your site schema</strong><br>
+                TinaCMS configuration initialized, committed, and pushed to main branch
+            </div>
+        </div>
+
+        <div class="step pending">
+            <span style="color: #ffc107; margin-right: 10px;">⏳</span>
+            <div>
+                <strong>Step 3: Log in through your site</strong><br>
+                Waiting for TinaCloud to recognize main branch...
+            </div>
+        </div>
+
+        <div class="step pending">
+            <span style="color: #ffc107; margin-right: 10px;">⏳</span>
+            <div>
+                <strong>Step 4: Create a commit with TinaCloud</strong><br>
+                Available after cloud connection is established
+            </div>
+        </div>
+
+        <div class="products-section">
+            <h3>Current Products</h3>
+            <p>Your products are currently managed via JSON file. Once TinaCMS cloud connection is established, you'll be able to edit them visually here.</p>
+            <div id="products-list"></div>
+            
+            <a href="/" class="btn">← Back to Website</a>
+            <a href="https://app.tina.io" class="btn" target="_blank">Check TinaCMS Dashboard</a>
         </div>
     </div>
 
     <script>
-        // Load and display products
+        // Load and display current products
         fetch('/products.json')
             .then(response => response.json())
             .then(data => {
                 const productsList = document.getElementById('products-list');
-                productsList.innerHTML = '';
-                
-                data.products.forEach(product => {
-                    const productDiv = document.createElement('div');
-                    productDiv.className = 'product-item';
-                    productDiv.innerHTML = `
-                        <h4>${product.name}</h4>
-                        <p>${product.description}</p>
-                        <p><strong>Price:</strong> $${product.price}</p>
-                        <p><strong>Category:</strong> ${product.category}</p>
-                    `;
-                    productsList.appendChild(productDiv);
-                });
+                if (data.products && data.products.length > 0) {
+                    data.products.forEach(product => {
+                        const productDiv = document.createElement('div');
+                        productDiv.className = 'product-item';
+                        productDiv.innerHTML = `
+                            <strong>${product.name}</strong> - $${product.price}<br>
+                            <small>${product.category} | ID: ${product.id}</small>
+                        `;
+                        productsList.appendChild(productDiv);
+                    });
+                } else {
+                    productsList.innerHTML = '<p>No products found.</p>';
+                }
             })
             .catch(error => {
-                console.error('Error loading products:', error);
-                document.getElementById('products-list').innerHTML = `
-                    <div class="product-item">
-                        <h4>Error loading products</h4>
-                        <p>Unable to load products. Please check your products.json file.</p>
-                    </div>
-                `;
+                document.getElementById('products-list').innerHTML = '<p>Unable to load products.</p>';
             });
-
-        // Auto-refresh TinaCMS status
-        function checkTinaCMSStatus() {
-            // This will be replaced with actual TinaCMS integration once the branch is detected
-            console.log('Checking TinaCMS status...');
-        }
-
-        // Check status every 30 seconds
-        setInterval(checkTinaCMSStatus, 30000);
     </script>
 </body>
-</html> 
+</html>

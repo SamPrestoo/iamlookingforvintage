@@ -1,0 +1,76 @@
+{
+  "products": [
+    {
+      "id": "1",
+      "name": "Vintage Denim Jacket",
+      "description": "Classic 70s style denim jacket in excellent condition",
+      "price": 45.00,
+      "category": "clothing",
+      "image": "placeholder"
+    },
+    {
+      "id": "2", 
+      "name": "Retro Band Tee",
+      "description": "Authentic vintage band t-shirt from the 80s",
+      "price": 28.00,
+      "category": "clothing",
+      "image": "placeholder"
+    },
+    {
+      "id": "3",
+      "name": "Vintage Handbag", 
+      "description": "Beautiful leather handbag from the 60s",
+      "price": 38.00,
+      "category": "accessories",
+      "image": "placeholder"
+    },
+    {
+      "id": "4",
+      "name": "Vintage Dress",
+      "description": "Elegant floral dress from the 50s", 
+      "price": 65.00,
+      "category": "clothing",
+      "image": "placeholder"
+    },
+    {
+      "id": "5",
+      "name": "Classic Sunglasses",
+      "description": "Retro sunglasses in perfect condition",
+      "price": 22.00,
+      "category": "accessories", 
+      "image": "placeholder"
+    },
+    {
+      "id": "6",
+      "name": "Vintage Vinyl Record",
+      "description": "Original pressing from 1973",
+      "price": 35.00,
+      "category": "collectibles",
+      "image": "placeholder"
+    },
+    {
+      "id": "7",
+      "name": "Vintage Sweater",
+      "description": "Cozy wool sweater from the 80s",
+      "price": 42.00,
+      "category": "clothing",
+      "image": "placeholder"
+    },
+    {
+      "id": "8",
+      "name": "Vintage Watch", 
+      "description": "Timeless timepiece from the 60s",
+      "price": 85.00,
+      "category": "accessories",
+      "image": "placeholder"
+    },
+    {
+      "id": "9",
+      "name": "Vintage Camera",
+      "description": "Classic film camera in working condition", 
+      "price": 125.00,
+      "category": "collectibles",
+      "image": "placeholder"
+    }
+  ]
+} 
