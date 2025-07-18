@@ -5,7 +5,7 @@
   "main": "index.html",
   "scripts": {
     "dev": "tinacms dev -c \"npx serve\"",
-    "build": "echo 'Building admin interface...' && echo 'Admin interface ready'",
+    "build": "tinacms build",
     "serve": "npx serve",
     "init": "tinacms init"
   },
