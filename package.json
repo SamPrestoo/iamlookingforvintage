@@ -5,8 +5,9 @@
   "main": "index.html",
   "scripts": {
     "dev": "tinacms dev -c \"npx serve\"",
-    "build": "tinacms build",
-    "serve": "npx serve"
+    "build": "tinacms build && echo 'Build complete'",
+    "serve": "npx serve",
+    "init": "tinacms init"
   },
   "dependencies": {
     "@tinacms/cli": "^1.10.1",
