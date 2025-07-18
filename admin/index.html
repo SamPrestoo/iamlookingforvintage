@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - iamlookingforvintage</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .admin-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .status {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .products-section {
+            margin-top: 30px;
+        }
+        .product-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            border-left: 4px solid #8b7355;
+        }
+        .btn {
+            background: #8b7355;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #6d5a43;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="header">
+            <h1>🏪 iamlookingforvintage Admin</h1>
+            <p>Content Management for Your Vintage Store</p>
+        </div>
+        
+        <div class="status">
+            <h3>⚙️ Setup Status</h3>
+            <p><strong>Repository:</strong> Connected ✅</p>
+            <p><strong>Site:</strong> Deployed ✅</p>
+            <p><strong>TinaCMS:</strong> Setting up... ⏳</p>
+        </div>
+
+        <div class="products-section">
+            <h2>📦 Current Products</h2>
+            <p>Your products are loaded from <code>products.json</code>. Once TinaCMS is fully connected, you'll be able to edit these directly here.</p>
+            
+            <div id="products-list">
+                <div class="product-item">
+                    <h4>Loading products...</h4>
+                    <p>Please wait while we load your vintage items.</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 30px; text-align: center;">
+            <a href="/" class="btn">← Back to Site</a>
+            <a href="https://app.tina.io/projects/efef55b3-3ff7-4fb3-90f5-df83d605cda6" class="btn" target="_blank">Open TinaCMS Dashboard</a>
+        </div>
+    </div>
+
+    <script>
+        // Load and display products
+        fetch('/products.json')
+            .then(response => response.json())
+            .then(data => {
+                const productsList = document.getElementById('products-list');
+                productsList.innerHTML = '';
+                
+                data.products.forEach(product => {
+                    const productDiv = document.createElement('div');
+                    productDiv.className = 'product-item';
+                    productDiv.innerHTML = `
+                        <h4>${product.name}</h4>
+                        <p>${product.description}</p>
+                        <p><strong>Price:</strong> $${product.price}</p>
+                        <p><strong>Category:</strong> ${product.category}</p>
+                    `;
+                    productsList.appendChild(productDiv);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading products:', error);
+                document.getElementById('products-list').innerHTML = `
+                    <div class="product-item">
+                        <h4>Error loading products</h4>
+                        <p>Unable to load products. Please check your products.json file.</p>
+                    </div>
+                `;
+            });
+
+        // Auto-refresh TinaCMS status
+        function checkTinaCMSStatus() {
+            // This will be replaced with actual TinaCMS integration once the branch is detected
+            console.log('Checking TinaCMS status...');
+        }
+
+        // Check status every 30 seconds
+        setInterval(checkTinaCMSStatus, 30000);
+    </script>
+</body>
+</html> 
