@@ -1,22 +1,21 @@
+// tina/config.js
 import { defineConfig } from "tinacms";
-
-export default defineConfig({
+var config_default = defineConfig({
   branch: "main",
-  clientId: "efef55b3-3ff7-4fb3-90f5-df83d605cda6", // Your Client ID from TinaCMS dashboard
-  token: process.env.TINA_TOKEN, // Will be set in Netlify environment variables
-  
+  clientId: "efef55b3-3ff7-4fb3-90f5-df83d605cda6",
+  // Your Client ID from TinaCMS dashboard
+  token: process.env.TINA_TOKEN,
+  // Will be set in Netlify environment variables
   build: {
     outputFolder: "admin",
-    publicFolder: "/",
+    publicFolder: "/"
   },
-  
   media: {
     tina: {
       mediaRoot: "",
-      publicFolder: "/",
-    },
+      publicFolder: "/"
+    }
   },
-  
   schema: {
     collections: [
       {
@@ -27,8 +26,8 @@ export default defineConfig({
         ui: {
           filename: {
             readonly: true,
-            slugify: () => "products",
-          },
+            slugify: () => "products"
+          }
         },
         fields: [
           {
@@ -39,34 +38,34 @@ export default defineConfig({
             ui: {
               itemProps: (item) => {
                 return { label: item?.name || "New Product" };
-              },
+              }
             },
             fields: [
               {
                 type: "string",
                 name: "id",
                 label: "Product ID",
-                required: true,
+                required: true
               },
               {
                 type: "string",
                 name: "name",
                 label: "Product Name",
-                required: true,
+                required: true
               },
               {
                 type: "string",
                 name: "description",
                 label: "Description",
                 ui: {
-                  component: "textarea",
-                },
+                  component: "textarea"
+                }
               },
               {
                 type: "number",
                 name: "price",
                 label: "Price ($)",
-                required: true,
+                required: true
               },
               {
                 type: "string",
@@ -75,19 +74,22 @@ export default defineConfig({
                 options: [
                   { value: "clothing", label: "Clothing" },
                   { value: "accessories", label: "Accessories" },
-                  { value: "collectibles", label: "Collectibles" },
+                  { value: "collectibles", label: "Collectibles" }
                 ],
-                required: true,
+                required: true
               },
               {
                 type: "image",
                 name: "image",
-                label: "Product Image",
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  },
-}); 
+                label: "Product Image"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+});
+export {
+  config_default as default
+};
