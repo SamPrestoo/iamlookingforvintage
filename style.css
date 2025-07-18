@@ -627,15 +627,10 @@ body {
     object-fit: contain;
 }
 
-.nav-link .cart-icon {
-    filter: brightness(0) invert(1); /* Makes it white in navigation */
-}
-
 .btn .cart-icon,
 .add-to-cart-btn .cart-icon,
 .buy-now-btn .cart-icon {
     width: 16px;
     height: 16px;
     margin-right: 8px;
-    filter: brightness(0) invert(1); /* Makes it white in buttons */
 } 
