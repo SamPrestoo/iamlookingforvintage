@@ -633,6 +633,7 @@ body {
     vertical-align: baseline;
     margin-right: 5px;
     object-fit: contain;
+    transform: translateY(3px);
 }
 
 .btn .cart-icon,
@@ -642,4 +643,5 @@ body {
     height: 16px;
     margin-right: 8px;
     vertical-align: baseline;
+    transform: translateY(2px);
 }
