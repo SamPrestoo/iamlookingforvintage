@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - iamlookingforvintage</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .product-detail-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .product-detail {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+        
+        .product-images {
+            position: relative;
+        }
+        
+        .main-image-container {
+            position: relative;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #f5f5f5;
+        }
+        
+        .main-image {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .image-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 18px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        
+        .image-nav:hover {
+            background: rgba(0,0,0,0.9);
+        }
+        
+        .prev-btn {
+            left: 10px;
+        }
+        
+        .next-btn {
+            right: 10px;
+        }
+        
+        .image-counter {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 14px;
+        }
+        
+        .thumbnail-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+        }
+        
+        .thumbnail {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border: 2px solid transparent;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        
+        .thumbnail.active {
+            border-color: #8b7355;
+        }
+        
+        .thumbnail:hover {
+            border-color: #8b7355;
+            opacity: 0.8;
+        }
+        
+        .product-info h1 {
+            color: #8b7355;
+            margin-bottom: 15px;
+            font-size: 2.2em;
+        }
+        
+        .price {
+            font-size: 2em;
+            color: #8b7355;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .product-description {
+            line-height: 1.8;
+            margin-bottom: 30px;
+            color: #666;
+        }
+        
+        .product-category {
+            display: inline-block;
+            background: #8b7355;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+        }
+        
+        .quantity-section {
+            margin-bottom: 20px;
+        }
+        
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .quantity-btn {
+            background: #8b7355;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        
+        .quantity-input {
+            width: 60px;
+            text-align: center;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .cart-actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .add-to-cart-btn, .buy-now-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-family: 'Workbench', Arial, sans-serif;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+        }
+        
+        .add-to-cart-btn {
+            background: #28a745;
+            color: white;
+        }
+        
+        .add-to-cart-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+        
+        .buy-now-btn {
+            background: #8b7355;
+            color: white;
+        }
+        
+        .buy-now-btn:hover {
+            background: #6d5a42;
+            transform: translateY(-2px);
+        }
+        
+        .cart-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transform: translateX(400px);
+            transition: transform 0.3s;
+            z-index: 1000;
+        }
+        
+        .cart-notification.show {
+            transform: translateX(0);
+        }
+        
+        .back-to-shop {
+            margin-bottom: 20px;
+        }
+        
+        .back-to-shop a {
+            color: #8b7355;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        
+        .back-to-shop a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .product-detail {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .main-image {
+                height: 300px;
+            }
+            
+            .cart-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2>iamlookingforvintage</h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="shop.html">Shop</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="#" id="cartToggle">🛒 Cart (<span id="cartCount">0</span>)</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="product-detail-container">
+            <div class="back-to-shop">
+                <a href="shop.html">← Back to Shop</a>
+            </div>
+            
+            <div id="productNotFound" style="display: none; text-align: center; padding: 50px;">
+                <h2>Product Not Found</h2>
+                <p>The product you're looking for doesn't exist or has been removed.</p>
+                <a href="shop.html" class="add-to-cart-btn">Browse All Products</a>
+            </div>
+            
+            <div id="productDetail" class="product-detail">
+                <div class="product-images">
+                    <div class="main-image-container">
+                        <img id="mainImage" src="" alt="" class="main-image">
+                        <button class="image-nav prev-btn" onclick="previousImage()">‹</button>
+                        <button class="image-nav next-btn" onclick="nextImage()">›</button>
+                        <div class="image-counter">
+                            <span id="currentImageIndex">1</span> / <span id="totalImages">1</span>
+                        </div>
+                    </div>
+                    <div class="thumbnail-gallery" id="thumbnailGallery">
+                        <!-- Thumbnails will be inserted here -->
+                    </div>
+                </div>
+                
+                <div class="product-info">
+                    <div class="product-category" id="productCategory">Category</div>
+                    <h1 id="productName">Product Name</h1>
+                    <div class="price" id="productPrice">$0.00</div>
+                    <div class="product-description" id="productDescription">
+                        Product description will appear here.
+                    </div>
+                    
+                    <div class="quantity-section">
+                        <label for="quantity"><strong>Quantity:</strong></label>
+                        <div class="quantity-controls">
+                            <button class="quantity-btn" onclick="changeQuantity(-1)">-</button>
+                            <input type="number" id="quantity" class="quantity-input" value="1" min="1" max="10">
+                            <button class="quantity-btn" onclick="changeQuantity(1)">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="cart-actions">
+                        <button class="add-to-cart-btn" onclick="addToCart()">
+                            🛒 Add to Cart
+                        </button>
+                        <button class="buy-now-btn" onclick="buyNow()">
+                            💳 Buy Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="cartNotification" class="cart-notification">
+        Item added to cart!
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        let currentProduct = null;
+        let currentImageIndex = 0;
+        let cart = JSON.parse(localStorage.getItem('vintageCart')) || [];
+
+        // Get product ID from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+
+        // Load product on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (productId) {
+                loadProduct(productId);
+            } else {
+                showProductNotFound();
+            }
+            updateCartCount();
+        });
+
+        async function loadProduct(id) {
+            try {
+                const response = await fetch('products.json');
+                const data = await response.json();
+                const product = data.products.find(p => p.id === id);
+                
+                if (product) {
+                    currentProduct = product;
+                    displayProduct(product);
+                } else {
+                    showProductNotFound();
+                }
+            } catch (error) {
+                console.error('Error loading product:', error);
+                showProductNotFound();
+            }
+        }
+
+        function displayProduct(product) {
+            document.getElementById('productName').textContent = product.name;
+            document.getElementById('productPrice').textContent = `$${product.price.toFixed(2)}`;
+            document.getElementById('productDescription').textContent = product.description || 'No description available.';
+            document.getElementById('productCategory').textContent = product.category;
+            
+            // Update page title
+            document.title = `${product.name} - iamlookingforvintage`;
+            
+            if (product.images && product.images.length > 0) {
+                setupImageGallery(product.images, product.thumbnailIndex || 0);
+            } else {
+                showProductNotFound();
+            }
+        }
+
+        function setupImageGallery(images, thumbnailIndex) {
+            currentImageIndex = thumbnailIndex;
+            
+            const mainImage = document.getElementById('mainImage');
+            const thumbnailGallery = document.getElementById('thumbnailGallery');
+            const totalImagesSpan = document.getElementById('totalImages');
+            
+            // Set main image
+            mainImage.src = images[currentImageIndex].data;
+            mainImage.alt = currentProduct.name;
+            
+            // Update counter
+            totalImagesSpan.textContent = images.length;
+            updateImageCounter();
+            
+            // Create thumbnails
+            thumbnailGallery.innerHTML = images.map((img, index) => `
+                <img src="${img.data}" 
+                     alt="${img.name}" 
+                     class="thumbnail ${index === currentImageIndex ? 'active' : ''}"
+                     onclick="setMainImage(${index})">
+            `).join('');
+            
+            // Hide navigation if only one image
+            const navButtons = document.querySelectorAll('.image-nav');
+            navButtons.forEach(btn => {
+                btn.style.display = images.length > 1 ? 'block' : 'none';
+            });
+        }
+
+        function setMainImage(index) {
+            if (!currentProduct || !currentProduct.images) return;
+            
+            currentImageIndex = index;
+            const mainImage = document.getElementById('mainImage');
+            mainImage.src = currentProduct.images[index].data;
+            
+            // Update thumbnails
+            document.querySelectorAll('.thumbnail').forEach((thumb, i) => {
+                thumb.classList.toggle('active', i === index);
+            });
+            
+            updateImageCounter();
+        }
+
+        function previousImage() {
+            if (!currentProduct || !currentProduct.images) return;
+            
+            currentImageIndex = currentImageIndex > 0 
+                ? currentImageIndex - 1 
+                : currentProduct.images.length - 1;
+            setMainImage(currentImageIndex);
+        }
+
+        function nextImage() {
+            if (!currentProduct || !currentProduct.images) return;
+            
+            currentImageIndex = currentImageIndex < currentProduct.images.length - 1 
+                ? currentImageIndex + 1 
+                : 0;
+            setMainImage(currentImageIndex);
+        }
+
+        function updateImageCounter() {
+            document.getElementById('currentImageIndex').textContent = currentImageIndex + 1;
+        }
+
+        function changeQuantity(delta) {
+            const quantityInput = document.getElementById('quantity');
+            let newQuantity = parseInt(quantityInput.value) + delta;
+            newQuantity = Math.max(1, Math.min(10, newQuantity));
+            quantityInput.value = newQuantity;
+        }
+
+        function addToCart() {
+            if (!currentProduct) return;
+            
+            const quantity = parseInt(document.getElementById('quantity').value);
+            const existingItem = cart.find(item => item.id === currentProduct.id);
+            
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                cart.push({
+                    id: currentProduct.id,
+                    name: currentProduct.name,
+                    price: currentProduct.price,
+                    image: currentProduct.images[currentProduct.thumbnailIndex || 0].data,
+                    quantity: quantity
+                });
+            }
+            
+            localStorage.setItem('vintageCart', JSON.stringify(cart));
+            updateCartCount();
+            showCartNotification();
+        }
+
+        function buyNow() {
+            addToCart();
+            // Redirect to checkout page (to be created)
+            window.location.href = 'checkout.html';
+        }
+
+        function updateCartCount() {
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cartCount').textContent = totalItems;
+        }
+
+        function showCartNotification() {
+            const notification = document.getElementById('cartNotification');
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function showProductNotFound() {
+            document.getElementById('productDetail').style.display = 'none';
+            document.getElementById('productNotFound').style.display = 'block';
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') {
+                previousImage();
+            } else if (e.key === 'ArrowRight') {
+                nextImage();
+            }
+        });
+    </script>
+</body>
+</html> 
