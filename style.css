@@ -646,4 +646,6 @@ body {
     font-variation-settings:
       "BLED" 0,
       "SCAN" 0;
+    margin-left: auto;
+    margin-right: auto;
 }
