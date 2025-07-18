@@ -240,7 +240,7 @@ body {
     background-color: #ffffff;
     border: 1px solid #e8e8e8;
     padding: 15px;
-    text-align: center;
+    /* text-align: center; */
     transition: all 0.3s ease;
     border-radius: 6px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
@@ -315,6 +315,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .add-to-cart:hover {
