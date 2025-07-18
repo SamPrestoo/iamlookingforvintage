@@ -364,7 +364,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <p class="product-description">${product.description ? product.description.substring(0, 100) + '...' : 'Premium vintage item'}</p>
                                     <p class="product-price">$${product.price.toFixed(2)}</p>
                                     <button class="add-to-cart" onclick="addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})"><img src="Frame 31.png" alt="Cart" class="cart-icon">Add to Cart</button>
-                                    <button class="view-details" onclick="viewProduct('${product.id}')" style="margin-left: 10px; background: #8b7355; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">View Details</button>
+                                    <button class="view-details" onclick="viewProduct('${product.id}')" style="font-family: "Workbench", sans-serif;font-optical-sizing: auto;font-weight: 400;font-style: normal;font-variation-settings:"BLED" 0,"SCAN" 0;margin-left: 10px; background: #8b7355; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">View Details</button>
                                 </div>
                             </div>
                         `;

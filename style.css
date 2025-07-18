@@ -622,9 +622,10 @@ body {
     width: 18px;
     height: 18px;
     display: inline-block;
-    vertical-align: middle;
+    vertical-align: text-top;
     margin-right: 5px;
     object-fit: contain;
+    transform: translateY(2px);
 }
 
 .btn .cart-icon,
@@ -633,4 +634,6 @@ body {
     width: 16px;
     height: 16px;
     margin-right: 8px;
+    vertical-align: text-top;
+    transform: translateY(1px);
 } 
