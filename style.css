@@ -312,6 +312,9 @@ body {
     font-variation-settings:
       "BLED" 0,
       "SCAN" 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .add-to-cart:hover {
@@ -638,10 +641,11 @@ body {
 
 .btn .cart-icon,
 .add-to-cart-btn .cart-icon,
-.buy-now-btn .cart-icon {
+.buy-now-btn .cart-icon,
+.add-to-cart .cart-icon {
     width: 16px;
     height: 16px;
     margin-right: 8px;
-    vertical-align: baseline;
-    transform: translateY(2px);
+    vertical-align: middle;
+    transform: none;
 }
