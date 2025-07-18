@@ -1,19 +1,11 @@
 {
   "name": "iamlookingforvintage",
   "version": "1.0.0",
-  "description": "Vintage clothing website with content management",
+  "description": "Vintage clothing website with custom admin interface",
   "main": "index.html",
   "scripts": {
-    "dev": "tinacms dev -c \"npx serve\"",
-    "build": "npm run build:tinacms || npm run build:static",
-    "build:tinacms": "tinacms build",
-    "build:static": "echo 'TinaCMS schema configured - ready for cloud connection. Building static version.' && mkdir -p admin && echo 'TinaCMS will be available once cloud connection is established.' > admin/index.html",
     "serve": "npx serve",
-    "init": "tinacms init"
-  },
-  "dependencies": {
-    "@tinacms/cli": "^1.10.1",
-    "tinacms": "^1.6.7"
+    "build": "echo 'Static site ready for deployment'"
   },
   "devDependencies": {
     "serve": "^14.2.4"
@@ -22,7 +14,7 @@
     "vintage",
     "clothing",
     "ecommerce",
-    "cms"
+    "static"
   ],
   "author": "iamlookingforvintage",
   "license": "MIT"
