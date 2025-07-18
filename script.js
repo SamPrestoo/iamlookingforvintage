@@ -355,16 +355,15 @@ document.addEventListener('DOMContentLoaded', function() {
                             : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik04NyA3NEg2NEMlOC42IDc0IDU0IDc4LjYgNTQgODRWMTM2QzU0IDE0MS40IDU4LjYgMTQ2IDY0IDE0Nkg4N0M5Mi40IDE0NiA5NyAxNDEuNCA5NyAxMzZWODRDOTcgNzguNiA5Mi40IDc0IDg3IDc0WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K';
                         
                         const productHTML = `
-                            <div class="product-item" data-category="${product.category}">
+                            <div class="product-item" data-category="${product.category}" onclick="viewProduct('${product.id}')" style="cursor: pointer;">
                                 <div class="product-image">
-                                    <img src="${thumbnailImage}" alt="${product.name}" onclick="viewProduct('${product.id}')" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; cursor: pointer;">
+                                    <img src="${thumbnailImage}" alt="${product.name}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;">
                                 </div>
                                 <div class="product-info">
                                     <h3>${product.name}</h3>
                                     <p class="product-description">${product.description ? product.description.substring(0, 100) + '...' : 'Premium vintage item'}</p>
                                     <p class="product-price">$${product.price.toFixed(2)}</p>
-                                    <button class="add-to-cart" onclick="addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})"><img src="Frame 31.png" alt="Cart" class="cart-icon">Add to Cart</button>
-                                    <button class="view-details" onclick="viewProduct('${product.id}')" style="background: #8b7355; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">View Details</button>
+                                    <button class="add-to-cart" onclick="event.stopPropagation(); addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})"><img src="Frame 31.png" alt="Cart" class="cart-icon">Add to Cart</button>
                                 </div>
                             </div>
                         `;
