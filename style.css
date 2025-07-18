@@ -615,4 +615,23 @@ body {
     .main-content {
         padding: 15px;
     }
+}
+
+/* Cart icon styling */
+.cart-icon {
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 5px;
+}
+
+.nav-link .cart-icon {
+    stroke: currentColor;
+}
+
+.btn .cart-icon,
+.add-to-cart-btn .cart-icon,
+.buy-now-btn .cart-icon {
+    margin-right: 8px;
 } 
