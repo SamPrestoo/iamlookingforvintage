@@ -2,8 +2,8 @@ import { defineConfig } from "tinacms";
 
 export default defineConfig({
   branch: "main",
-  clientId: "efef55b3-3ff7-4fb3-90f5-df83d605cda6", // Your Client ID from TinaCMS dashboard
-  token: process.env.TINA_TOKEN, // Will be set in Netlify environment variables
+  clientId: "efef55b3-3ff7-4fb3-90f5-df83d605cda6",
+  token: process.env.TINA_TOKEN,
   
   build: {
     outputFolder: "admin",
@@ -20,9 +20,9 @@ export default defineConfig({
   schema: {
     collections: [
       {
-        name: "products",
+        name: "products", 
         label: "Products",
-        path: "",
+        path: "/",
         format: "json",
         ui: {
           filename: {
@@ -34,7 +34,7 @@ export default defineConfig({
           {
             type: "object",
             name: "products",
-            label: "Products",
+            label: "Products", 
             list: true,
             ui: {
               itemProps: (item) => {
@@ -49,14 +49,14 @@ export default defineConfig({
                 required: true,
               },
               {
-                type: "string",
+                type: "string", 
                 name: "name",
                 label: "Product Name",
                 required: true,
               },
               {
                 type: "string",
-                name: "description",
+                name: "description", 
                 label: "Description",
                 ui: {
                   component: "textarea",
@@ -81,7 +81,7 @@ export default defineConfig({
               },
               {
                 type: "image",
-                name: "image",
+                name: "image", 
                 label: "Product Image",
               },
             ],
@@ -90,4 +90,4 @@ export default defineConfig({
       },
     ],
   },
-}); 
+});
