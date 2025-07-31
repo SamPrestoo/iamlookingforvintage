@@ -339,46 +339,104 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 3000);
     }
 
-    // Load products dynamically
-    function loadProducts() {
+    // Load products dynamically from Shopify or fallback to local JSON
+    async function loadProducts() {
+        const productsContainer = document.getElementById('products-container');
+        if (!productsContainer) return;
+
+        // Show loading state
+        productsContainer.innerHTML = '<div class="loading-message">Loading products from Shopify...</div>';
+
+        try {
+            // Try to load from Shopify first
+            const { products, error } = await window.shopifyAPI.fetchProducts(20);
+            
+            if (error || products.length === 0) {
+                console.log('Shopify load failed, falling back to local products.json:', error);
+                return loadLocalProducts();
+            }
+
+            // Successfully loaded from Shopify
+            console.log(`Loaded ${products.length} products from Shopify`);
+            displayProducts(products);
+            
+        } catch (shopifyError) {
+            console.log('Shopify API error, falling back to local products.json:', shopifyError);
+            loadLocalProducts();
+        }
+    }
+
+    // Fallback function to load local products.json
+    function loadLocalProducts() {
         fetch('products.json')
             .then(response => response.json())
             .then(data => {
-                const productsContainer = document.getElementById('products-container');
-                if (productsContainer) {
-                    productsContainer.innerHTML = '';
-                    
-                    data.products.forEach(product => {
-                        // Get thumbnail image
-                        const thumbnailImage = product.images && product.images.length > 0 
-                            ? product.images[product.thumbnailIndex || 0].data 
-                            : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik04NyA3NEg2NEMlOC42IDc0IDU0IDc4LjYgNTQgODRWMTM2QzU0IDE0MS40IDU4LjYgMTQ2IDY0IDE0Nkg4N0M5Mi40IDE0NiA5NyAxNDEuNCA5NyAxMzZWODRDOTcgNzguNiA5Mi40IDc0IDg3IDc0WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K';
-                        
-                        const productHTML = `
-                            <div class="product-item" data-category="${product.category}" onclick="viewProduct('${product.id}')" style="cursor: pointer;">
-                                <div class="product-image">
-                                    <img src="${thumbnailImage}" alt="${product.name}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;">
-                                </div>
-                                <div class="product-info">
-                                    <h3>${product.name}</h3>
-                                    <p class="product-description">${product.description ? product.description.substring(0, 100) + '...' : 'Premium vintage item'}</p>
-                                    <p class="product-price">$${product.price.toFixed(2)}</p>
-                                    <button class="add-to-cart" onclick="event.stopPropagation(); addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})"><img src="Frame 31.png" alt="Cart" class="cart-icon">Add to Cart</button>
-                                </div>
-                            </div>
-                        `;
-                        productsContainer.innerHTML += productHTML;
-                    });
-                    
-                    // Re-initialize interactive features for new products
-                    initializeCartButtons();
-                    initializeHoverEffects();
-                }
+                console.log(`Loaded ${data.products.length} products from local JSON`);
+                displayProducts(data.products);
             })
             .catch(error => {
-                console.log('Products will be loaded from CMS when deployed');
-                // Fallback: keep existing products if JSON fails to load during development
+                console.error('Failed to load products from both Shopify and local JSON:', error);
+                const productsContainer = document.getElementById('products-container');
+                if (productsContainer) {
+                    productsContainer.innerHTML = '<div class="error-message">Unable to load products. Please try again later.</div>';
+                }
             });
+    }
+
+    // Display products in the UI
+    function displayProducts(products) {
+        const productsContainer = document.getElementById('products-container');
+        if (!productsContainer) return;
+
+        productsContainer.innerHTML = '';
+        
+        products.forEach(product => {
+            // Get thumbnail image - handle both Shopify and local formats
+            let thumbnailImage;
+            if (product.image) {
+                // Shopify product with direct image URL
+                thumbnailImage = product.image;
+            } else if (product.images && product.images.length > 0) {
+                // Local product with images array
+                thumbnailImage = product.images[product.thumbnailIndex || 0].data || product.images[0].url;
+            } else {
+                // Fallback placeholder
+                thumbnailImage = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik04NyA3NEg2NEMlOC42IDc0IDU0IDc4LjYgNTQgODRWMTM2QzU0IDE0MS40IDU4LjYgMTQ2IDY0IDE0Nkg4N0M5Mi40IDE0NiA5NyAxNDEuNCA5NyAxMzZWODRDOTcgNzguNiA5Mi40IDc0IDg3IDc0WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K';
+            }
+
+            // Determine the product click action
+            const clickAction = product.productUrl 
+                ? `window.open('${product.productUrl}', '_blank')` 
+                : `viewProduct('${product.id}')`;
+            
+            const productHTML = `
+                <div class="product-item" data-category="${product.category}" onclick="${clickAction}" style="cursor: pointer;">
+                    <div class="product-image">
+                        <img src="${thumbnailImage}" alt="${product.name}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;" loading="lazy">
+                        ${product.productUrl ? '<div class="shopify-badge">View on Shopify</div>' : ''}
+                    </div>
+                    <div class="product-info">
+                        <h3>${product.name}</h3>
+                        <p class="product-description">${product.description ? (product.description.length > 100 ? product.description.substring(0, 100) + '...' : product.description) : 'Premium vintage item'}</p>
+                        <p class="product-price">$${product.price.toFixed(2)}</p>
+                        ${product.originalPrice ? `<p class="original-price">Originally $${product.originalPrice.toFixed(2)}</p>` : ''}
+                        ${product.productUrl ? 
+                            `<button class="view-on-shopify" onclick="event.stopPropagation(); window.open('${product.productUrl}', '_blank')">
+                                <img src="Frame 31.png" alt="Shopify" class="cart-icon">View on Shopify
+                            </button>` :
+                            `<button class="add-to-cart" onclick="event.stopPropagation(); addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})">
+                                <img src="Frame 31.png" alt="Cart" class="cart-icon">Add to Cart
+                            </button>`
+                        }
+                    </div>
+                </div>
+            `;
+            productsContainer.innerHTML += productHTML;
+        });
+        
+        // Re-initialize interactive features for new products
+        initializeCartButtons();
+        initializeHoverEffects();
     }
     
     // Navigate to product detail page

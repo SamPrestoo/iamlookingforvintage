@@ -5,7 +5,7 @@
   "main": "index.html",
   "scripts": {
     "serve": "npx serve",
-    "build": "echo 'Static site ready for deployment'"
+    "build": "node build.js"
   },
   "devDependencies": {
     "serve": "^14.2.4"
@@ -17,5 +17,8 @@
     "static"
   ],
   "author": "iamlookingforvintage",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@shopify/storefront-api-client": "^1.0.9"
+  }
 }

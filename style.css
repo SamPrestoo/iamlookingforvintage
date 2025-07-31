@@ -323,6 +323,67 @@ body {
     background-color: #6d5a43;
 }
 
+/* Shopify integration styles */
+.view-on-shopify {
+    background-color: #96bf48;  /* Shopify green */
+    color: #ffffff;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    border-radius: 4px;
+    font-weight: 500;
+    font-family: "Workbench", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.view-on-shopify:hover {
+    background-color: #7fb838;
+}
+
+.shopify-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background-color: #96bf48;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.loading-message {
+    text-align: center;
+    padding: 40px;
+    color: #8b7355;
+    font-style: italic;
+}
+
+.error-message {
+    text-align: center;
+    padding: 40px;
+    color: #d32f2f;
+    font-style: italic;
+}
+
+.original-price {
+    text-decoration: line-through;
+    color: #999;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
 .view-all {
     text-align: center;
     margin-top: 30px;

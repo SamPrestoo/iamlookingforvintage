@@ -1,0 +1,9 @@
+# Security headers for the site
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  
+# Allow Shopify API calls
+/shopify-api.js
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.skypack.dev; connect-src 'self' https://*.myshopify.com https://cdn.skypack.dev;
