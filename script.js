@@ -339,6 +339,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 3000);
     }
 
+    // Global variables for pagination
+    let allProducts = [];
+    let displayedProducts = [];
+    let productsPerPage = 24; // Show 24 products initially
+    let currentPage = 1;
+    let isLoading = false;
+
     // Load products dynamically from Shopify or fallback to local JSON
     async function loadProducts() {
         const productsContainer = document.getElementById('products-container');
@@ -346,10 +353,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Show loading state
         productsContainer.innerHTML = '<div class="loading-message">Loading products from Shopify...</div>';
+        isLoading = true;
 
         try {
-            // Try to load from Shopify first
-            const { products, error } = await window.shopifyAPI.fetchProducts(20);
+            // Try to load from Shopify first - load more products for pagination
+            const { products, error } = await window.shopifyAPI.fetchProducts(250);
             
             if (error || products.length === 0) {
                 console.log('Shopify load failed, falling back to local products.json:', error);
@@ -358,12 +366,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Successfully loaded from Shopify
             console.log(`Loaded ${products.length} products from Shopify`);
-            displayProducts(products);
+            allProducts = products;
+            displayProductsPaginated();
             
         } catch (shopifyError) {
             console.log('Shopify API error, falling back to local products.json:', shopifyError);
             loadLocalProducts();
         }
+        
+        isLoading = false;
     }
 
     // Fallback function to load local products.json
@@ -372,7 +383,8 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 console.log(`Loaded ${data.products.length} products from local JSON`);
-                displayProducts(data.products);
+                allProducts = data.products;
+                displayProductsPaginated();
             })
             .catch(error => {
                 console.error('Failed to load products from both Shopify and local JSON:', error);
@@ -381,6 +393,168 @@ document.addEventListener('DOMContentLoaded', function() {
                     productsContainer.innerHTML = '<div class="error-message">Unable to load products. Please try again later.</div>';
                 }
             });
+    }
+
+    // Display products with pagination
+    function displayProductsPaginated() {
+        const startIndex = 0;
+        const endIndex = productsPerPage;
+        displayedProducts = allProducts.slice(startIndex, endIndex);
+        displayProducts(displayedProducts);
+        
+        // Add load more button if there are more products
+        if (allProducts.length > productsPerPage) {
+            addLoadMoreButton();
+        }
+        
+        // Set up infinite scroll
+        setupInfiniteScroll();
+    }
+
+    // Add load more button
+    function addLoadMoreButton() {
+        const productsContainer = document.getElementById('products-container');
+        if (!productsContainer) return;
+        
+        const existingButton = document.getElementById('load-more-btn');
+        if (existingButton) existingButton.remove();
+        
+        const loadMoreContainer = document.createElement('div');
+        loadMoreContainer.className = 'load-more-container';
+        loadMoreContainer.innerHTML = `
+            <button id="load-more-btn" class="load-more-btn">
+                Load More Products (${Math.min(productsPerPage, allProducts.length - displayedProducts.length)} more)
+            </button>
+        `;
+        
+        productsContainer.parentNode.insertBefore(loadMoreContainer, productsContainer.nextSibling);
+        
+        document.getElementById('load-more-btn').addEventListener('click', loadMoreProducts);
+    }
+
+    // Load more products
+    function loadMoreProducts() {
+        if (isLoading || displayedProducts.length >= allProducts.length) return;
+        
+        isLoading = true;
+        const loadMoreBtn = document.getElementById('load-more-btn');
+        if (loadMoreBtn) {
+            loadMoreBtn.textContent = 'Loading...';
+            loadMoreBtn.disabled = true;
+        }
+        
+        setTimeout(() => {
+            const startIndex = displayedProducts.length;
+            const endIndex = Math.min(startIndex + productsPerPage, allProducts.length);
+            const newProducts = allProducts.slice(startIndex, endIndex);
+            
+            displayedProducts = [...displayedProducts, ...newProducts];
+            appendProducts(newProducts);
+            
+            // Update or remove load more button
+            if (displayedProducts.length >= allProducts.length) {
+                const loadMoreContainer = document.querySelector('.load-more-container');
+                if (loadMoreContainer) loadMoreContainer.remove();
+            } else {
+                updateLoadMoreButton();
+            }
+            
+            isLoading = false;
+        }, 500); // Small delay for better UX
+    }
+
+    // Update load more button text
+    function updateLoadMoreButton() {
+        const loadMoreBtn = document.getElementById('load-more-btn');
+        if (loadMoreBtn) {
+            const remaining = allProducts.length - displayedProducts.length;
+            loadMoreBtn.textContent = `Load More Products (${Math.min(productsPerPage, remaining)} more)`;
+            loadMoreBtn.disabled = false;
+        }
+    }
+
+    // Setup infinite scroll
+    function setupInfiniteScroll() {
+        let scrollTimeout;
+        
+        window.addEventListener('scroll', () => {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                if (isLoading || displayedProducts.length >= allProducts.length) return;
+                
+                const scrollPosition = window.innerHeight + window.scrollY;
+                const documentHeight = document.documentElement.offsetHeight;
+                
+                // Load more when user scrolls to within 200px of bottom
+                if (scrollPosition >= documentHeight - 200) {
+                    loadMoreProducts();
+                }
+            }, 100);
+        });
+    }
+
+    // Append new products to existing grid
+    function appendProducts(products) {
+        const productsContainer = document.getElementById('products-container');
+        if (!productsContainer) return;
+
+        products.forEach(product => {
+            // Get thumbnail image - handle both Shopify and local formats
+            let thumbnailImage;
+            if (product.image) {
+                thumbnailImage = product.image;
+            } else if (product.images && product.images.length > 0) {
+                thumbnailImage = product.images[product.thumbnailIndex || 0].data || product.images[0].url;
+            } else {
+                thumbnailImage = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik04NyA3NEg2NEMlOC42IDc0IDU0IDc4LjYgNTQgODRWMTM2QzU0IDE0MS40IDU4LjYgMTQ2IDY0IDE0Nkg4N0M5Mi40IDE0NiA5NyAxNDEuNCA5NyAxMzZWODRDOTcgNzguNiA5Mi40IDc0IDg3IDc0WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K';
+            }
+
+            const clickAction = product.productUrl 
+                ? `window.open('${product.productUrl}', '_blank')` 
+                : `viewProduct('${product.id}')`;
+            
+            const productElement = document.createElement('div');
+            productElement.className = 'product-item';
+            productElement.setAttribute('data-category', product.category);
+            productElement.onclick = () => eval(clickAction);
+            productElement.style.cursor = 'pointer';
+            productElement.style.opacity = '0';
+            productElement.style.transform = 'translateY(20px)';
+            
+            productElement.innerHTML = `
+                <div class="product-image">
+                    <img src="${thumbnailImage}" alt="${product.name}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;" loading="lazy">
+                    ${product.productUrl ? '<div class="shopify-badge">View on Shopify</div>' : ''}
+                </div>
+                <div class="product-info">
+                    <h3>${product.name}</h3>
+                    <p class="product-description">${product.description ? (product.description.length > 100 ? product.description.substring(0, 100) + '...' : product.description) : 'Premium vintage item'}</p>
+                    <p class="product-price">$${product.price.toFixed(2)}</p>
+                    ${product.originalPrice ? `<p class="original-price">Originally $${product.originalPrice.toFixed(2)}</p>` : ''}
+                    ${product.productUrl ? 
+                        `<button class="view-on-shopify" onclick="event.stopPropagation(); window.open('${product.productUrl}', '_blank')">
+                            View on Shopify
+                        </button>` :
+                        `<button class="add-to-cart" onclick="event.stopPropagation(); addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})">
+                            Add to Cart
+                        </button>`
+                    }
+                </div>
+            `;
+            
+            productsContainer.appendChild(productElement);
+            
+            // Animate in
+            setTimeout(() => {
+                productElement.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                productElement.style.opacity = '1';
+                productElement.style.transform = 'translateY(0)';
+            }, 50);
+        });
+        
+        // Re-initialize interactive features for new products
+        initializeCartButtons();
+        initializeHoverEffects();
     }
 
     // Display products in the UI
@@ -422,10 +596,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         ${product.originalPrice ? `<p class="original-price">Originally $${product.originalPrice.toFixed(2)}</p>` : ''}
                         ${product.productUrl ? 
                             `<button class="view-on-shopify" onclick="event.stopPropagation(); window.open('${product.productUrl}', '_blank')">
-                                <img src="Frame 31.png" alt="Shopify" class="cart-icon">View on Shopify
+                                View on Shopify
                             </button>` :
                             `<button class="add-to-cart" onclick="event.stopPropagation(); addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})">
-                                <img src="Frame 31.png" alt="Cart" class="cart-icon">Add to Cart
+                                Add to Cart
                             </button>`
                         }
                     </div>
@@ -452,8 +626,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializePageLoad();
     setTimeout(() => {
         fadeInElements();
-        loadProducts(); // Load products from JSON
-        updateCartCount(); // Update cart count on page load
+        loadProducts(); // Load products from Shopify or JSON
         initializeFilters();
         initializeCartButtons();
         initializeHoverEffects();
