@@ -622,11 +622,114 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addToCart = addToCart;
     window.viewProduct = viewProduct;
 
+    // Load featured products for home page
+    async function loadFeaturedProducts() {
+        const homeProductsContainer = document.getElementById('home-products-container');
+        if (!homeProductsContainer) return;
+
+        // Show loading state
+        homeProductsContainer.innerHTML = '<div class="loading-message">Loading latest arrivals...</div>';
+
+        try {
+            // Try to load from Shopify first - get latest 6 products
+            const { products, error } = await window.shopifyAPI.fetchProducts(6);
+            
+            if (error || products.length === 0) {
+                console.log('Shopify load failed for home page, falling back to local products.json:', error);
+                return loadFeaturedLocalProducts();
+            }
+
+            // Successfully loaded from Shopify
+            console.log(`Loaded ${products.length} featured products from Shopify`);
+            displayFeaturedProducts(products);
+            
+        } catch (shopifyError) {
+            console.log('Shopify API error for home page, falling back to local products.json:', shopifyError);
+            loadFeaturedLocalProducts();
+        }
+    }
+
+    // Fallback for featured products from local JSON
+    function loadFeaturedLocalProducts() {
+        fetch('products.json')
+            .then(response => response.json())
+            .then(data => {
+                // Take first 6 products as featured
+                const featuredProducts = data.products.slice(0, 6);
+                console.log(`Loaded ${featuredProducts.length} featured products from local JSON`);
+                displayFeaturedProducts(featuredProducts);
+            })
+            .catch(error => {
+                console.error('Failed to load featured products:', error);
+                const homeProductsContainer = document.getElementById('home-products-container');
+                if (homeProductsContainer) {
+                    homeProductsContainer.innerHTML = '<div class="error-message">Unable to load latest arrivals.</div>';
+                }
+            });
+    }
+
+    // Display featured products on home page
+    function displayFeaturedProducts(products) {
+        const homeProductsContainer = document.getElementById('home-products-container');
+        if (!homeProductsContainer) return;
+
+        homeProductsContainer.innerHTML = '';
+        
+        products.forEach(product => {
+            // Get thumbnail image - handle both Shopify and local formats
+            let thumbnailImage;
+            if (product.image) {
+                thumbnailImage = product.image;
+            } else if (product.images && product.images.length > 0) {
+                thumbnailImage = product.images[product.thumbnailIndex || 0].data || product.images[0].url;
+            } else {
+                thumbnailImage = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik04NyA3NEg2NEMlOC42IDc0IDU0IDc4LjYgNTQgODRWMTM2QzU0IDE0MS40IDU4LjYgMTQ2IDY0IDE0Nkg4N0M5Mi40IDE0NiA5NyAxNDEuNCA5NyAxMzZWODRDOTcgNzguNiA5Mi40IDc0IDg3IDc0WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K';
+            }
+
+            const clickAction = product.productUrl 
+                ? `window.open('${product.productUrl}', '_blank')` 
+                : `viewProduct('${product.id}')`;
+            
+            const productHTML = `
+                <div class="product-card" onclick="${clickAction}" style="cursor: pointer;">
+                    <div class="product-image">
+                        <img src="${thumbnailImage}" alt="${product.name}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;" loading="lazy">
+                        ${product.productUrl ? '<div class="shopify-badge">View on Shopify</div>' : ''}
+                    </div>
+                    <div class="product-info">
+                        <h4>${product.name}</h4>
+                        <p class="product-price">$${product.price.toFixed(2)}</p>
+                        ${product.productUrl ? 
+                            `<button class="view-on-shopify" onclick="event.stopPropagation(); window.open('${product.productUrl}', '_blank')">
+                                View on Shopify
+                            </button>` :
+                            `<button class="add-to-cart" onclick="event.stopPropagation(); addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})">
+                                Add to Cart
+                            </button>`
+                        }
+                    </div>
+                </div>
+            `;
+            homeProductsContainer.innerHTML += productHTML;
+        });
+        
+        // Re-initialize interactive features for new products
+        initializeCartButtons();
+        initializeHoverEffects();
+    }
+
     // Initialize all functions
     initializePageLoad();
     setTimeout(() => {
         fadeInElements();
-        loadProducts(); // Load products from Shopify or JSON
+        
+        // Load different products based on page
+        if (document.getElementById('home-products-container')) {
+            loadFeaturedProducts(); // Load featured products for home page
+        } else {
+            loadProducts(); // Load all products for shop page
+        }
+        
         initializeFilters();
         initializeCartButtons();
         initializeHoverEffects();
