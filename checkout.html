@@ -6,6 +6,11 @@
     <title>Checkout - iamlookingforvintage</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://js.stripe.com/v3/"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jacquard+12&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Workbench&display=swap" rel="stylesheet">
     <style>
         .checkout-container {
             max-width: 1200px;
@@ -188,7 +193,7 @@
         
         .place-order-btn {
             width: 100%;
-            background: #28a745;
+            background: #8b7355;
             color: white;
             padding: 15px;
             border: none;
@@ -203,7 +208,7 @@
         }
         
         .place-order-btn:hover {
-            background: #218838;
+            background: #6d5a43;
         }
         
         .place-order-btn:disabled {
@@ -243,7 +248,7 @@
         }
         
         .error-message {
-            color: #dc3545;
+            color: #8b4a47;
             font-size: 14px;
             margin-top: 5px;
         }
@@ -259,15 +264,25 @@
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <h2>iamlookingforvintage</h2>
+    <div class="container">
+        <!-- Header with vintage navigation -->
+        <header class="header">
+            <div class="logo">
+                <h1>iamlookingforvintage</h1>
+                <p class="tagline">~authentic vintage finds~</p>
             </div>
-        </div>
-    </nav>
+            <nav class="navigation">
+                <ul>
+                    <li><a href="index.html" class="nav-link">home</a></li>
+                    <li><a href="shop.html" class="nav-link">shop</a></li>
+                    <li><a href="about.html" class="nav-link">about</a></li>
+                    <li><a href="#" class="nav-link" id="cartToggle"><img src="cart-icon.svg" alt="Cart" class="cart-icon">cart (<span id="cartCount">0</span>)</a></li>
+                </ul>
+            </nav>
+        </header>
     
-    <div class="checkout-container">
+    <main class="main-content">
+        <div class="checkout-container">
         <div class="checkout-form">
             <div class="back-link">
                 <a href="shop.html">← Continue Shopping</a>
@@ -382,6 +397,16 @@
                 </div>
             </div>
         </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 iamlookingforvintage. All rights reserved.</p>
+            <p>Contact: hello@iamlookingforvintage.com</p>
+        </div>
+    </footer>
     </div>
     
     <script>
@@ -428,7 +453,7 @@
             cartItemsContainer.innerHTML = '';
             
             cart.forEach(item => {
-                const itemTotal = item.price * item.quantity;
+                const itemTotal = item.price;
                 subtotal += itemTotal;
                 
                 const cartItemDiv = document.createElement('div');
@@ -437,9 +462,8 @@
                     <img src="${item.image || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIiBmaWxsPSIjRjVGNUY1Ii8+CjwvcG9sPg=='}" alt="${item.name}">
                     <div class="cart-item-info">
                         <h4>${item.name}</h4>
-                        <p>Quantity: ${item.quantity}</p>
                     </div>
-                    <div class="cart-item-price">$${itemTotal.toFixed(2)}</div>
+                    <div class="cart-item-price">$${item.price.toFixed(2)}</div>
                 `;
                 cartItemsContainer.appendChild(cartItemDiv);
             });

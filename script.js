@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Simulate form submission
                 setTimeout(() => {
                     submitBtn.textContent = 'Message Sent!';
-                    submitBtn.style.background = '#228b22';
+                    submitBtn.style.background = '#8b7355';
                 }, 1500);
                 
                 setTimeout(() => {
@@ -278,7 +278,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateCartCount() {
         const cartCountElement = document.getElementById('cartCount');
         if (cartCountElement) {
-            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const totalItems = cart.length;
             cartCountElement.textContent = totalItems;
         }
     }
@@ -287,7 +287,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const existingItem = cart.find(item => item.id === product.id);
         
         if (existingItem) {
-            existingItem.quantity += quantity;
+            // Item already in cart - show notification but don't add again
+            showCartNotification('Item already in cart!');
+            return;
         } else {
             cart.push({
                 id: product.id,
@@ -295,8 +297,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 price: product.price,
                 image: product.images && product.images.length > 0 
                     ? product.images[product.thumbnailIndex || 0].data 
-                    : null,
-                quantity: quantity
+                    : null
             });
         }
         
@@ -305,7 +306,7 @@ document.addEventListener('DOMContentLoaded', function() {
         showCartNotification();
     }
     
-    function showCartNotification() {
+    function showCartNotification(message = 'Item added to cart!') {
         // Create a temporary notification
         const notification = document.createElement('div');
         notification.style.cssText = `
@@ -322,7 +323,7 @@ document.addEventListener('DOMContentLoaded', function() {
             transform: translateX(400px);
             transition: transform 0.3s;
         `;
-        notification.textContent = 'Item added to cart!';
+        notification.textContent = message;
         document.body.appendChild(notification);
         
         // Animate in

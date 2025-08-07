@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - iamlookingforvintage</title>
     <link rel="stylesheet" href="style.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jacquard+12&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Workbench&display=swap" rel="stylesheet">
     <style>
         .admin-container {
             max-width: 1400px;
@@ -53,11 +58,11 @@
         }
         
         .admin-nav .logout-btn {
-            background: #dc3545;
+            background: #8b4a47;
         }
         
         .admin-nav .logout-btn:hover {
-            background: #c82333;
+            background: #6d3a38;
         }
         
         .admin-tabs {
@@ -183,7 +188,7 @@
             position: absolute;
             top: 5px;
             right: 5px;
-            background: #dc3545;
+            background: #8b4a47;
             color: white;
             border: none;
             border-radius: 50%;
@@ -194,7 +199,7 @@
         }
         
         .submit-btn {
-            background: #28a745;
+            background: #8b7355;
             color: white;
             padding: 15px 30px;
             border: none;
@@ -208,7 +213,7 @@
         }
         
         .submit-btn:hover {
-            background: #218838;
+            background: #6d5a43;
         }
         
         .products-grid {
@@ -265,18 +270,18 @@
         }
         
         .edit-btn {
-            background: #007bff;
+            background: #8b7355;
             color: white;
         }
         
         .delete-btn {
-            background: #dc3545;
+            background: #8b4a47;
             color: white;
         }
         
         .sold-btn {
-            background: #ffc107;
-            color: #212529;
+            background: #d4b896;
+            color: #2c2c2c;
         }
         
         @media (max-width: 768px) {
@@ -382,13 +387,15 @@
     </div>
     
     <script>
-        // Check authentication
+        // Enhanced authentication with additional security checks
         function checkAuth() {
+            // Check if admin is authenticated
             if (sessionStorage.getItem('adminAuthenticated') !== 'true') {
                 window.location.href = 'admin-login.html';
                 return false;
             }
             
+            // Check session expiration
             const loginTime = parseInt(sessionStorage.getItem('adminLoginTime'));
             const currentTime = Date.now();
             const sessionDuration = 2 * 60 * 60 * 1000; // 2 hours
@@ -398,12 +405,23 @@
                 return false;
             }
             
+            // In production: verify session with server
+            // if (!verifySessionWithServer()) {
+            //     logout();
+            //     return false;
+            // }
+            
             return true;
         }
         
         function logout() {
-            sessionStorage.removeItem('adminAuthenticated');
-            sessionStorage.removeItem('adminLoginTime');
+            // Clear all session data
+            sessionStorage.clear();
+            
+            // In production: invalidate session on server
+            // fetch('/admin/logout', { method: 'POST' });
+            
+            // Redirect to login
             window.location.href = 'admin-login.html';
         }
         

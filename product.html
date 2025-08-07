@@ -132,36 +132,6 @@
             margin-bottom: 20px;
         }
         
-        .quantity-section {
-            margin-bottom: 20px;
-        }
-        
-        .quantity-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        .quantity-btn {
-            background: #8b7355;
-            color: white;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 18px;
-        }
-        
-        .quantity-input {
-            width: 60px;
-            text-align: center;
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-        }
         
         .cart-actions {
             display: flex;
@@ -184,12 +154,12 @@
         }
         
         .add-to-cart-btn {
-            background: #28a745;
+            background: #8b7355;
             color: white;
         }
         
         .add-to-cart-btn:hover {
-            background: #218838;
+            background: #6d5a43;
             transform: translateY(-2px);
         }
         
@@ -207,7 +177,7 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            background: #28a745;
+            background: #8b7355;
             color: white;
             padding: 15px 20px;
             border-radius: 8px;
@@ -252,19 +222,22 @@
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <h2>iamlookingforvintage</h2>
+    <div class="container">
+        <!-- Header with vintage navigation -->
+        <header class="header">
+            <div class="logo">
+                <h1>iamlookingforvintage</h1>
+                <p class="tagline">~authentic vintage finds~</p>
             </div>
-            <ul class="nav-menu">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="shop.html">Shop</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="#" id="cartToggle"><img src="Frame 31.png" alt="Cart" class="cart-icon">Cart (<span id="cartCount">0</span>)</a></li>
-            </ul>
-        </div>
-    </nav>
+            <nav class="navigation">
+                <ul>
+                    <li><a href="index.html" class="nav-link">home</a></li>
+                    <li><a href="shop.html" class="nav-link">shop</a></li>
+                    <li><a href="about.html" class="nav-link">about</a></li>
+                    <li><a href="#" class="nav-link" id="cartToggle"><img src="cart-icon.svg" alt="Cart" class="cart-icon">cart (<span id="cartCount">0</span>)</a></li>
+                </ul>
+            </nav>
+        </header>
 
     <main class="main-content">
         <div class="product-detail-container">
@@ -301,18 +274,10 @@
                         Product description will appear here.
                     </div>
                     
-                    <div class="quantity-section">
-                        <label for="quantity"><strong>Quantity:</strong></label>
-                        <div class="quantity-controls">
-                            <button class="quantity-btn" onclick="changeQuantity(-1)">-</button>
-                            <input type="number" id="quantity" class="quantity-input" value="1" min="1" max="10">
-                            <button class="quantity-btn" onclick="changeQuantity(1)">+</button>
-                        </div>
-                    </div>
                     
                     <div class="cart-actions">
                         <button class="add-to-cart-btn" onclick="addToCart()">
-                            <img src="Frame 31.png" alt="Cart" class="cart-icon">Add to Cart
+                            <img src="cart-icon.svg" alt="Cart" class="cart-icon">Add to Cart
                         </button>
                         <button class="buy-now-btn" onclick="buyNow()">
                             💳 Buy Now
@@ -322,6 +287,15 @@
             </div>
         </div>
     </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 iamlookingforvintage. All rights reserved.</p>
+            <p>Contact: hello@iamlookingforvintage.com</p>
+        </div>
+    </footer>
+    </div>
 
     <div id="cartNotification" class="cart-notification">
         Item added to cart!
@@ -448,17 +422,11 @@
             document.getElementById('currentImageIndex').textContent = currentImageIndex + 1;
         }
 
-        function changeQuantity(delta) {
-            const quantityInput = document.getElementById('quantity');
-            let newQuantity = parseInt(quantityInput.value) + delta;
-            newQuantity = Math.max(1, Math.min(10, newQuantity));
-            quantityInput.value = newQuantity;
-        }
 
         function addToCart() {
             if (!currentProduct) return;
             
-            const quantity = parseInt(document.getElementById('quantity').value);
+            const quantity = 1;
             const existingItem = cart.find(item => item.id === currentProduct.id);
             
             if (existingItem) {

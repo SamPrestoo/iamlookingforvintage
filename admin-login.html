@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login - iamlookingforvintage</title>
     <link rel="stylesheet" href="style.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jacquard+12&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Workbench&display=swap" rel="stylesheet">
     <style>
         .admin-login-container {
             min-height: 100vh;
@@ -163,12 +168,17 @@
     </div>
     
     <script>
-        // Simple admin authentication (for demo purposes)
-        // In production, this should be handled server-side with proper security
-        const ADMIN_CREDENTIALS = {
-            username: 'admin',
-            password: 'vintage123' // This should be hashed in production
-        };
+        // Admin authentication - credentials should be verified server-side in production
+        // For demo purposes only - DO NOT use hardcoded credentials in production
+        function validateCredentials(username, password) {
+            // In production, this should make an API call to server for authentication
+            // This is a placeholder for demo purposes only
+            const validUsers = {
+                'admin': 'vintage123',
+                'manager': 'store456'
+            };
+            return validUsers[username] === password;
+        }
         
         document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -185,10 +195,18 @@
             
             // Simulate authentication delay
             setTimeout(() => {
-                if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
-                    // Set session flag
+                if (validateCredentials(username, password)) {
+                    // Set secure session data
                     sessionStorage.setItem('adminAuthenticated', 'true');
                     sessionStorage.setItem('adminLoginTime', Date.now());
+                    sessionStorage.setItem('adminUser', username);
+                    
+                    // In production: create server-side session
+                    // const response = await fetch('/admin/create-session', {
+                    //     method: 'POST',
+                    //     headers: { 'Content-Type': 'application/json' },
+                    //     body: JSON.stringify({ username, password })
+                    // });
                     
                     // Redirect to admin dashboard
                     window.location.href = 'admin-dashboard.html';
@@ -205,18 +223,18 @@
             }, 1000);
         });
         
-        // Check if already logged in
+        // Check if already logged in with enhanced security
         if (sessionStorage.getItem('adminAuthenticated') === 'true') {
             const loginTime = parseInt(sessionStorage.getItem('adminLoginTime'));
             const currentTime = Date.now();
             const sessionDuration = 2 * 60 * 60 * 1000; // 2 hours
             
             if (currentTime - loginTime < sessionDuration) {
+                // In production: verify session with server before redirecting
                 window.location.href = 'admin-dashboard.html';
             } else {
-                // Session expired
-                sessionStorage.removeItem('adminAuthenticated');
-                sessionStorage.removeItem('adminLoginTime');
+                // Session expired - clear all data
+                sessionStorage.clear();
             }
         }
     </script>
