@@ -488,6 +488,7 @@ body {
     opacity: 0.7;
     margin-bottom: 8px;
     width: 100%;
+    font-family: 'Workbench', Arial, sans-serif;
 }
 
 .view-details {
@@ -502,8 +503,6 @@ body {
     text-transform: uppercase;
     transition: all 0.3s ease;
     font-family: 'Workbench', Arial, sans-serif;
-    flex: 1;
-    margin-left: 10px;
 }
 
 .view-details:hover {
@@ -513,21 +512,24 @@ body {
 
 .product-buttons {
     display: flex;
-    gap: 8px;
+    gap: 12px;
     margin-top: 10px;
 }
 
 .product-buttons .add-to-cart {
     flex: 2;
+    font-family: 'Workbench', Arial, sans-serif;
 }
 
 .product-buttons .view-details {
     flex: 1;
     margin-left: 0;
+    font-family: 'Workbench', Arial, sans-serif;
 }
 
 .product-buttons .sold-out-btn {
     width: 100%;
+    font-family: 'Workbench', Arial, sans-serif;
 }
 
 .product-type {
