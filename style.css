@@ -501,12 +501,33 @@ body {
     font-weight: 500;
     text-transform: uppercase;
     transition: all 0.3s ease;
-    width: 100%;
+    font-family: 'Workbench', Arial, sans-serif;
+    flex: 1;
+    margin-left: 10px;
 }
 
 .view-details:hover {
     background-color: #8b7355;
     color: white;
+}
+
+.product-buttons {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.product-buttons .add-to-cart {
+    flex: 2;
+}
+
+.product-buttons .view-details {
+    flex: 1;
+    margin-left: 0;
+}
+
+.product-buttons .sold-out-btn {
+    width: 100%;
 }
 
 .product-type {

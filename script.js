@@ -563,17 +563,19 @@ document.addEventListener('DOMContentLoaded', function() {
                             <p class="product-type">${product.type} • ${product.size}</p>
                         </div>
                         <p class="product-price">$${product.price.toFixed(2)}</p>
-                        ${product.sold ? 
-                            `<button class="sold-out-btn" disabled>
-                                Sold Out
-                            </button>` :
-                            `<button class="add-to-cart" onclick="event.stopPropagation(); addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})">
-                                <img src="Frame 31.png" alt="Cart" class="cart-icon">Add to Cart
-                            </button>`
-                        }
-                        <button class="view-details" onclick="event.stopPropagation(); viewProduct('${product.id}')">
-                            View Details
-                        </button>
+                        <div class="product-buttons">
+                            ${product.sold ? 
+                                `<button class="sold-out-btn" disabled>
+                                    Sold Out
+                                </button>` :
+                                `<button class="add-to-cart" onclick="event.stopPropagation(); addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})">
+                                    <img src="Frame 31.png" alt="Cart" class="cart-icon">Add to Cart
+                                </button>
+                                <button class="view-details" onclick="event.stopPropagation(); viewProduct('${product.id}')">
+                                    View Details
+                                </button>`
+                            }
+                        </div>
                     </div>
                 </div>
             `;

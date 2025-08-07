@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Details - iamlookingforvintage</title>
     <link rel="stylesheet" href="style.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jacquard+12&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Workbench&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Workbench', Arial, sans-serif;
@@ -175,6 +180,22 @@
         .buy-now-btn:hover {
             background: #6d5a42;
             transform: translateY(-2px);
+        }
+        
+        .sold-out-btn {
+            width: 100%;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-family: 'Workbench', Arial, sans-serif;
+            background: #f5f5f5;
+            color: #8b7355;
+            cursor: not-allowed;
+            border: 2px solid #8b7355;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
         .cart-notification {
@@ -351,6 +372,16 @@
             
             // Update page title
             document.title = `${product.name} - iamlookingforvintage`;
+            
+            // Handle sold items
+            const cartActions = document.querySelector('.cart-actions');
+            if (product.sold) {
+                cartActions.innerHTML = `
+                    <button class="sold-out-btn" disabled>
+                        Sold Out - No Longer Available
+                    </button>
+                `;
+            }
             
             if (product.images && product.images.length > 0) {
                 setupImageGallery(product.images, product.thumbnailIndex || 0);
