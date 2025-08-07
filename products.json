@@ -3,74 +3,128 @@
     {
       "id": "1",
       "name": "Vintage Denim Jacket",
-      "description": "Classic 70s style denim jacket in excellent condition",
+      "description": "Classic 70s style denim jacket in excellent condition. Made from premium denim with authentic vintage wash and detailing. Perfect for layering or wearing as a statement piece.",
       "price": 45.00,
       "category": "clothing",
-      "image": "placeholder"
+      "type": "jacket",
+      "size": "Medium",
+      "sold": false,
+      "images": [
+        "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjNEE5MEU2Ii8+CjxwYXRoIGQ9Ik04NyA3NEg2NEMlOC42IDc0IDU0IDc4LjYgNTQgODRWMTM2QzU0IDE0MS40IDU4LjYgMTQ2IDY0IDE0Nkg4N0M5Mi40IDE0NiA5NyAxNDEuNCA5NyAxMzZWODRDOTcgNzguNiA5Mi40IDc0IDg3IDc0WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K"
+      ],
+      "thumbnailIndex": 0
     },
     {
       "id": "2", 
       "name": "Retro Band Tee",
-      "description": "Authentic vintage band t-shirt from the 80s",
+      "description": "Authentic vintage band t-shirt from the 80s featuring original tour graphics. Soft cotton blend with that perfect vintage feel and fade.",
       "price": 28.00,
       "category": "clothing",
-      "image": "placeholder"
+      "type": "t-shirt",
+      "size": "Large",
+      "sold": false,
+      "images": [
+        "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRkY2Mzk0Ii8+CjxwYXRoIGQ9Ik04NyA3NEg2NEMlOC42IDc0IDU0IDc4LjYgNTQgODRWMTM2QzU0IDE0MS40IDU4LjYgMTQ2IDY0IDE0Nkg4N0M5Mi40IDE0NiA5NyAxNDEuNCA5NyAxMzZWODRDOTcgNzguNiA5Mi40IDc0IDg3IDc0WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K"
+      ],
+      "thumbnailIndex": 0
     },
     {
       "id": "3",
       "name": "Vintage Handbag", 
-      "description": "Beautiful leather handbag from the 60s",
+      "description": "Beautiful genuine leather handbag from the 60s with brass hardware and classic silhouette. Interior is clean and spacious.",
       "price": 38.00,
       "category": "accessories",
-      "image": "placeholder"
+      "type": "handbag",
+      "size": "One Size",
+      "sold": true,
+      "images": [
+        "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjOEI1Q0Y2Ii8+CjxwYXRoIGQ9Ik04NyA3NEg2NEMlOC42IDc0IDU0IDc4LjYgNTQgODRWMTM2QzU0IDE0MS40IDU4LjYgMTQ2IDY0IDE0Nkg4N0M5Mi40IDE0NiA5NyAxNDEuNCA5NyAxMzZWODRDOTcgNzguNiA5Mi40IDc0IDQ3IDc0WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K"
+      ],
+      "thumbnailIndex": 0
     },
     {
       "id": "4",
       "name": "Vintage Dress",
-      "description": "Elegant floral dress from the 50s", 
+      "description": "Elegant floral dress from the 50s with full circle skirt and fitted bodice. Perfect for special occasions or vintage enthusiasts.", 
       "price": 65.00,
       "category": "clothing",
-      "image": "placeholder"
+      "type": "dress",
+      "size": "Small",
+      "sold": false,
+      "images": [
+        "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjMTBCOTgxIi8+CjxwYXRoIGQ9Ik04NyA3NEg2NEMlOC42IDc0IDU0IDc4LjYgNTQgODRWMTM2QzU0IDE0MS40IDU4LjYgMTQ2IDY0IDE0Nkg4N0M5Mi40IDE0NiA5NyAxNDEuNCA5NyAxMzZWODRDOTcgNzguNiA5Mi40IDc0IDg3IDc0WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K"
+      ],
+      "thumbnailIndex": 0
     },
     {
       "id": "5",
       "name": "Classic Sunglasses",
-      "description": "Retro sunglasses in perfect condition",
+      "description": "Retro sunglasses in perfect condition with UV protection and timeless aviator style. Comes with vintage case.",
       "price": 22.00,
-      "category": "accessories", 
-      "image": "placeholder"
+      "category": "accessories",
+      "type": "sunglasses", 
+      "size": "One Size",
+      "sold": false,
+      "images": [
+        "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjU5RTBCIi8+CjxwYXRoIGQ9Ik04NyA3NEg2NEMlOC42IDc0IDU0IDc4LjYgNTQgODRWMTM2QzU0IDE0MS40IDU4LjYgMTQ2IDY0IDE0Nkg4N0M5Mi40IDE0NiA5NyAxNDEuNCA5NyAxMzZWODRDOTcgNzguNiA5Mi40IDc0IDg3IDc0WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K"
+      ],
+      "thumbnailIndex": 0
     },
     {
       "id": "6",
       "name": "Vintage Vinyl Record",
-      "description": "Original pressing from 1973",
+      "description": "Original pressing from 1973 in excellent condition. Classic rock album that's perfect for any vinyl collection.",
       "price": 35.00,
       "category": "collectibles",
-      "image": "placeholder"
+      "type": "vinyl",
+      "size": "12 inch",
+      "sold": true,
+      "images": [
+        "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjMTUxNTE1Ii8+CjxwYXRoIGQ9Ik04NyA3NEg2NEMlOC42IDc0IDU0IDc4LjYgNTQgODRWMTM2QzU0IDE0MS40IDU4LjYgMTQ2IDY0IDE0Nkg4N0M5Mi40IDE0NiA5NyAxNDEuNCA5NyAxMzZWODRDOTcgNzguNiA5Mi40IDc0IDg3IDc0WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K"
+      ],
+      "thumbnailIndex": 0
     },
     {
       "id": "7",
       "name": "Vintage Sweater",
-      "description": "Cozy wool sweater from the 80s",
+      "description": "Cozy wool sweater from the 80s with classic cable knit pattern. Warm and stylish for fall and winter wear.",
       "price": 42.00,
       "category": "clothing",
-      "image": "placeholder"
+      "type": "sweater",
+      "size": "Medium",
+      "sold": false,
+      "images": [
+        "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRUY0NDQ0Ii8+CjxwYXRoIGQ9Ik04NyA3NEg2NEMlOC42IDc0IDU0IDc4LjYgNTQgODRWMTM2QzU0IDE0MS40IDU4LjYgMTQ2IDY0IDE0Nkg4N0M5Mi40IDE0NiA5NyAxNDEuNCA5NyAxMzZWODRDOTcgNzguNiA5Mi40IDc0IDg3IDc0WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K"
+      ],
+      "thumbnailIndex": 0
     },
     {
       "id": "8",
       "name": "Vintage Watch", 
-      "description": "Timeless timepiece from the 60s",
+      "description": "Timeless timepiece from the 60s with automatic movement and leather strap. Serviced and keeping perfect time.",
       "price": 85.00,
       "category": "accessories",
-      "image": "placeholder"
+      "type": "watch",
+      "size": "One Size",
+      "sold": false,
+      "images": [
+        "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjMzc0MTUxIi8+CjxwYXRoIGQ9Ik04NyA3NEg2NEMlOC42IDc0IDU0IDc4LjYgNTQgODRWMTM2QzU0IDE0MS40IDU4LjYgMTQ2IDY0IDE0Nkg4N0M5Mi40IDE0NiA5NyAxNDEuNCA5NyAxMzZWODRDOTcgNzguNiA5Mi40IDc0IDg3IDc0WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K"
+      ],
+      "thumbnailIndex": 0
     },
     {
       "id": "9",
       "name": "Vintage Camera",
-      "description": "Classic film camera in working condition", 
+      "description": "Classic film camera in working condition with original leather case. Perfect for film photography enthusiasts or collectors.", 
       "price": 125.00,
       "category": "collectibles",
-      "image": "placeholder"
+      "type": "camera",
+      "size": "One Size",
+      "sold": false,
+      "images": [
+        "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjNjM2NjcwIi8+CjxwYXRoIGQ9Ik04NyA3NEg2NEMlOC42IDc0IDU0IDc4LjYgNTQgODRWMTM2QzU0IDE0MS40IDU4LjYgMTQ2IDY0IDE0Nkg4N0M5Mi40IDE0NiA5NyAxNDEuNCA5NyAxMzZWODRDOTcgNzguNiA5Mi40IDc0IDg3IDc0WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K"
+      ],
+      "thumbnailIndex": 0
     }
   ]
 } 

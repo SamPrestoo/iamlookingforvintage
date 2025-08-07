@@ -346,54 +346,33 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentPage = 1;
     let isLoading = false;
 
-    // Load products dynamically from Shopify or fallback to local JSON
-    async function loadProducts() {
+    // Load products from local JSON
+    function loadProducts() {
         const productsContainer = document.getElementById('products-container');
         if (!productsContainer) return;
 
         // Show loading state
-        productsContainer.innerHTML = '<div class="loading-message">Loading products from Shopify...</div>';
+        productsContainer.innerHTML = '<div class="loading-message">Loading products...</div>';
         isLoading = true;
 
-        try {
-            // Try to load from Shopify first - load more products for pagination
-            const { products, error } = await window.shopifyAPI.fetchProducts(250);
-            
-            if (error || products.length === 0) {
-                console.log('Shopify load failed, falling back to local products.json:', error);
-                return loadLocalProducts();
-            }
-
-            // Successfully loaded from Shopify
-            console.log(`Loaded ${products.length} products from Shopify`);
-            allProducts = products;
-            displayProductsPaginated();
-            
-        } catch (shopifyError) {
-            console.log('Shopify API error, falling back to local products.json:', shopifyError);
-            loadLocalProducts();
-        }
-        
-        isLoading = false;
-    }
-
-    // Fallback function to load local products.json
-    function loadLocalProducts() {
         fetch('products.json')
             .then(response => response.json())
             .then(data => {
-                console.log(`Loaded ${data.products.length} products from local JSON`);
+                console.log(`Loaded ${data.products.length} products`);
                 allProducts = data.products;
                 displayProductsPaginated();
             })
             .catch(error => {
-                console.error('Failed to load products from both Shopify and local JSON:', error);
+                console.error('Failed to load products:', error);
                 const productsContainer = document.getElementById('products-container');
                 if (productsContainer) {
                     productsContainer.innerHTML = '<div class="error-message">Unable to load products. Please try again later.</div>';
                 }
             });
+        
+        isLoading = false;
     }
+
 
     // Display products with pagination
     function displayProductsPaginated() {
@@ -565,43 +544,35 @@ document.addEventListener('DOMContentLoaded', function() {
         productsContainer.innerHTML = '';
         
         products.forEach(product => {
-            // Get thumbnail image - handle both Shopify and local formats
-            let thumbnailImage;
-            if (product.image) {
-                // Shopify product with direct image URL
-                thumbnailImage = product.image;
-            } else if (product.images && product.images.length > 0) {
-                // Local product with images array
-                thumbnailImage = product.images[product.thumbnailIndex || 0].data || product.images[0].url;
-            } else {
-                // Fallback placeholder
-                thumbnailImage = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik04NyA3NEg2NEMlOC42IDc0IDU0IDc4LjYgNTQgODRWMTM2QzU0IDE0MS40IDU4LjYgMTQ2IDY0IDE0Nkg4N0M5Mi40IDE0NiA5NyAxNDEuNCA5NyAxMzZWODRDOTcgNzguNiA5Mi40IDc0IDg3IDc0WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K';
-            }
-
-            // Determine the product click action
-            const clickAction = product.productUrl 
-                ? `window.open('${product.productUrl}', '_blank')` 
-                : `viewProduct('${product.id}')`;
+            // Get thumbnail image
+            const thumbnailImage = product.images && product.images.length > 0 
+                ? product.images[product.thumbnailIndex || 0] 
+                : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik04NyA3NEg2NEMlOC42IDc0IDU0IDc4LjYgNTQgODRWMTM2QzU0IDE0MS40IDU4LjYgMTQ2IDY0IDE0Nkg4N0M5Mi40IDE0NiA5NyAxNDEuNCA5NyAxMzZWODRDOTcgNzguNiA5Mi40IDc0IDg3IDc0WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K';
             
             const productHTML = `
-                <div class="product-item" data-category="${product.category}" onclick="${clickAction}" style="cursor: pointer;">
+                <div class="product-item ${product.sold ? 'sold-out' : ''}" data-category="${product.category}" onclick="viewProduct('${product.id}')" style="cursor: pointer;">
                     <div class="product-image">
                         <img src="${thumbnailImage}" alt="${product.name}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;" loading="lazy">
-                        ${product.productUrl ? '<div class="shopify-badge">View on Shopify</div>' : ''}
+                        ${product.sold ? '<div class="sold-badge">SOLD OUT</div>' : ''}
                     </div>
                     <div class="product-info">
                         <h3>${product.name}</h3>
                         <p class="product-description">${product.description ? (product.description.length > 100 ? product.description.substring(0, 100) + '...' : product.description) : 'Premium vintage item'}</p>
+                        <div class="product-details">
+                            <p class="product-type">${product.type} • ${product.size}</p>
+                        </div>
                         <p class="product-price">$${product.price.toFixed(2)}</p>
-                        ${product.originalPrice ? `<p class="original-price">Originally $${product.originalPrice.toFixed(2)}</p>` : ''}
-                        ${product.productUrl ? 
-                            `<button class="view-on-shopify" onclick="event.stopPropagation(); window.open('${product.productUrl}', '_blank')">
-                                View on Shopify
+                        ${product.sold ? 
+                            `<button class="sold-out-btn" disabled>
+                                Sold Out
                             </button>` :
                             `<button class="add-to-cart" onclick="event.stopPropagation(); addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})">
-                                Add to Cart
+                                <img src="cart-icon.svg" alt="Cart" class="cart-icon">Add to Cart
                             </button>`
                         }
+                        <button class="view-details" onclick="event.stopPropagation(); viewProduct('${product.id}')">
+                            View Details
+                        </button>
                     </div>
                 </div>
             `;
@@ -623,40 +594,20 @@ document.addEventListener('DOMContentLoaded', function() {
     window.viewProduct = viewProduct;
 
     // Load featured products for home page
-    async function loadFeaturedProducts() {
+    function loadFeaturedProducts() {
         const homeProductsContainer = document.getElementById('home-products-container');
         if (!homeProductsContainer) return;
 
         // Show loading state
         homeProductsContainer.innerHTML = '<div class="loading-message">Loading latest arrivals...</div>';
 
-        try {
-            // Try to load from Shopify first - get latest 6 products
-            const { products, error } = await window.shopifyAPI.fetchProducts(6);
-            
-            if (error || products.length === 0) {
-                console.log('Shopify load failed for home page, falling back to local products.json:', error);
-                return loadFeaturedLocalProducts();
-            }
-
-            // Successfully loaded from Shopify
-            console.log(`Loaded ${products.length} featured products from Shopify`);
-            displayFeaturedProducts(products);
-            
-        } catch (shopifyError) {
-            console.log('Shopify API error for home page, falling back to local products.json:', shopifyError);
-            loadFeaturedLocalProducts();
-        }
-    }
-
-    // Fallback for featured products from local JSON
-    function loadFeaturedLocalProducts() {
         fetch('products.json')
             .then(response => response.json())
             .then(data => {
-                // Take first 6 products as featured
-                const featuredProducts = data.products.slice(0, 6);
-                console.log(`Loaded ${featuredProducts.length} featured products from local JSON`);
+                // Filter available products and take first 6 as featured
+                const availableProducts = data.products.filter(product => !product.sold);
+                const featuredProducts = availableProducts.slice(0, 6);
+                console.log(`Loaded ${featuredProducts.length} featured products`);
                 displayFeaturedProducts(featuredProducts);
             })
             .catch(error => {
@@ -676,37 +627,21 @@ document.addEventListener('DOMContentLoaded', function() {
         homeProductsContainer.innerHTML = '';
         
         products.forEach(product => {
-            // Get thumbnail image - handle both Shopify and local formats
-            let thumbnailImage;
-            if (product.image) {
-                thumbnailImage = product.image;
-            } else if (product.images && product.images.length > 0) {
-                thumbnailImage = product.images[product.thumbnailIndex || 0].data || product.images[0].url;
-            } else {
-                thumbnailImage = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik04NyA3NEg2NEMlOC42IDc0IDU0IDc4LjYgNTQgODRWMTM2QzU0IDE0MS40IDU4LjYgMTQ2IDY0IDE0Nkg4N0M5Mi40IDE0NiA5NyAxNDEuNCA5NyAxMzZWODRDOTcgNzguNiA5Mi40IDc0IDg3IDc0WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K';
-            }
-
-            const clickAction = product.productUrl 
-                ? `window.open('${product.productUrl}', '_blank')` 
-                : `viewProduct('${product.id}')`;
+            const thumbnailImage = product.images && product.images.length > 0 
+                ? product.images[product.thumbnailIndex || 0] 
+                : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik04NyA3NEg2NEMlOC42IDc0IDU0IDc4LjYgNTQgODRWMTM2QzU0IDE0MS40IDU4LjYgMTQ2IDY0IDE0Nkg4N0M5Mi40IDE0NiA5NyAxNDEuNCA5NyAxMzZWODRDOTcgNzguNiA5Mi40IDc0IDg3IDc0WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K';
             
             const productHTML = `
-                <div class="product-card" onclick="${clickAction}" style="cursor: pointer;">
+                <div class="product-card" onclick="viewProduct('${product.id}')" style="cursor: pointer;">
                     <div class="product-image">
                         <img src="${thumbnailImage}" alt="${product.name}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;" loading="lazy">
-                        ${product.productUrl ? '<div class="shopify-badge">View on Shopify</div>' : ''}
                     </div>
                     <div class="product-info">
                         <h4>${product.name}</h4>
                         <p class="product-price">$${product.price.toFixed(2)}</p>
-                        ${product.productUrl ? 
-                            `<button class="view-on-shopify" onclick="event.stopPropagation(); window.open('${product.productUrl}', '_blank')">
-                                View on Shopify
-                            </button>` :
-                            `<button class="add-to-cart" onclick="event.stopPropagation(); addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})">
-                                Add to Cart
-                            </button>`
-                        }
+                        <button class="add-to-cart" onclick="event.stopPropagation(); addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})">
+                            <img src="cart-icon.svg" alt="Cart" class="cart-icon">Add to Cart
+                        </button>
                     </div>
                 </div>
             `;
@@ -730,6 +665,7 @@ document.addEventListener('DOMContentLoaded', function() {
             loadProducts(); // Load all products for shop page
         }
         
+        updateCartCount(); // Update cart count on page load
         initializeFilters();
         initializeCartButtons();
         initializeHoverEffects();
