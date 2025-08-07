@@ -568,7 +568,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 Sold Out
                             </button>` :
                             `<button class="add-to-cart" onclick="event.stopPropagation(); addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})">
-                                <img src="cart-icon.svg" alt="Cart" class="cart-icon">Add to Cart
+                                <img src="Frame 31.png" alt="Cart" class="cart-icon">Add to Cart
                             </button>`
                         }
                         <button class="view-details" onclick="event.stopPropagation(); viewProduct('${product.id}')">
@@ -641,7 +641,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <h4>${product.name}</h4>
                         <p class="product-price">$${product.price.toFixed(2)}</p>
                         <button class="add-to-cart" onclick="event.stopPropagation(); addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})">
-                            <img src="cart-icon.svg" alt="Cart" class="cart-icon">Add to Cart
+                            <img src="Frame 31.png" alt="Cart" class="cart-icon">Add to Cart
                         </button>
                     </div>
                 </div>

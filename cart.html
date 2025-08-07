@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - iamlookingforvintage</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jacquard+12&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Workbench&display=swap" rel="stylesheet">
+    <style>
+        .cart-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        
+        .cart-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .cart-header h1 {
+            color: #8b7355;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .cart-header p {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .cart-items {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .cart-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        
+        .cart-item-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        .cart-item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .cart-item-details {
+            flex: 1;
+        }
+        
+        .cart-item-details h3 {
+            color: #2c2c2c;
+            margin-bottom: 5px;
+            font-size: 1.2em;
+        }
+        
+        .cart-item-price {
+            color: #8b7355;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .cart-item-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .remove-btn, .view-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .remove-btn {
+            background: #8b4a47;
+            color: white;
+        }
+        
+        .remove-btn:hover {
+            background: #6d3a38;
+        }
+        
+        .view-btn {
+            background: #8b7355;
+            color: white;
+        }
+        
+        .view-btn:hover {
+            background: #6d5a43;
+        }
+        
+        .cart-summary {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .cart-total {
+            font-size: 1.5em;
+            color: #8b7355;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .cart-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .continue-shopping, .checkout-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .continue-shopping {
+            background: #f5f5f5;
+            color: #2c2c2c;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .continue-shopping:hover {
+            background: #e0e0e0;
+        }
+        
+        .checkout-btn {
+            background: #8b7355;
+            color: white;
+        }
+        
+        .checkout-btn:hover {
+            background: #6d5a43;
+        }
+        
+        .empty-cart {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .empty-cart h2 {
+            color: #8b7355;
+            margin-bottom: 15px;
+        }
+        
+        .empty-cart p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .cart-item {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .cart-item-image {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .cart-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header with vintage navigation -->
+        <header class="header">
+            <div class="logo">
+                <h1>iamlookingforvintage</h1>
+                <p class="tagline">~authentic vintage finds~</p>
+            </div>
+            <nav class="navigation">
+                <ul>
+                    <li><a href="index.html" class="nav-link">home</a></li>
+                    <li><a href="shop.html" class="nav-link">shop</a></li>
+                    <li><a href="about.html" class="nav-link">about</a></li>
+                    <li><a href="cart.html" class="nav-link active" id="cartToggle"><img src="Frame 31.png" alt="Cart" class="cart-icon">cart (<span id="cartCount">0</span>)</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main class="main-content">
+            <div class="cart-container">
+                <div class="cart-header">
+                    <h1>Your Cart</h1>
+                    <p>Review your selected vintage items</p>
+                </div>
+
+                <!-- Cart Items Section -->
+                <div id="cart-content">
+                    <!-- Cart items will be loaded here -->
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <p>&copy; 2024 iamlookingforvintage. All rights reserved.</p>
+                <p>Contact: hello@iamlookingforvintage.com</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        let cart = JSON.parse(localStorage.getItem('vintageCart')) || [];
+
+        function loadCartItems() {
+            const cartContent = document.getElementById('cart-content');
+            
+            if (cart.length === 0) {
+                cartContent.innerHTML = `
+                    <div class="empty-cart">
+                        <h2>Your cart is empty</h2>
+                        <p>Looks like you haven't added any vintage treasures yet!</p>
+                        <a href="shop.html" class="checkout-btn">Start Shopping</a>
+                    </div>
+                `;
+                return;
+            }
+
+            let total = 0;
+            let itemsHtml = '<div class="cart-items">';
+            
+            cart.forEach((item, index) => {
+                total += item.price;
+                const imageUrl = item.image || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik00My41IDM3SDMyQzMwLjMgMzcgMjkgMzguMyAyOSA0MFY2OEMyOSA2OS43IDMwLjMgNzEgMzIgNzFINDMuNUM0NS4yIDcxIDQ2LjUgNjkuNyA0Ni41IDY4VjQwQzQ2LjUgMzguMyA0NS4yIDM3IDQzLjUgMzdaIiBmaWxsPSIjOUNBM0FGIi8+Cjwvc3ZnPgo=';
+                
+                itemsHtml += `
+                    <div class="cart-item">
+                        <div class="cart-item-image">
+                            <img src="${imageUrl}" alt="${item.name}">
+                        </div>
+                        <div class="cart-item-details">
+                            <h3>${item.name}</h3>
+                            <div class="cart-item-price">$${item.price.toFixed(2)}</div>
+                            <div class="cart-item-actions">
+                                <button class="remove-btn" onclick="removeFromCart(${index})">Remove</button>
+                                <button class="view-btn" onclick="viewProduct('${item.id}')">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            itemsHtml += '</div>';
+            
+            const summaryHtml = `
+                <div class="cart-summary">
+                    <div class="cart-total">
+                        Total: $${total.toFixed(2)}
+                    </div>
+                    <div class="cart-actions">
+                        <a href="shop.html" class="continue-shopping">Continue Shopping</a>
+                        <a href="checkout.html" class="checkout-btn">Proceed to Checkout</a>
+                    </div>
+                </div>
+            `;
+            
+            cartContent.innerHTML = itemsHtml + summaryHtml;
+        }
+
+        function removeFromCart(index) {
+            if (confirm('Remove this item from your cart?')) {
+                cart.splice(index, 1);
+                localStorage.setItem('vintageCart', JSON.stringify(cart));
+                updateCartCount();
+                loadCartItems();
+                
+                // Show notification
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: #8b4a47;
+                    color: white;
+                    padding: 15px 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                    z-index: 1000;
+                    font-family: 'Workbench', Arial, sans-serif;
+                    transform: translateX(400px);
+                    transition: transform 0.3s;
+                `;
+                notification.textContent = 'Item removed from cart';
+                document.body.appendChild(notification);
+                
+                setTimeout(() => notification.style.transform = 'translateX(0)', 100);
+                setTimeout(() => {
+                    notification.style.transform = 'translateX(400px)';
+                    setTimeout(() => document.body.removeChild(notification), 300);
+                }, 2000);
+            }
+        }
+
+        function viewProduct(productId) {
+            window.location.href = `product.html?id=${productId}`;
+        }
+
+        function updateCartCount() {
+            const totalItems = cart.length;
+            document.getElementById('cartCount').textContent = totalItems;
+        }
+
+        // Initialize cart page
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartCount();
+            loadCartItems();
+        });
+    </script>
+</body>
+</html>
