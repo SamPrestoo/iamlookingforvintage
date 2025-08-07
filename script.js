@@ -347,7 +347,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentPage = 1;
     let isLoading = false;
 
-    // Load products from local JSON
+    // Load products from local JSON and admin products
     function loadProducts() {
         const productsContainer = document.getElementById('products-container');
         if (!productsContainer) return;
@@ -356,18 +356,32 @@ document.addEventListener('DOMContentLoaded', function() {
         productsContainer.innerHTML = '<div class="loading-message">Loading products...</div>';
         isLoading = true;
 
+        // Load admin products from localStorage
+        let adminProducts = JSON.parse(localStorage.getItem('adminProducts') || '[]');
+
         fetch('products.json')
             .then(response => response.json())
             .then(data => {
-                console.log(`Loaded ${data.products.length} products`);
-                allProducts = data.products;
+                // Merge admin products with products.json products
+                const jsonProducts = data.products || [];
+                const adminProductIds = new Set(adminProducts.map(p => p.id));
+                const filteredJsonProducts = jsonProducts.filter(p => !adminProductIds.has(p.id));
+                
+                allProducts = [...adminProducts, ...filteredJsonProducts];
+                console.log(`Loaded ${allProducts.length} products (${adminProducts.length} admin, ${filteredJsonProducts.length} from JSON)`);
                 displayProductsPaginated();
             })
             .catch(error => {
-                console.error('Failed to load products:', error);
-                const productsContainer = document.getElementById('products-container');
-                if (productsContainer) {
-                    productsContainer.innerHTML = '<div class="error-message">Unable to load products. Please try again later.</div>';
+                console.error('Failed to load products.json, using admin products only:', error);
+                allProducts = adminProducts;
+                if (allProducts.length > 0) {
+                    console.log(`Loaded ${allProducts.length} admin products`);
+                    displayProductsPaginated();
+                } else {
+                    const productsContainer = document.getElementById('products-container');
+                    if (productsContainer) {
+                        productsContainer.innerHTML = '<div class="error-message">Unable to load products. Please try again later.</div>';
+                    }
                 }
             });
         
@@ -604,20 +618,37 @@ document.addEventListener('DOMContentLoaded', function() {
         // Show loading state
         homeProductsContainer.innerHTML = '<div class="loading-message">Loading latest arrivals...</div>';
 
+        // Load admin products from localStorage
+        let adminProducts = JSON.parse(localStorage.getItem('adminProducts') || '[]');
+
         fetch('products.json')
             .then(response => response.json())
             .then(data => {
+                // Merge admin products with products.json products
+                const jsonProducts = data.products || [];
+                const adminProductIds = new Set(adminProducts.map(p => p.id));
+                const filteredJsonProducts = jsonProducts.filter(p => !adminProductIds.has(p.id));
+                
+                const allProducts = [...adminProducts, ...filteredJsonProducts];
+                
                 // Filter available products and take first 6 as featured
-                const availableProducts = data.products.filter(product => !product.sold);
+                const availableProducts = allProducts.filter(product => !product.sold);
                 const featuredProducts = availableProducts.slice(0, 6);
-                console.log(`Loaded ${featuredProducts.length} featured products`);
+                console.log(`Loaded ${featuredProducts.length} featured products from ${allProducts.length} total`);
                 displayFeaturedProducts(featuredProducts);
             })
             .catch(error => {
-                console.error('Failed to load featured products:', error);
-                const homeProductsContainer = document.getElementById('home-products-container');
-                if (homeProductsContainer) {
-                    homeProductsContainer.innerHTML = '<div class="error-message">Unable to load latest arrivals.</div>';
+                console.error('Failed to load products.json, using admin products only:', error);
+                const availableProducts = adminProducts.filter(product => !product.sold);
+                const featuredProducts = availableProducts.slice(0, 6);
+                if (featuredProducts.length > 0) {
+                    console.log(`Loaded ${featuredProducts.length} featured admin products`);
+                    displayFeaturedProducts(featuredProducts);
+                } else {
+                    const homeProductsContainer = document.getElementById('home-products-container');
+                    if (homeProductsContainer) {
+                        homeProductsContainer.innerHTML = '<div class="error-message">Unable to load latest arrivals.</div>';
+                    }
                 }
             });
     }

@@ -311,6 +311,7 @@
             <h1>Admin Dashboard</h1>
             <div class="admin-nav">
                 <button onclick="window.open('index.html', '_blank')">View Store</button>
+                <button onclick="exportAllProducts()">Export Products JSON</button>
                 <button class="logout-btn" onclick="logout()">Logout</button>
             </div>
         </div>
@@ -535,13 +536,15 @@
                 thumbnailIndex: 0
             };
             
-            // In a real application, this would be sent to a server
-            // For demo purposes, we'll store in localStorage
-            let products = JSON.parse(localStorage.getItem('adminProducts') || '[]');
-            products.push(newProduct);
-            localStorage.setItem('adminProducts', JSON.stringify(products));
+            // Save to localStorage and attempt to persist to products.json
+            let adminProducts = JSON.parse(localStorage.getItem('adminProducts') || '[]');
+            adminProducts.push(newProduct);
+            localStorage.setItem('adminProducts', JSON.stringify(adminProducts));
             
-            alert('Product added successfully!');
+            // Also attempt to update the products.json file
+            updateProductsFile(newProduct);
+            
+            alert('Product added successfully! Note: For changes to persist across deployments, you need to manually add this product to products.json or set up a backend API.');
             
             // Reset form
             document.getElementById('productForm').reset();
@@ -553,18 +556,25 @@
         function loadProducts() {
             const grid = document.getElementById('productsGrid');
             
-            // Load from localStorage first (admin added), then from products.json
-            let products = JSON.parse(localStorage.getItem('adminProducts') || '[]');
+            // Load from localStorage first (admin added)
+            let adminProducts = JSON.parse(localStorage.getItem('adminProducts') || '[]');
             
             // Also load original products from JSON
             fetch('products.json')
                 .then(response => response.json())
                 .then(data => {
-                    const allProducts = [...products, ...data.products];
+                    // Merge admin products with products.json products
+                    // Admin products take precedence if there are ID conflicts
+                    const jsonProducts = data.products || [];
+                    const adminProductIds = new Set(adminProducts.map(p => p.id));
+                    const filteredJsonProducts = jsonProducts.filter(p => !adminProductIds.has(p.id));
+                    
+                    const allProducts = [...adminProducts, ...filteredJsonProducts];
                     displayProducts(allProducts);
                 })
                 .catch(() => {
-                    displayProducts(products);
+                    // If products.json fails to load, just show admin products
+                    displayProducts(adminProducts);
                 });
         }
         
@@ -597,8 +607,18 @@
         
         function markAsSold(productId) {
             if (confirm('Mark this item as sold?')) {
-                // This would update the server in a real application
-                alert('Item marked as sold! (Demo function)');
+                // Update in localStorage if it's an admin product
+                let adminProducts = JSON.parse(localStorage.getItem('adminProducts') || '[]');
+                let productIndex = adminProducts.findIndex(p => p.id === productId);
+                
+                if (productIndex !== -1) {
+                    adminProducts[productIndex].sold = true;
+                    localStorage.setItem('adminProducts', JSON.stringify(adminProducts));
+                    alert('Item marked as sold in admin storage! Note: To persist this change, you may need to update products.json manually.');
+                } else {
+                    alert('Item marked as sold! Note: This is a products.json item - you\'ll need to update the file manually to persist this change.');
+                }
+                
                 loadProducts();
             }
         }
@@ -609,10 +629,98 @@
         
         function deleteProduct(productId) {
             if (confirm('Are you sure you want to delete this product?')) {
-                // This would delete from server in a real application
-                alert('Product deleted! (Demo function)');
+                // Remove from localStorage
+                let adminProducts = JSON.parse(localStorage.getItem('adminProducts') || '[]');
+                adminProducts = adminProducts.filter(p => p.id !== productId);
+                localStorage.setItem('adminProducts', JSON.stringify(adminProducts));
+                
+                alert('Product deleted from admin storage! Note: To permanently delete from the site, you may need to update products.json manually.');
                 loadProducts();
             }
+        }
+        
+        function updateProductsFile(newProduct) {
+            // Since we can't directly modify files from client-side JavaScript,
+            // we'll provide instructions and a downloadable JSON file
+            console.log('New product to add to products.json:', newProduct);
+            
+            // Create a downloadable file with the new product data
+            const productData = {
+                id: newProduct.id,
+                name: newProduct.name,
+                description: newProduct.description,
+                price: newProduct.price,
+                category: newProduct.category,
+                type: newProduct.type,
+                size: newProduct.size,
+                sold: newProduct.sold,
+                images: newProduct.images,
+                thumbnailIndex: newProduct.thumbnailIndex
+            };
+            
+            // Show admin a way to download the product data
+            const blob = new Blob([JSON.stringify(productData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            // Create a temporary link for download
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `new-product-${newProduct.id}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+        
+        function exportAllProducts() {
+            // Load all products (admin + JSON)
+            let adminProducts = JSON.parse(localStorage.getItem('adminProducts') || '[]');
+            
+            fetch('products.json')
+                .then(response => response.json())
+                .then(data => {
+                    const jsonProducts = data.products || [];
+                    const adminProductIds = new Set(adminProducts.map(p => p.id));
+                    const filteredJsonProducts = jsonProducts.filter(p => !adminProductIds.has(p.id));
+                    
+                    const allProducts = [...adminProducts, ...filteredJsonProducts];
+                    
+                    const exportData = {
+                        products: allProducts
+                    };
+                    
+                    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'products.json';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                    
+                    alert('Products exported! Replace the products.json file in your repository with the downloaded file, then commit and push to persist changes.');
+                })
+                .catch(error => {
+                    console.error('Error loading products.json, exporting admin products only:', error);
+                    const exportData = {
+                        products: adminProducts
+                    };
+                    
+                    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'products.json';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                    
+                    alert('Admin products exported! Replace the products.json file in your repository with the downloaded file, then commit and push to persist changes.');
+                });
         }
         
         // Initialize

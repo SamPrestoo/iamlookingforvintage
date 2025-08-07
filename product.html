@@ -348,9 +348,20 @@
 
         async function loadProduct(id) {
             try {
+                // Check admin products first
+                let adminProducts = JSON.parse(localStorage.getItem('adminProducts') || '[]');
+                let product = adminProducts.find(p => p.id === id);
+                
+                if (product) {
+                    currentProduct = product;
+                    displayProduct(product);
+                    return;
+                }
+                
+                // If not found in admin products, check products.json
                 const response = await fetch('products.json');
                 const data = await response.json();
-                const product = data.products.find(p => p.id === id);
+                product = data.products.find(p => p.id === id);
                 
                 if (product) {
                     currentProduct = product;
@@ -360,7 +371,16 @@
                 }
             } catch (error) {
                 console.error('Error loading product:', error);
-                showProductNotFound();
+                // Try admin products as fallback
+                let adminProducts = JSON.parse(localStorage.getItem('adminProducts') || '[]');
+                let product = adminProducts.find(p => p.id === id);
+                
+                if (product) {
+                    currentProduct = product;
+                    displayProduct(product);
+                } else {
+                    showProductNotFound();
+                }
             }
         }
 
