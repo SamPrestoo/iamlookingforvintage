@@ -42,6 +42,11 @@ exports.handler = async (event, context) => {
         return await updateSoldStatus(data, { apiBase, headers, owner, repo, branch });
       case 'delete_product':
         return await deleteProduct(data, { apiBase, headers, owner, repo, branch });
+      case 'test_connection':
+        return {
+          statusCode: 200,
+          body: JSON.stringify({ success: true, message: 'GitHub connection successful' })
+        };
       default:
         return {
           statusCode: 400,
