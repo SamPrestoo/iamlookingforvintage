@@ -5,36 +5,45 @@
 
 class GitHubUpdater {
     constructor() {
-        this.token = localStorage.getItem('github_token');
-        this.repoOwner = 'SamPrestoo'; // Your GitHub username
-        this.repoName = 'iamlookingforvintage'; // Your repository name
-        this.branch = 'main';
-        this.apiBase = 'https://api.github.com';
+        // Get configuration automatically
+        this.config = window.getGitHubConfig ? window.getGitHubConfig() : null;
+        
+        if (this.config) {
+            this.token = this.config.token;
+            this.repoOwner = this.config.owner;
+            this.repoName = this.config.repo;
+            this.branch = this.config.branch;
+            this.apiBase = this.config.apiBase;
+        } else {
+            // Fallback values (will not work without proper token)
+            this.token = null;
+            this.repoOwner = 'SamPrestoo';
+            this.repoName = 'iamlookingforvintage';
+            this.branch = 'main';
+            this.apiBase = 'https://api.github.com';
+        }
     }
 
     /**
-     * Set the GitHub Personal Access Token
-     * @param {string} token - GitHub Personal Access Token
+     * Refresh configuration (in case config.js was updated)
      */
-    setToken(token) {
-        if (!token || typeof token !== 'string') {
-            throw new Error('Invalid token provided');
-        }
+    refreshConfig() {
+        this.config = window.getGitHubConfig ? window.getGitHubConfig() : null;
         
-        // Basic token format validation
-        if (!token.startsWith('ghp_') && !token.startsWith('github_pat_')) {
-            throw new Error('Invalid GitHub token format');
+        if (this.config) {
+            this.token = this.config.token;
+            this.repoOwner = this.config.owner;
+            this.repoName = this.config.repo;
+            this.branch = this.config.branch;
+            this.apiBase = this.config.apiBase;
         }
-        
-        this.token = token;
-        localStorage.setItem('github_token', token);
     }
 
     /**
-     * Check if token is configured
+     * Check if GitHub integration is properly configured
      */
     isConfigured() {
-        return !!this.token;
+        return window.isGitHubConfigured ? window.isGitHubConfigured() : false;
     }
 
     /**
