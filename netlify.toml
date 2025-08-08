@@ -1,9 +1,16 @@
 [build]
   command = "npm install && npm run build"
   publish = "."
+  functions = "netlify/functions"
 
 [build.environment]
   NODE_VERSION = "18"
+
+# Environment variables configured in Netlify dashboard:
+# GITHUB_TOKEN = your_github_personal_access_token
+# GITHUB_OWNER = SamPrestoo  
+# GITHUB_REPO = iamlookingforvintage
+# GITHUB_BRANCH = main
 
 # Redirect /admin to TinaCMS admin
 [[redirects]]

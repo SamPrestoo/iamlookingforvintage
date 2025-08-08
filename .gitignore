@@ -68,8 +68,6 @@ jspm_packages/
 .env.local
 .env.production
 
-# Configuration files with sensitive tokens
-config.js
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache

@@ -1,172 +1,20 @@
 /**
- * GitHub API Integration for Automatic Product Updates
- * This module handles secure automatic commits to the repository when products are added/updated
+ * Secure GitHub API Integration using Netlify Functions
+ * Handles automatic commits when products are added, updated, or sold
+ * No tokens or credentials stored in client-side code
  */
-
 class GitHubUpdater {
     constructor() {
-        // Get configuration automatically
-        this.config = window.getGitHubConfig ? window.getGitHubConfig() : null;
-        
-        if (this.config) {
-            this.token = this.config.token;
-            this.repoOwner = this.config.owner;
-            this.repoName = this.config.repo;
-            this.branch = this.config.branch;
-            this.apiBase = this.config.apiBase;
-        } else {
-            // Fallback values (will not work without proper token)
-            this.token = null;
-            this.repoOwner = 'SamPrestoo';
-            this.repoName = 'iamlookingforvintage';
-            this.branch = 'main';
-            this.apiBase = 'https://api.github.com';
-        }
-    }
-
-    /**
-     * Refresh configuration (in case config.js was updated)
-     */
-    refreshConfig() {
-        this.config = window.getGitHubConfig ? window.getGitHubConfig() : null;
-        
-        if (this.config) {
-            this.token = this.config.token;
-            this.repoOwner = this.config.owner;
-            this.repoName = this.config.repo;
-            this.branch = this.config.branch;
-            this.apiBase = this.config.apiBase;
-        }
+        // Use secure Netlify Function endpoint
+        this.functionEndpoint = '/.netlify/functions/github-api';
+        this.configured = true; // Always configured with Netlify Functions
     }
 
     /**
      * Check if GitHub integration is properly configured
      */
     isConfigured() {
-        return window.isGitHubConfigured ? window.isGitHubConfigured() : false;
-    }
-
-    /**
-     * Get current products.json content from GitHub
-     */
-    async getCurrentProductsFile() {
-        if (!this.token) {
-            throw new Error('GitHub token not configured');
-        }
-
-        try {
-            const response = await fetch(
-                `${this.apiBase}/repos/${this.repoOwner}/${this.repoName}/contents/products.json`,
-                {
-                    headers: {
-                        'Authorization': `token ${this.token}`,
-                        'Accept': 'application/vnd.github.v3+json'
-                    }
-                }
-            );
-
-            if (!response.ok) {
-                if (response.status === 401) {
-                    throw new Error('Invalid GitHub token or insufficient permissions');
-                } else if (response.status === 404) {
-                    throw new Error('Repository not found or token lacks access');
-                } else {
-                    throw new Error(`GitHub API error: ${response.status}`);
-                }
-            }
-
-            const data = await response.json();
-            const content = JSON.parse(atob(data.content));
-            
-            return {
-                content: content,
-                sha: data.sha // Required for updating the file
-            };
-        } catch (error) {
-            console.error('Error fetching current products file:', error);
-            throw error;
-        }
-    }
-
-    /**
-     * Update products.json file on GitHub
-     * @param {Object} newProductsData - The complete products data
-     * @param {string} commitMessage - Commit message
-     */
-    async updateProductsFile(newProductsData, commitMessage) {
-        if (!this.token) {
-            throw new Error('GitHub token not configured');
-        }
-
-        try {
-            // Get current file to get SHA
-            const currentFile = await this.getCurrentProductsFile();
-            
-            // Merge admin products with existing products
-            const adminProducts = JSON.parse(localStorage.getItem('adminProducts') || '[]');
-            const existingProducts = currentFile.content.products || [];
-            
-            // Remove existing products that have same IDs as admin products
-            const adminProductIds = new Set(adminProducts.map(p => p.id));
-            const filteredExistingProducts = existingProducts.filter(p => !adminProductIds.has(p.id));
-            
-            // Create merged products array
-            const allProducts = [...adminProducts, ...filteredExistingProducts];
-            
-            const updatedContent = {
-                products: allProducts
-            };
-
-            // Encode content as base64
-            const encodedContent = btoa(JSON.stringify(updatedContent, null, 2));
-
-            // Update file on GitHub
-            const response = await fetch(
-                `${this.apiBase}/repos/${this.repoOwner}/${this.repoName}/contents/products.json`,
-                {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${this.token}`,
-                        'Accept': 'application/vnd.github.v3+json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: commitMessage,
-                        content: encodedContent,
-                        sha: currentFile.sha,
-                        branch: this.branch
-                    })
-                }
-            );
-
-            if (!response.ok) {
-                let errorMessage = `GitHub API error: ${response.status}`;
-                try {
-                    const errorData = await response.json();
-                    errorMessage += ` - ${errorData.message}`;
-                } catch (e) {
-                    // Ignore JSON parsing errors for error responses
-                }
-                
-                if (response.status === 401) {
-                    errorMessage = 'Invalid GitHub token or token has expired';
-                } else if (response.status === 403) {
-                    errorMessage = 'GitHub token lacks sufficient permissions. Ensure "repo" scope is enabled.';
-                } else if (response.status === 409) {
-                    errorMessage = 'Conflict: File was modified by someone else. Please try again.';
-                }
-                
-                throw new Error(errorMessage);
-            }
-
-            const result = await response.json();
-            console.log('Successfully updated products.json:', result);
-            
-            return result;
-        } catch (error) {
-            console.error('Error updating products file:', error);
-            throw error;
-        }
+        return this.configured;
     }
 
     /**
@@ -175,52 +23,124 @@ class GitHubUpdater {
      */
     async addProduct(product) {
         try {
-            const commitMessage = `Add new product: ${product.name}
+            const response = await fetch(this.functionEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: 'add_product',
+                    data: product
+                })
+            });
 
-🛍️ Added via admin dashboard
-- Name: ${product.name}
-- Price: $${product.price}
-- Category: ${product.category}
-- Type: ${product.type}
-- Size: ${product.size}
+            const result = await response.json();
 
-🤖 Automated commit via GitHub API`;
+            if (!response.ok) {
+                throw new Error(result.error || 'Failed to add product');
+            }
 
-            const result = await this.updateProductsFile(null, commitMessage);
-            
             // Show success notification
-            this.showNotification(`Product "${product.name}" added and committed to repository!`, 'success');
-            
+            this.showNotification(result.message, 'success');
             return result;
         } catch (error) {
-            this.showNotification(`Failed to commit product: ${error.message}`, 'error');
+            this.showNotification(`Failed to add product: ${error.message}`, 'error');
             throw error;
         }
     }
 
     /**
-     * Mark product as sold and commit to repository
+     * Update product sold status and commit to repository
      * @param {string} productId - Product ID
-     * @param {string} productName - Product name for commit message
+     * @param {boolean} sold - Sold status
+     * @param {string} productTitle - Product title for display
      */
-    async markProductSold(productId, productName) {
+    async updateSoldStatus(productId, sold, productTitle) {
         try {
-            const commitMessage = `Mark product as sold: ${productName}
+            const response = await fetch(this.functionEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: 'update_sold_status',
+                    data: { id: productId, sold: sold }
+                })
+            });
 
-📦 Product sold via admin dashboard
-- Product ID: ${productId}
-- Status: SOLD
+            const result = await response.json();
 
-🤖 Automated commit via GitHub API`;
+            if (!response.ok) {
+                throw new Error(result.error || 'Failed to update product status');
+            }
 
-            const result = await this.updateProductsFile(null, commitMessage);
-            
             // Show success notification
-            this.showNotification(`Product "${productName}" marked as sold and committed to repository!`, 'success');
-            
+            this.showNotification(result.message, 'success');
             return result;
         } catch (error) {
-            this.showNotification(`Failed to commit sold status: ${error.message}`, 'error');
+            this.showNotification(`Failed to update status: ${error.message}`, 'error');
+            throw error;
+        }
+    }
+
+    /**
+     * Delete a product and commit to repository
+     * @param {string} productId - Product ID
+     * @param {string} productTitle - Product title for display
+     */
+    async deleteProduct(productId, productTitle) {
+        try {
+            const response = await fetch(this.functionEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: 'delete_product',
+                    data: { id: productId }
+                })
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error || 'Failed to delete product');
+            }
+
+            // Show success notification
+            this.showNotification(result.message, 'success');
+            return result;
+        } catch (error) {
+            this.showNotification(`Failed to delete product: ${error.message}`, 'error');
+            throw error;
+        }
+    }
+
+    /**
+     * Test the connection to GitHub API via Netlify Function
+     */
+    async testConnection() {
+        try {
+            // Try a simple operation to test the connection
+            const response = await fetch(this.functionEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: 'test_connection',
+                    data: {}
+                })
+            });
+
+            if (response.ok) {
+                this.showNotification('✅ GitHub connection successful', 'success');
+                return true;
+            } else {
+                throw new Error('Connection test failed');
+            }
+        } catch (error) {
+            this.showNotification(`❌ Connection failed: ${error.message}`, 'error');
             throw error;
         }
     }
@@ -276,45 +196,7 @@ class GitHubUpdater {
                     document.body.removeChild(notification);
                 }
             }, 300);
-        }, type === 'error' ? 8000 : 5000); // Show errors longer
-    }
-
-    /**
-     * Test the GitHub API connection
-     */
-    async testConnection() {
-        if (!this.token) {
-            throw new Error('GitHub token not configured');
-        }
-
-        try {
-            const response = await fetch(
-                `${this.apiBase}/repos/${this.repoOwner}/${this.repoName}`,
-                {
-                    headers: {
-                        'Authorization': `token ${this.token}`,
-                        'Accept': 'application/vnd.github.v3+json'
-                    }
-                }
-            );
-
-            if (!response.ok) {
-                if (response.status === 401) {
-                    throw new Error('Invalid GitHub token or token has expired');
-                } else if (response.status === 404) {
-                    throw new Error('Repository not found. Check repository name or token permissions.');
-                } else {
-                    throw new Error(`GitHub API error: ${response.status}`);
-                }
-            }
-
-            const repoData = await response.json();
-            this.showNotification(`✅ Connected to ${repoData.full_name}`, 'success');
-            return true;
-        } catch (error) {
-            this.showNotification(`❌ Connection failed: ${error.message}`, 'error');
-            throw error;
-        }
+        }, type === 'error' ? 8000 : 5000);
     }
 }
 
