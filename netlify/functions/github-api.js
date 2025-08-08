@@ -59,42 +59,28 @@ exports.handler = async (event, context) => {
 
 async function addProduct(productData, config) {
   try {
-    // Get current products.js file
-    const fileResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.js`, {
+    // Get current products.json file
+    const fileResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.json`, {
       headers: config.headers
     });
     
     if (!fileResponse.ok) {
-      throw new Error(`Failed to fetch products.js: ${fileResponse.statusText}`);
+      throw new Error(`Failed to fetch products.json: ${fileResponse.statusText}`);
     }
     
     const fileData = await fileResponse.json();
-    const currentContent = Buffer.from(fileData.content, 'base64').toString('utf8');
+    const currentContent = JSON.parse(Buffer.from(fileData.content, 'base64').toString('utf8'));
     
-    // Parse products from current file
-    const productsMatch = currentContent.match(/const products = (\[[\s\S]*?\]);/);
-    if (!productsMatch) {
-      throw new Error('Could not find products array in products.js');
-    }
-    
-    const products = JSON.parse(productsMatch[1]);
-    
-    // Add new product
-    products.push(productData);
-    
-    // Update file content
-    const newContent = currentContent.replace(
-      /const products = \[[\s\S]*?\];/,
-      `const products = ${JSON.stringify(products, null, 4)};`
-    );
+    // Add new product to the products array
+    currentContent.products.push(productData);
     
     // Commit the updated file
-    const commitResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.js`, {
+    const commitResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.json`, {
       method: 'PUT',
       headers: config.headers,
       body: JSON.stringify({
-        message: `Add new product: ${productData.title}`,
-        content: Buffer.from(newContent).toString('base64'),
+        message: `Add new product: ${productData.name}`,
+        content: Buffer.from(JSON.stringify(currentContent, null, 2)).toString('base64'),
         sha: fileData.sha,
         branch: config.branch
       })
@@ -109,7 +95,7 @@ async function addProduct(productData, config) {
       statusCode: 200,
       body: JSON.stringify({ 
         success: true, 
-        message: `Product "${productData.title}" added and committed to repository` 
+        message: `Product "${productData.name}" added and committed to repository` 
       })
     };
     
@@ -123,47 +109,33 @@ async function addProduct(productData, config) {
 
 async function updateSoldStatus(updateData, config) {
   try {
-    // Get current products.js file
-    const fileResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.js`, {
+    // Get current products.json file
+    const fileResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.json`, {
       headers: config.headers
     });
     
     if (!fileResponse.ok) {
-      throw new Error(`Failed to fetch products.js: ${fileResponse.statusText}`);
+      throw new Error(`Failed to fetch products.json: ${fileResponse.statusText}`);
     }
     
     const fileData = await fileResponse.json();
-    const currentContent = Buffer.from(fileData.content, 'base64').toString('utf8');
-    
-    // Parse products from current file
-    const productsMatch = currentContent.match(/const products = (\[[\s\S]*?\]);/);
-    if (!productsMatch) {
-      throw new Error('Could not find products array in products.js');
-    }
-    
-    const products = JSON.parse(productsMatch[1]);
+    const currentContent = JSON.parse(Buffer.from(fileData.content, 'base64').toString('utf8'));
     
     // Find and update product
-    const product = products.find(p => p.id === updateData.id);
+    const product = currentContent.products.find(p => p.id === updateData.id);
     if (!product) {
       throw new Error(`Product with ID ${updateData.id} not found`);
     }
     
     product.sold = updateData.sold;
     
-    // Update file content
-    const newContent = currentContent.replace(
-      /const products = \[[\s\S]*?\];/,
-      `const products = ${JSON.stringify(products, null, 4)};`
-    );
-    
     // Commit the updated file
-    const commitResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.js`, {
+    const commitResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.json`, {
       method: 'PUT',
       headers: config.headers,
       body: JSON.stringify({
-        message: `Mark "${product.title}" as ${updateData.sold ? 'sold' : 'available'}`,
-        content: Buffer.from(newContent).toString('base64'),
+        message: `Mark "${product.name}" as ${updateData.sold ? 'sold' : 'available'}`,
+        content: Buffer.from(JSON.stringify(currentContent, null, 2)).toString('base64'),
         sha: fileData.sha,
         branch: config.branch
       })
@@ -178,7 +150,7 @@ async function updateSoldStatus(updateData, config) {
       statusCode: 200,
       body: JSON.stringify({ 
         success: true, 
-        message: `Product "${product.title}" marked as ${updateData.sold ? 'sold' : 'available'}` 
+        message: `Product "${product.name}" marked as ${updateData.sold ? 'sold' : 'available'}` 
       })
     };
     
@@ -192,48 +164,34 @@ async function updateSoldStatus(updateData, config) {
 
 async function deleteProduct(deleteData, config) {
   try {
-    // Get current products.js file
-    const fileResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.js`, {
+    // Get current products.json file
+    const fileResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.json`, {
       headers: config.headers
     });
     
     if (!fileResponse.ok) {
-      throw new Error(`Failed to fetch products.js: ${fileResponse.statusText}`);
+      throw new Error(`Failed to fetch products.json: ${fileResponse.statusText}`);
     }
     
     const fileData = await fileResponse.json();
-    const currentContent = Buffer.from(fileData.content, 'base64').toString('utf8');
-    
-    // Parse products from current file
-    const productsMatch = currentContent.match(/const products = (\[[\s\S]*?\]);/);
-    if (!productsMatch) {
-      throw new Error('Could not find products array in products.js');
-    }
-    
-    const products = JSON.parse(productsMatch[1]);
+    const currentContent = JSON.parse(Buffer.from(fileData.content, 'base64').toString('utf8'));
     
     // Find product to delete
-    const productIndex = products.findIndex(p => p.id === deleteData.id);
+    const productIndex = currentContent.products.findIndex(p => p.id === deleteData.id);
     if (productIndex === -1) {
       throw new Error(`Product with ID ${deleteData.id} not found`);
     }
     
-    const productTitle = products[productIndex].title;
-    products.splice(productIndex, 1);
-    
-    // Update file content
-    const newContent = currentContent.replace(
-      /const products = \[[\s\S]*?\];/,
-      `const products = ${JSON.stringify(products, null, 4)};`
-    );
+    const productName = currentContent.products[productIndex].name;
+    currentContent.products.splice(productIndex, 1);
     
     // Commit the updated file
-    const commitResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.js`, {
+    const commitResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.json`, {
       method: 'PUT',
       headers: config.headers,
       body: JSON.stringify({
-        message: `Delete product: ${productTitle}`,
-        content: Buffer.from(newContent).toString('base64'),
+        message: `Delete product: ${productName}`,
+        content: Buffer.from(JSON.stringify(currentContent, null, 2)).toString('base64'),
         sha: fileData.sha,
         branch: config.branch
       })
@@ -248,7 +206,7 @@ async function deleteProduct(deleteData, config) {
       statusCode: 200,
       body: JSON.stringify({ 
         success: true, 
-        message: `Product "${productTitle}" deleted from repository` 
+        message: `Product "${productName}" deleted from repository` 
       })
     };
     
