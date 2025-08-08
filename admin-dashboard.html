@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - iamlookingforvintage</title>
     <link rel="stylesheet" href="style.css">
+    <script src="github-api.js"></script>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -308,7 +309,12 @@
 <body>
     <div class="admin-container">
         <div class="admin-header">
-            <h1>Admin Dashboard</h1>
+            <div>
+                <h1>Admin Dashboard</h1>
+                <div id="github-indicator" style="font-size: 12px; margin-top: 5px; opacity: 0.8;">
+                    🔄 Loading GitHub status...
+                </div>
+            </div>
             <div class="admin-nav">
                 <button onclick="window.open('index.html', '_blank')">View Store</button>
                 <button onclick="exportAllProducts()">Export Products JSON</button>
@@ -319,6 +325,7 @@
         <div class="admin-tabs">
             <button class="tab-btn active" onclick="showTab('add-product')">Add Product</button>
             <button class="tab-btn" onclick="showTab('manage-products')">Manage Products</button>
+            <button class="tab-btn" onclick="showTab('github-settings')">GitHub Settings</button>
         </div>
         
         <!-- Add Product Tab -->
@@ -383,6 +390,50 @@
             <h2>Current Inventory</h2>
             <div class="products-grid" id="productsGrid">
                 <!-- Products will be loaded here -->
+            </div>
+        </div>
+        
+        <!-- GitHub Settings Tab -->
+        <div id="github-settings" class="tab-content">
+            <h2>GitHub Integration Settings</h2>
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #8b7355;">
+                <h4 style="margin: 0 0 10px 0; color: #8b7355;">🔒 Secure Auto-Update</h4>
+                <p style="margin: 0; font-size: 14px; color: #666;">Configure automatic repository updates when you add products or mark items as sold.</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="githubToken">GitHub Personal Access Token *</label>
+                <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" style="font-family: monospace;">
+                <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                    <strong>Need a token?</strong> Go to GitHub Settings → Developer Settings → Personal Access Tokens → Tokens (classic) → Generate new token
+                    <br><strong>Required permissions:</strong> repo (Full control of private repositories)
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                <button onclick="saveGitHubToken()" class="submit-btn">Save Token</button>
+                <button onclick="testGitHubConnection()" class="submit-btn" style="background: #007bff;" id="testBtn">Test Connection</button>
+                <button onclick="clearGitHubToken()" class="submit-btn" style="background: #dc3545;" id="clearBtn">Clear Token</button>
+            </div>
+            
+            <div id="github-status" style="padding: 15px; border-radius: 8px; margin-bottom: 20px; display: none;">
+                <!-- Status messages will appear here -->
+            </div>
+            
+            <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #e0e0e0;">
+                <h4 style="color: #8b7355; margin: 0 0 15px 0;">📋 Setup Instructions</h4>
+                <ol style="margin: 0; padding-left: 20px; color: #333;">
+                    <li>Go to <a href="https://github.com/settings/tokens" target="_blank" style="color: #8b7355;">GitHub → Settings → Developer Settings → Personal Access Tokens</a></li>
+                    <li>Click "Generate new token (classic)"</li>
+                    <li>Give it a name like "iamlookingforvintage-admin"</li>
+                    <li>Select scope: <strong>repo</strong> (Full control of private repositories)</li>
+                    <li>Click "Generate token"</li>
+                    <li>Copy the token (starts with "ghp_") and paste it above</li>
+                    <li>Click "Save Token" and then "Test Connection"</li>
+                </ol>
+                <p style="margin: 15px 0 0 0; font-size: 14px; color: #666;">
+                    <strong>Security:</strong> Your token is stored securely in your browser and never sent to anyone except GitHub.
+                </p>
             </div>
         </div>
     </div>
@@ -515,7 +566,7 @@
         }
         
         // Product form submission
-        document.getElementById('productForm').addEventListener('submit', function(e) {
+        document.getElementById('productForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             if (uploadedImages.length === 0) {
@@ -536,15 +587,35 @@
                 thumbnailIndex: 0
             };
             
-            // Save to localStorage and attempt to persist to products.json
+            // Save to localStorage
             let adminProducts = JSON.parse(localStorage.getItem('adminProducts') || '[]');
             adminProducts.push(newProduct);
             localStorage.setItem('adminProducts', JSON.stringify(adminProducts));
             
-            // Also attempt to update the products.json file
-            updateProductsFile(newProduct);
+            // Show loading state for GitHub commit
+            const submitBtn = this.querySelector('.submit-btn');
+            const originalText = submitBtn.textContent;
             
-            alert('Product added successfully! Note: For changes to persist across deployments, you need to manually add this product to products.json or set up a backend API.');
+            // Try to automatically commit to GitHub if configured
+            if (window.githubUpdater && window.githubUpdater.isConfigured()) {
+                try {
+                    submitBtn.textContent = 'Committing to GitHub...';
+                    submitBtn.disabled = true;
+                    
+                    await window.githubUpdater.addProduct(newProduct);
+                    alert('Product added and automatically committed to GitHub repository! ✅\n\nYour website will update within a few minutes.');
+                } catch (error) {
+                    console.error('Failed to auto-commit to GitHub:', error);
+                    alert(`Product added locally and is visible on your site!\n\nHowever, auto-commit to GitHub failed: ${error.message}\n\nYou can manually export or check your GitHub settings.`);
+                } finally {
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                }
+            } else {
+                // Fallback to manual export
+                updateProductsFile(newProduct);
+                alert('Product added successfully and is visible on your site!\n\nTo make it permanent: Configure GitHub integration in settings for automatic commits, or manually export to persist changes.');
+            }
             
             // Reset form
             document.getElementById('productForm').reset();
@@ -605,16 +676,32 @@
             });
         }
         
-        function markAsSold(productId) {
+        async function markAsSold(productId) {
             if (confirm('Mark this item as sold?')) {
                 // Update in localStorage if it's an admin product
                 let adminProducts = JSON.parse(localStorage.getItem('adminProducts') || '[]');
                 let productIndex = adminProducts.findIndex(p => p.id === productId);
+                let productName = 'Unknown Product';
                 
                 if (productIndex !== -1) {
                     adminProducts[productIndex].sold = true;
+                    productName = adminProducts[productIndex].name;
                     localStorage.setItem('adminProducts', JSON.stringify(adminProducts));
-                    alert('Item marked as sold in admin storage! Note: To persist this change, you may need to update products.json manually.');
+                    
+                    // Try to automatically commit to GitHub if configured
+                    if (window.githubUpdater && window.githubUpdater.isConfigured()) {
+                        try {
+                            await window.githubUpdater.markProductSold(productId, productName);
+                        } catch (error) {
+                            console.error('Failed to auto-commit sold status to GitHub:', error);
+                            alert('Item marked as sold locally! However, auto-commit to GitHub failed. You can manually export or check your GitHub settings.');
+                            loadProducts();
+                            return;
+                        }
+                        alert('Item marked as sold and automatically committed to GitHub repository! ✅');
+                    } else {
+                        alert('Item marked as sold! Configure GitHub integration for automatic commits, or manually export to persist changes.');
+                    }
                 } else {
                     alert('Item marked as sold! Note: This is a products.json item - you\'ll need to update the file manually to persist this change.');
                 }
@@ -723,10 +810,124 @@
                 });
         }
         
+        // GitHub Integration Functions
+        function saveGitHubToken() {
+            const tokenInput = document.getElementById('githubToken');
+            const token = tokenInput.value.trim();
+            
+            if (!token) {
+                showGitHubStatus('Please enter a GitHub token', 'error');
+                return;
+            }
+            
+            if (!token.startsWith('ghp_') && !token.startsWith('github_pat_')) {
+                showGitHubStatus('Invalid token format. GitHub tokens start with "ghp_" or "github_pat_"', 'error');
+                return;
+            }
+            
+            window.githubUpdater.setToken(token);
+            tokenInput.value = ''; // Clear input for security
+            showGitHubStatus('GitHub token saved securely! Now test the connection.', 'success');
+            updateGitHubIndicator();
+        }
+        
+        async function testGitHubConnection() {
+            const testBtn = document.getElementById('testBtn');
+            const originalText = testBtn.textContent;
+            
+            if (!window.githubUpdater.isConfigured()) {
+                showGitHubStatus('Please save a GitHub token first', 'error');
+                return;
+            }
+            
+            testBtn.textContent = 'Testing...';
+            testBtn.disabled = true;
+            
+            try {
+                await window.githubUpdater.testConnection();
+                showGitHubStatus('✅ GitHub connection successful! Auto-commits are now enabled.', 'success');
+            } catch (error) {
+                showGitHubStatus(`❌ Connection failed: ${error.message}`, 'error');
+            } finally {
+                testBtn.textContent = originalText;
+                testBtn.disabled = false;
+            }
+        }
+        
+        function clearGitHubToken() {
+            if (confirm('Are you sure you want to clear the GitHub token? Auto-commits will be disabled.')) {
+                localStorage.removeItem('github_token');
+                window.githubUpdater.token = null;
+                showGitHubStatus('GitHub token cleared. Auto-commits disabled.', 'info');
+                updateGitHubIndicator();
+            }
+        }
+        
+        function showGitHubStatus(message, type) {
+            const statusDiv = document.getElementById('github-status');
+            statusDiv.style.display = 'block';
+            statusDiv.textContent = message;
+            
+            // Set background color based on type
+            switch (type) {
+                case 'success':
+                    statusDiv.style.background = '#d4edda';
+                    statusDiv.style.color = '#155724';
+                    statusDiv.style.border = '1px solid #c3e6cb';
+                    break;
+                case 'error':
+                    statusDiv.style.background = '#f8d7da';
+                    statusDiv.style.color = '#721c24';
+                    statusDiv.style.border = '1px solid #f5c6cb';
+                    break;
+                case 'info':
+                    statusDiv.style.background = '#e2e3e5';
+                    statusDiv.style.color = '#383d41';
+                    statusDiv.style.border = '1px solid #d6d8db';
+                    break;
+            }
+        }
+        
+        // Initialize GitHub status on page load
+        function initializeGitHubStatus() {
+            const indicator = document.getElementById('github-indicator');
+            const tokenInput = document.getElementById('githubToken');
+            
+            if (window.githubUpdater && window.githubUpdater.isConfigured()) {
+                indicator.innerHTML = '✅ Auto-commits enabled';
+                indicator.style.color = '#28a745';
+                if (document.getElementById('github-status')) {
+                    showGitHubStatus('✅ GitHub integration is configured and ready!', 'success');
+                }
+            } else {
+                indicator.innerHTML = '⚠️ Auto-commits disabled - <a href="#" onclick="showTab(\'github-settings\')" style="color: #8b7355;">Configure</a>';
+                indicator.style.color = '#ffc107';
+                if (document.getElementById('github-status')) {
+                    showGitHubStatus('⚠️ Configure GitHub integration to enable auto-commits', 'info');
+                }
+            }
+        }
+        
+        // Update indicator when token is saved
+        function updateGitHubIndicator() {
+            setTimeout(initializeGitHubStatus, 100);
+        }
+        
+        // Update showTab function to initialize GitHub status
+        const originalShowTab = showTab;
+        showTab = function(tabName) {
+            originalShowTab.call(this, tabName);
+            if (tabName === 'github-settings') {
+                setTimeout(initializeGitHubStatus, 100);
+            }
+        }
+        
         // Initialize
         if (checkAuth()) {
             initializeImageUpload();
             loadProducts();
+            // Initialize GitHub status indicator
+            setTimeout(initializeGitHubStatus, 100);
         }
     </script>
 </body>
