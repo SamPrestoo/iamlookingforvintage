@@ -612,9 +612,9 @@
                     <p><strong>Size:</strong> ${product.size}</p>
                     <p><strong>Description:</strong> ${product.description.substring(0, 100)}...</p>
                     <div class="product-actions">
-                        ${!product.sold ? `<button class="action-btn sold-btn" onclick="markAsSold('${product.id}', '${product.name.replace(/'/g, '\\\')}')">Mark as Sold</button>` : ''}
+                        ${!product.sold ? '<button class="action-btn sold-btn" onclick="markAsSold(\'' + product.id + '\', \'' + product.name.replace(/'/g, "\\'") + '\')">Mark as Sold</button>' : ''}
                         <button class="action-btn edit-btn" onclick="editProduct('${product.id}')">Edit</button>
-                        <button class="action-btn delete-btn" onclick="deleteProduct('${product.id}', '${product.name.replace(/'/g, '\\\')}')">Delete</button>
+                        <button class="action-btn delete-btn" onclick="deleteProduct('${product.id}', '${product.name.replace(/'/g, "\\'")}')">Delete</button>
                     </div>
                 `;
                 grid.appendChild(productDiv);
