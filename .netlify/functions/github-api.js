@@ -126,21 +126,32 @@ exports.handler = async (event, context) => {
         };
     }
   } catch (error) {
-    console.error('GitHub API Error:', error);
+    console.error('❌ GitHub API Error:', error);
+    console.error('❌ Error stack:', error.stack);
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: 'Internal server error' })
+      body: JSON.stringify({ 
+        error: 'Internal server error', 
+        message: error.message,
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      })
     };
   }
 };
 
 async function addProduct(productData, config) {
   try {
+    console.log('🏗️ Adding product:', productData.name);
+    console.log('📦 Product data size:', JSON.stringify(productData).length, 'bytes');
+    
     // Get current products.json file
+    console.log('📥 Fetching current products.json...');
     const fileResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.json`, {
       headers: config.headers
     });
+    
+    console.log('📥 File fetch response status:', fileResponse.status);
     
     if (!fileResponse.ok) {
       throw new Error(`Failed to fetch products.json: ${fileResponse.statusText}`);

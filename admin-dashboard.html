@@ -317,6 +317,7 @@
             </div>
             <div class="admin-nav">
                 <button onclick="testGitHubAPI()">🧪 Test API</button>
+                <button onclick="testAddMinimalProduct()">🧪 Test Add</button>
                 <button onclick="testAuth()">🔐 Test Auth</button>
                 <button onclick="quickLogin()">⚡ Quick Login</button>
                 <button onclick="window.open('index.html', '_blank')">View Store</button>
@@ -481,6 +482,31 @@
             }
         }
         
+        async function testAddMinimalProduct() {
+            try {
+                console.log('🧪 Testing minimal product add...');
+                const minimalProduct = {
+                    id: 'test-' + Date.now(),
+                    name: 'Test Product',
+                    price: 10.00,
+                    category: 'test',
+                    type: 'test',
+                    size: 'test',
+                    description: 'Test product',
+                    sold: false,
+                    images: [], // No images to test without size issues
+                    thumbnailIndex: 0
+                };
+                
+                const result = await window.githubUpdater.addProduct(minimalProduct);
+                console.log('✅ Minimal product test result:', result);
+                alert('✅ Minimal product test successful!');
+            } catch (error) {
+                console.error('❌ Minimal product test failed:', error);
+                alert(`❌ Minimal product test failed:\n\n${error.message}`);
+            }
+        }
+        
         function showTab(tabName) {
             // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(tab => {
@@ -600,6 +626,16 @@
             try {
                 // Check authentication before adding product
                 if (!checkAuth()) {
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                    return;
+                }
+                
+                // Check payload size (Netlify limit is ~6MB)
+                const payloadSize = JSON.stringify(newProduct).length;
+                console.log('📦 Product payload size:', payloadSize, 'bytes');
+                if (payloadSize > 5000000) { // 5MB safety margin
+                    alert('❌ Product data too large (>5MB). Please reduce image sizes.');
                     submitBtn.textContent = originalText;
                     submitBtn.disabled = false;
                     return;

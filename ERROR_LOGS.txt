@@ -1,0 +1,31 @@
+
+﻿
+admin-dashboard.html:403 Checking auth...
+admin-dashboard.html:404 adminAuthenticated: true
+admin-dashboard.html:405 adminLoginTime: 1754782376774
+admin-dashboard.html:474 🧪 Testing GitHub API connection...
+admin-dashboard.html:476 ✅ API test result: true
+admin-dashboard.html:447 === Authentication Test ===
+admin-dashboard.html:448 adminAuthenticated: true
+admin-dashboard.html:449 adminLoginTime: 1754782376774
+admin-dashboard.html:450 adminUser: admin
+admin-dashboard.html:456 Current time: Sat Aug 09 2025 18:33:03 GMT-0500 (Central Daylight Time)
+admin-dashboard.html:457 Login time: Sat Aug 09 2025 18:32:56 GMT-0500 (Central Daylight Time)
+admin-dashboard.html:458 Time difference (minutes): 0
+admin-dashboard.html:403 Checking auth...
+admin-dashboard.html:404 adminAuthenticated: true
+admin-dashboard.html:405 adminLoginTime: 1754782376774
+github-api.js:26 🚀 Attempting to add product: Blue Tee
+github-api.js:27 📍 Function endpoint: /.netlify/functions/github-api
+github-api.js:33 📤 Request body: 
+{action: 'add_product', data: {…}}
+github-api.js:35 
+ POST https://splendid-madeleine-249932.netlify.app/.netlify/functions/github-api 400 (Bad Request)
+github-api.js:43 📥 Response status: 400
+github-api.js:44 📥 Response headers: 
+{age: '0', cache-control: 'private,max-age=0', cache-status: '"Netlify Edge"; fwd=miss', content-length: '0', content-type: 'text/plain; charset=utf-8', …}
+github-api.js:48 📥 Raw response text: 
+github-api.js:60 ❌ Empty response received
+admin-dashboard.html:622 Failed to add product: Error: Server returned empty response with status 400
+    at GitHubUpdater.addProduct (github-api.js:61:23)
+    at async HTMLFormElement.<anonymous> (admin-dashboard.html:609:17)

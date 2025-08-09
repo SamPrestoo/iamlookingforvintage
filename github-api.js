@@ -31,6 +31,11 @@ class GitHubUpdater {
                 data: product
             };
             console.log('📤 Request body:', requestBody);
+            console.log('📦 Request body size:', JSON.stringify(requestBody).length, 'bytes');
+            console.log('🖼️ Number of images:', product.images ? product.images.length : 0);
+            if (product.images && product.images.length > 0) {
+                console.log('🖼️ First image size:', product.images[0].length, 'bytes');
+            }
             
             const response = await fetch(this.functionEndpoint, {
                 method: 'POST',
