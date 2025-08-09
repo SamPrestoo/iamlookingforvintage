@@ -316,6 +316,7 @@
                 </div>
             </div>
             <div class="admin-nav">
+                <button onclick="testDebugEndpoint()">🐛 Debug</button>
                 <button onclick="testGitHubAPI()">🧪 Test API</button>
                 <button onclick="testAddMinimalProduct()">🧪 Test Add</button>
                 <button onclick="testAuth()">🔐 Test Auth</button>
@@ -504,6 +505,29 @@
             } catch (error) {
                 console.error('❌ Minimal product test failed:', error);
                 alert(`❌ Minimal product test failed:\n\n${error.message}`);
+            }
+        }
+        
+        async function testDebugEndpoint() {
+            try {
+                console.log('🐛 Testing debug endpoint...');
+                const response = await fetch('/.netlify/functions/github-api', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        action: 'debug',
+                        data: { test: 'data' }
+                    })
+                });
+                
+                const result = await response.json();
+                console.log('🐛 Debug response:', result);
+                alert(`Debug Results:\n\n${JSON.stringify(result, null, 2)}`);
+            } catch (error) {
+                console.error('❌ Debug test failed:', error);
+                alert(`❌ Debug test failed:\n\n${error.message}`);
             }
         }
         

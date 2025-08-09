@@ -1,31 +1,43 @@
-
-﻿
-admin-dashboard.html:403 Checking auth...
-admin-dashboard.html:404 adminAuthenticated: true
-admin-dashboard.html:405 adminLoginTime: 1754782376774
-admin-dashboard.html:474 🧪 Testing GitHub API connection...
-admin-dashboard.html:476 ✅ API test result: true
-admin-dashboard.html:447 === Authentication Test ===
-admin-dashboard.html:448 adminAuthenticated: true
-admin-dashboard.html:449 adminLoginTime: 1754782376774
-admin-dashboard.html:450 adminUser: admin
-admin-dashboard.html:456 Current time: Sat Aug 09 2025 18:33:03 GMT-0500 (Central Daylight Time)
-admin-dashboard.html:457 Login time: Sat Aug 09 2025 18:32:56 GMT-0500 (Central Daylight Time)
-admin-dashboard.html:458 Time difference (minutes): 0
-admin-dashboard.html:403 Checking auth...
-admin-dashboard.html:404 adminAuthenticated: true
-admin-dashboard.html:405 adminLoginTime: 1754782376774
+Checking auth...
+admin-dashboard.html:405 adminAuthenticated: true
+admin-dashboard.html:406 adminLoginTime: 1754782376774
+admin-dashboard.html:487 🧪 Testing minimal product add...
+github-api.js:26 🚀 Attempting to add product: Test Product
+github-api.js:27 📍 Function endpoint: /.netlify/functions/github-api
+github-api.js:33 📤 Request body: {action: 'add_product', data: {…}}
+github-api.js:34 📦 Request body size: 211 bytes
+github-api.js:35 🖼️ Number of images: 0
+github-api.js:40  POST https://splendid-madeleine-249932.netlify.app/.netlify/functions/github-api 500 (Internal Server Error)
+addProduct @ github-api.js:40
+testAddMinimalProduct @ admin-dashboard.html:501
+onclick @ admin-dashboard.html:320Understand this error
+github-api.js:48 📥 Response status: 500
+github-api.js:49 📥 Response headers: {access-control-allow-headers: 'Content-Type', access-control-allow-methods: 'POST, OPTIONS', access-control-allow-origin: '*', age: '0', cache-control: 'no-cache', …}
+github-api.js:53 📥 Raw response text: {"error":"Unexpected end of JSON input"}
+github-api.js:59 📥 Parsed response: {error: 'Unexpected end of JSON input'}
+admin-dashboard.html:505 ❌ Minimal product test failed: Error: Unexpected end of JSON input
+    at GitHubUpdater.addProduct (github-api.js:70:23)
+    at async testAddMinimalProduct (admin-dashboard.html:501:32)
+testAddMinimalProduct @ admin-dashboard.html:505
+await in testAddMinimalProduct
+onclick @ admin-dashboard.html:320Understand this error
+admin-dashboard.html:404 Checking auth...
+admin-dashboard.html:405 adminAuthenticated: true
+admin-dashboard.html:406 adminLoginTime: 1754782376774
+admin-dashboard.html:636 📦 Product payload size: 2024825 bytes
 github-api.js:26 🚀 Attempting to add product: Blue Tee
 github-api.js:27 📍 Function endpoint: /.netlify/functions/github-api
-github-api.js:33 📤 Request body: 
-{action: 'add_product', data: {…}}
-github-api.js:35 
- POST https://splendid-madeleine-249932.netlify.app/.netlify/functions/github-api 400 (Bad Request)
-github-api.js:43 📥 Response status: 400
-github-api.js:44 📥 Response headers: 
-{age: '0', cache-control: 'private,max-age=0', cache-status: '"Netlify Edge"; fwd=miss', content-length: '0', content-type: 'text/plain; charset=utf-8', …}
-github-api.js:48 📥 Raw response text: 
-github-api.js:60 ❌ Empty response received
-admin-dashboard.html:622 Failed to add product: Error: Server returned empty response with status 400
-    at GitHubUpdater.addProduct (github-api.js:61:23)
-    at async HTMLFormElement.<anonymous> (admin-dashboard.html:609:17)
+github-api.js:33 📤 Request body: {action: 'add_product', data: {…}}
+github-api.js:34 📦 Request body size: 2024857 bytes
+github-api.js:35 🖼️ Number of images: 1
+github-api.js:37 🖼️ First image size: 2024631 bytes
+github-api.js:40  POST https://splendid-madeleine-249932.netlify.app/.netlify/functions/github-api 500 (Internal Server Error)
+addProduct @ github-api.js:40
+(anonymous) @ admin-dashboard.html:645Understand this error
+github-api.js:48 📥 Response status: 500
+github-api.js:49 📥 Response headers: {access-control-allow-headers: 'Content-Type', access-control-allow-methods: 'POST, OPTIONS', access-control-allow-origin: '*', age: '1', cache-control: 'no-cache', …}
+github-api.js:53 📥 Raw response text: {"error":"Unexpected end of JSON input"}
+github-api.js:59 📥 Parsed response: {error: 'Unexpected end of JSON input'}
+admin-dashboard.html:658 Failed to add product: Error: Unexpected end of JSON input
+    at GitHubUpdater.addProduct (github-api.js:70:23)
+    at async HTMLFormElement.<anonymous> (admin-dashboard.html:645:17)

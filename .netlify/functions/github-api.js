@@ -3,6 +3,8 @@
  * Handles product updates and commits using environment variables
  */
 
+// Native fetch is available in Node 18+ (Netlify default)
+
 exports.handler = async (event, context) => {
   console.log('🔧 GitHub API function called');
   console.log('📍 HTTP Method:', event.httpMethod);
@@ -114,7 +116,30 @@ exports.handler = async (event, context) => {
               owner,
               repo,
               branch,
-              hasToken: !!token
+              hasToken: !!token,
+              nodeVersion: process.version,
+              hasNativeFetch: typeof fetch !== 'undefined'
+            }
+          })
+        };
+      case 'debug':
+        console.log('🐛 Debug endpoint called');
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            success: true,
+            message: 'Debug endpoint working',
+            request: {
+              method: event.httpMethod,
+              hasBody: !!event.body,
+              bodyLength: event.body ? event.body.length : 0,
+              headers: Object.keys(event.headers || {})
+            },
+            environment: {
+              nodeVersion: process.version,
+              hasToken: !!token,
+              hasNativeFetch: typeof fetch !== 'undefined'
             }
           })
         };
@@ -154,11 +179,29 @@ async function addProduct(productData, config) {
     console.log('📥 File fetch response status:', fileResponse.status);
     
     if (!fileResponse.ok) {
+      console.error('❌ Failed to fetch products.json:', fileResponse.statusText);
       throw new Error(`Failed to fetch products.json: ${fileResponse.statusText}`);
     }
     
-    const fileData = await fileResponse.json();
-    const currentContent = JSON.parse(Buffer.from(fileData.content, 'base64').toString('utf8'));
+    console.log('📋 Parsing GitHub response...');
+    let fileData;
+    try {
+      fileData = await fileResponse.json();
+    } catch (jsonError) {
+      console.error('❌ Failed to parse GitHub response as JSON:', jsonError);
+      throw new Error(`Failed to parse GitHub response: ${jsonError.message}`);
+    }
+    
+    console.log('📋 Decoding base64 content...');
+    let currentContent;
+    try {
+      const decodedContent = Buffer.from(fileData.content, 'base64').toString('utf8');
+      console.log('📋 Decoded content length:', decodedContent.length);
+      currentContent = JSON.parse(decodedContent);
+    } catch (decodeError) {
+      console.error('❌ Failed to decode/parse products.json content:', decodeError);
+      throw new Error(`Failed to decode products.json: ${decodeError.message}`);
+    }
     
     // Add new product to the products array
     currentContent.products.push(productData);
@@ -175,10 +218,22 @@ async function addProduct(productData, config) {
       })
     });
     
+    console.log('📤 Commit response status:', commitResponse.status);
+    
     if (!commitResponse.ok) {
-      const error = await commitResponse.json();
-      throw new Error(`Failed to commit: ${error.message}`);
+      console.error('❌ Commit failed with status:', commitResponse.status);
+      let errorMessage = `Failed to commit with status ${commitResponse.status}`;
+      try {
+        const error = await commitResponse.json();
+        errorMessage = `Failed to commit: ${error.message}`;
+        console.error('❌ Commit error details:', error);
+      } catch (parseError) {
+        console.error('❌ Could not parse commit error response:', parseError);
+      }
+      throw new Error(errorMessage);
     }
+    
+    console.log('✅ Successfully committed to GitHub');
     
     return {
       statusCode: 200,
@@ -232,10 +287,22 @@ async function updateSoldStatus(updateData, config) {
       })
     });
     
+    console.log('📤 Commit response status:', commitResponse.status);
+    
     if (!commitResponse.ok) {
-      const error = await commitResponse.json();
-      throw new Error(`Failed to commit: ${error.message}`);
+      console.error('❌ Commit failed with status:', commitResponse.status);
+      let errorMessage = `Failed to commit with status ${commitResponse.status}`;
+      try {
+        const error = await commitResponse.json();
+        errorMessage = `Failed to commit: ${error.message}`;
+        console.error('❌ Commit error details:', error);
+      } catch (parseError) {
+        console.error('❌ Could not parse commit error response:', parseError);
+      }
+      throw new Error(errorMessage);
     }
+    
+    console.log('✅ Successfully committed to GitHub');
     
     return {
       statusCode: 200,
@@ -290,10 +357,22 @@ async function deleteProduct(deleteData, config) {
       })
     });
     
+    console.log('📤 Commit response status:', commitResponse.status);
+    
     if (!commitResponse.ok) {
-      const error = await commitResponse.json();
-      throw new Error(`Failed to commit: ${error.message}`);
+      console.error('❌ Commit failed with status:', commitResponse.status);
+      let errorMessage = `Failed to commit with status ${commitResponse.status}`;
+      try {
+        const error = await commitResponse.json();
+        errorMessage = `Failed to commit: ${error.message}`;
+        console.error('❌ Commit error details:', error);
+      } catch (parseError) {
+        console.error('❌ Could not parse commit error response:', parseError);
+      }
+      throw new Error(errorMessage);
     }
+    
+    console.log('✅ Successfully committed to GitHub');
     
     return {
       statusCode: 200,
