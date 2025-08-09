@@ -491,9 +491,9 @@ body {
     font-family: 'Workbench', Arial, sans-serif;
 }
 
-.view-details {
-    background-color: transparent;
-    color: #8b7355;
+.buy-now {
+    background-color: #8b7355;
+    color: white;
     border: 2px solid #8b7355;
     padding: 6px 12px;
     cursor: pointer;
@@ -505,9 +505,9 @@ body {
     font-family: 'Workbench', Arial, sans-serif;
 }
 
-.view-details:hover {
-    background-color: #8b7355;
-    color: white;
+.buy-now:hover {
+    background-color: #6d5a42;
+    border-color: #6d5a42;
 }
 
 .product-buttons {
@@ -522,7 +522,7 @@ body {
     font-family: 'Workbench', Arial, sans-serif;
 }
 
-.product-buttons .view-details {
+.product-buttons .buy-now {
     width: 100%;
     margin-left: 0;
     font-family: 'Workbench', Arial, sans-serif;

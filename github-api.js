@@ -6,7 +6,7 @@
 class GitHubUpdater {
     constructor() {
         // Use secure Netlify Function endpoint
-        this.functionEndpoint = '/.netlify/functions/github-api';
+        this.functionEndpoint = '/netlify/functions/github-api';
         this.configured = true; // Always configured with Netlify Functions
     }
 

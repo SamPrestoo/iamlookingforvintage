@@ -585,8 +585,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                 `<button class="add-to-cart" onclick="event.stopPropagation(); addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})">
                                     <img src="Frame 31.png" alt="Cart" class="cart-icon">Add to Cart
                                 </button>
-                                <button class="view-details" onclick="event.stopPropagation(); viewProduct('${product.id}')">
-                                    View Details
+                                <button class="buy-now" onclick="event.stopPropagation(); buyNow('${product.id}')">
+                                    Buy Now
                                 </button>`
                             }
                         </div>
@@ -606,9 +606,26 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = `product.html?id=${productId}`;
     }
     
+    // Buy now function - adds to cart and goes to checkout
+    function buyNow(productId) {
+        fetch('products.json')
+            .then(response => response.json())
+            .then(data => {
+                const product = data.products.find(p => p.id === productId);
+                if (product && !product.sold) {
+                    addToCart(product);
+                    window.location.href = 'cart.html';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading product:', error);
+            });
+    }
+    
     // Make functions globally available
     window.addToCart = addToCart;
     window.viewProduct = viewProduct;
+    window.buyNow = buyNow;
 
     // Load featured products for home page
     function loadFeaturedProducts() {
