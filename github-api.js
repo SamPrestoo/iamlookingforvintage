@@ -6,7 +6,7 @@
 class GitHubUpdater {
     constructor() {
         // Use secure Netlify Function endpoint
-        this.functionEndpoint = '/netlify/functions/github-api';
+        this.functionEndpoint = '/.netlify/functions/github-api';
         this.configured = true; // Always configured with Netlify Functions
     }
 
@@ -34,10 +34,22 @@ class GitHubUpdater {
                 })
             });
 
-            const result = await response.json();
+            let result;
+            const responseText = await response.text();
+            
+            // Try to parse JSON, handle empty responses
+            if (responseText) {
+                try {
+                    result = JSON.parse(responseText);
+                } catch (parseError) {
+                    throw new Error(`Server returned invalid response: ${responseText}`);
+                }
+            } else {
+                throw new Error(`Server returned empty response with status ${response.status}`);
+            }
 
             if (!response.ok) {
-                throw new Error(result.error || 'Failed to add product');
+                throw new Error(result.error || `Server error: ${response.status}`);
             }
 
             // Show success notification
