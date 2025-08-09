@@ -4,6 +4,11 @@
  */
 
 exports.handler = async (event, context) => {
+  console.log('🔧 GitHub API function called');
+  console.log('📍 HTTP Method:', event.httpMethod);
+  console.log('📍 Headers:', event.headers);
+  console.log('📍 Body length:', event.body ? event.body.length : 0);
+  
   // Add CORS headers
   const headers = {
     'Access-Control-Allow-Origin': '*',
@@ -67,7 +72,15 @@ exports.handler = async (event, context) => {
     const repo = process.env.GITHUB_REPO || 'iamlookingforvintage';
     const branch = process.env.GITHUB_BRANCH || 'main';
     
+    console.log('🔑 Environment check:');
+    console.log('- GITHUB_TOKEN exists:', !!token);
+    console.log('- GITHUB_TOKEN length:', token ? token.length : 0);
+    console.log('- GITHUB_OWNER:', owner);
+    console.log('- GITHUB_REPO:', repo);
+    console.log('- GITHUB_BRANCH:', branch);
+    
     if (!token) {
+      console.error('❌ No GitHub token found in environment variables');
       return {
         statusCode: 500,
         headers,
@@ -90,10 +103,20 @@ exports.handler = async (event, context) => {
       case 'delete_product':
         return await deleteProduct(data, { apiBase, headers: githubHeaders, owner, repo, branch, responseHeaders: headers });
       case 'test_connection':
+        console.log('🧪 Testing connection...');
         return {
           statusCode: 200,
           headers,
-          body: JSON.stringify({ success: true, message: 'GitHub connection successful' })
+          body: JSON.stringify({ 
+            success: true, 
+            message: 'GitHub connection successful',
+            config: {
+              owner,
+              repo,
+              branch,
+              hasToken: !!token
+            }
+          })
         };
       default:
         return {

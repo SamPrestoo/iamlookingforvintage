@@ -23,28 +23,41 @@ class GitHubUpdater {
      */
     async addProduct(product) {
         try {
+            console.log('🚀 Attempting to add product:', product.name);
+            console.log('📍 Function endpoint:', this.functionEndpoint);
+            
+            const requestBody = {
+                action: 'add_product',
+                data: product
+            };
+            console.log('📤 Request body:', requestBody);
+            
             const response = await fetch(this.functionEndpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    action: 'add_product',
-                    data: product
-                })
+                body: JSON.stringify(requestBody)
             });
+            
+            console.log('📥 Response status:', response.status);
+            console.log('📥 Response headers:', Object.fromEntries(response.headers.entries()));
 
             let result;
             const responseText = await response.text();
+            console.log('📥 Raw response text:', responseText);
             
             // Try to parse JSON, handle empty responses
             if (responseText) {
                 try {
                     result = JSON.parse(responseText);
+                    console.log('📥 Parsed response:', result);
                 } catch (parseError) {
+                    console.error('❌ JSON parse error:', parseError);
                     throw new Error(`Server returned invalid response: ${responseText}`);
                 }
             } else {
+                console.error('❌ Empty response received');
                 throw new Error(`Server returned empty response with status ${response.status}`);
             }
 

@@ -316,6 +316,7 @@
                 </div>
             </div>
             <div class="admin-nav">
+                <button onclick="testGitHubAPI()">🧪 Test API</button>
                 <button onclick="testAuth()">🔐 Test Auth</button>
                 <button onclick="quickLogin()">⚡ Quick Login</button>
                 <button onclick="window.open('index.html', '_blank')">View Store</button>
@@ -466,6 +467,18 @@
             sessionStorage.setItem('adminUser', 'admin');
             alert('Quick login successful! You are now authenticated as admin.');
             location.reload();
+        }
+        
+        async function testGitHubAPI() {
+            try {
+                console.log('🧪 Testing GitHub API connection...');
+                const result = await window.githubUpdater.testConnection();
+                console.log('✅ API test result:', result);
+                alert(`API Test Results:\n\n${JSON.stringify(result, null, 2)}`);
+            } catch (error) {
+                console.error('❌ API test failed:', error);
+                alert(`API Test Failed:\n\n${error.message}`);
+            }
         }
         
         function showTab(tabName) {
