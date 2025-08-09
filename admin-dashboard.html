@@ -316,6 +316,8 @@
                 </div>
             </div>
             <div class="admin-nav">
+                <button onclick="testAuth()">🔐 Test Auth</button>
+                <button onclick="quickLogin()">⚡ Quick Login</button>
                 <button onclick="window.open('index.html', '_blank')">View Store</button>
                 <button class="logout-btn" onclick="logout()">Logout</button>
             </div>
@@ -396,8 +398,15 @@
     <script>
         // Enhanced authentication with additional security checks
         function checkAuth() {
+            // Debug authentication status
+            console.log('Checking auth...');
+            console.log('adminAuthenticated:', sessionStorage.getItem('adminAuthenticated'));
+            console.log('adminLoginTime:', sessionStorage.getItem('adminLoginTime'));
+            
             // Check if admin is authenticated
             if (sessionStorage.getItem('adminAuthenticated') !== 'true') {
+                console.log('Not authenticated, redirecting to login');
+                alert('You must be logged in as admin to add products. Redirecting to login...');
                 window.location.href = 'admin-login.html';
                 return false;
             }
@@ -408,6 +417,7 @@
             const sessionDuration = 2 * 60 * 60 * 1000; // 2 hours
             
             if (currentTime - loginTime > sessionDuration) {
+                console.log('Session expired, logging out');
                 logout();
                 return false;
             }
@@ -430,6 +440,32 @@
             
             // Redirect to login
             window.location.href = 'admin-login.html';
+        }
+        
+        function testAuth() {
+            console.log('=== Authentication Test ===');
+            console.log('adminAuthenticated:', sessionStorage.getItem('adminAuthenticated'));
+            console.log('adminLoginTime:', sessionStorage.getItem('adminLoginTime'));
+            console.log('adminUser:', sessionStorage.getItem('adminUser'));
+            
+            const loginTime = parseInt(sessionStorage.getItem('adminLoginTime'));
+            const currentTime = Date.now();
+            const timeDiff = currentTime - loginTime;
+            
+            console.log('Current time:', new Date(currentTime));
+            console.log('Login time:', new Date(loginTime));
+            console.log('Time difference (minutes):', Math.floor(timeDiff / (1000 * 60)));
+            
+            alert(`Auth Status:\n\nAuthenticated: ${sessionStorage.getItem('adminAuthenticated')}\nUser: ${sessionStorage.getItem('adminUser')}\nLogin Time: ${new Date(loginTime).toLocaleString()}\nSession Age: ${Math.floor(timeDiff / (1000 * 60))} minutes`);
+        }
+        
+        function quickLogin() {
+            // Quick login for testing - sets admin session
+            sessionStorage.setItem('adminAuthenticated', 'true');
+            sessionStorage.setItem('adminLoginTime', Date.now());
+            sessionStorage.setItem('adminUser', 'admin');
+            alert('Quick login successful! You are now authenticated as admin.');
+            location.reload();
         }
         
         function showTab(tabName) {
@@ -549,6 +585,13 @@
             submitBtn.disabled = true;
             
             try {
+                // Check authentication before adding product
+                if (!checkAuth()) {
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                    return;
+                }
+                
                 // Add directly to website via secure backend
                 await window.githubUpdater.addProduct(newProduct);
                 alert('Product added successfully! ✅\n\nYour product is now live on the website.');
