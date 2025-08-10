@@ -83,6 +83,18 @@
       "sold": false,
       "images": [],
       "thumbnailIndex": 0
+    },
+    {
+      "id": "test-1754784225241",
+      "name": "Test Product",
+      "price": 10,
+      "category": "test",
+      "type": "test",
+      "size": "test",
+      "description": "Test product",
+      "sold": false,
+      "images": [],
+      "thumbnailIndex": 0
     }
   ]
 }
