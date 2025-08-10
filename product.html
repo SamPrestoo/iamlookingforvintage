@@ -417,21 +417,28 @@
             const thumbnailGallery = document.getElementById('thumbnailGallery');
             const totalImagesSpan = document.getElementById('totalImages');
             
-            // Set main image
-            mainImage.src = images[currentImageIndex].data;
+            // Set main image - handle both string and object formats
+            const imageData = typeof images[currentImageIndex] === 'string' 
+                ? images[currentImageIndex] 
+                : images[currentImageIndex].data;
+            mainImage.src = imageData;
             mainImage.alt = currentProduct.name;
             
             // Update counter
             totalImagesSpan.textContent = images.length;
             updateImageCounter();
             
-            // Create thumbnails
-            thumbnailGallery.innerHTML = images.map((img, index) => `
-                <img src="${img.data}" 
-                     alt="${img.name}" 
-                     class="thumbnail ${index === currentImageIndex ? 'active' : ''}"
-                     onclick="setMainImage(${index})">
-            `).join('');
+            // Create thumbnails - handle both string and object formats
+            thumbnailGallery.innerHTML = images.map((img, index) => {
+                const imgSrc = typeof img === 'string' ? img : img.data;
+                const imgAlt = typeof img === 'string' ? `${currentProduct.name} ${index + 1}` : img.name;
+                return `
+                    <img src="${imgSrc}" 
+                         alt="${imgAlt}" 
+                         class="thumbnail ${index === currentImageIndex ? 'active' : ''}"
+                         onclick="setMainImage(${index})">
+                `;
+            }).join('');
             
             // Hide navigation if only one image
             const navButtons = document.querySelectorAll('.image-nav');
@@ -445,7 +452,12 @@
             
             currentImageIndex = index;
             const mainImage = document.getElementById('mainImage');
-            mainImage.src = currentProduct.images[index].data;
+            
+            // Handle both string and object formats
+            const imageData = typeof currentProduct.images[index] === 'string' 
+                ? currentProduct.images[index] 
+                : currentProduct.images[index].data;
+            mainImage.src = imageData;
             
             // Update thumbnails
             document.querySelectorAll('.thumbnail').forEach((thumb, i) => {
@@ -488,11 +500,17 @@
                 showCartNotification('Item already in cart!');
                 return;
             } else {
+                // Handle both string and object formats for images
+                const thumbnailIndex = currentProduct.thumbnailIndex || 0;
+                const imageData = typeof currentProduct.images[thumbnailIndex] === 'string' 
+                    ? currentProduct.images[thumbnailIndex] 
+                    : currentProduct.images[thumbnailIndex].data;
+                
                 cart.push({
                     id: currentProduct.id,
                     name: currentProduct.name,
                     price: currentProduct.price,
-                    image: currentProduct.images[currentProduct.thumbnailIndex || 0].data
+                    image: imageData
                 });
             }
             
