@@ -586,17 +586,55 @@
                 }
                 
                 if (file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
+                    compressImage(file, (compressedDataUrl) => {
                         uploadedImages.push({
                             name: file.name,
-                            data: e.target.result
+                            data: compressedDataUrl
                         });
                         displayUploadedImages();
-                    };
-                    reader.readAsDataURL(file);
+                    });
                 }
             });
+        }
+        
+        function compressImage(file, callback) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            
+            img.onload = function() {
+                // Calculate new dimensions (max 1200px on longest side)
+                const maxSize = 1200;
+                let { width, height } = img;
+                
+                if (width > height && width > maxSize) {
+                    height = (height * maxSize) / width;
+                    width = maxSize;
+                } else if (height > maxSize) {
+                    width = (width * maxSize) / height;
+                    height = maxSize;
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                
+                // Draw and compress
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // Try different quality levels until under 1MB per image
+                let quality = 0.8;
+                let compressedDataUrl;
+                
+                do {
+                    compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+                    quality -= 0.1;
+                } while (compressedDataUrl.length > 1000000 && quality > 0.1); // 1MB limit per image
+                
+                console.log(`📸 Compressed ${file.name}: ${file.size} bytes → ${compressedDataUrl.length} bytes (${Math.round((1 - compressedDataUrl.length / file.size) * 100)}% reduction)`);
+                callback(compressedDataUrl);
+            };
+            
+            img.src = URL.createObjectURL(file);
         }
         
         function displayUploadedImages() {
@@ -655,11 +693,11 @@
                     return;
                 }
                 
-                // Check payload size (Netlify limit is ~6MB)
+                // Check payload size (Netlify limit is ~6MB but GitHub has limits too)
                 const payloadSize = JSON.stringify(newProduct).length;
                 console.log('📦 Product payload size:', payloadSize, 'bytes');
-                if (payloadSize > 5000000) { // 5MB safety margin
-                    alert('❌ Product data too large (>5MB). Please reduce image sizes.');
+                if (payloadSize > 50000000) { // 50MB absolute maximum
+                    alert('❌ Product data too large (>50MB). This should not happen with compression.');
                     submitBtn.textContent = originalText;
                     submitBtn.disabled = false;
                     return;
