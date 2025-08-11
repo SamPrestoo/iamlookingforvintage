@@ -497,17 +497,73 @@ async function updateSoldStatus(updateData, config) {
 
 async function deleteProduct(deleteData, config) {
   try {
-    // Get current products.json file
-    const fileResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.json`, {
-      headers: config.headers
-    });
+    console.log('🗑️ Server: Starting product deletion for ID:', deleteData.id);
     
-    if (!fileResponse.ok) {
-      throw new Error(`Failed to fetch products.json: ${fileResponse.statusText}`);
+    // Use the same robust file fetching as addProduct for large files
+    let fileData;
+    let currentSha;
+    let attempts = 0;
+    const maxAttempts = 3;
+    
+    while (attempts < maxAttempts) {
+      attempts++;
+      console.log(`📥 Delete: Attempt ${attempts}/${maxAttempts} to fetch products.json`);
+      
+      // Try Contents API first
+      const fileResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.json`, {
+        headers: config.headers
+      });
+      
+      console.log('📥 Delete: Contents API response status:', fileResponse.status);
+      
+      if (fileResponse.ok) {
+        const responseText = await fileResponse.text();
+        const responseData = JSON.parse(responseText);
+        
+        // Check if file is too large for Contents API
+        if (!responseData.content && responseData.size > 1000000) {
+          console.log('📥 Delete: File too large for Contents API, using Git Data API...');
+          // Use Git Data API for large files
+          const blobResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/git/blobs/${responseData.sha}`, {
+            headers: config.headers
+          });
+          
+          if (blobResponse.ok) {
+            const blobData = await blobResponse.json();
+            fileData = {
+              content: blobData.content,
+              encoding: blobData.encoding,
+              sha: responseData.sha,
+              size: responseData.size
+            };
+            currentSha = responseData.sha;
+            console.log('📥 Delete: Successfully fetched via Git Data API');
+            break;
+          } else {
+            throw new Error(`Failed to fetch blob via Git Data API: ${blobResponse.statusText}`);
+          }
+        } else if (responseData.content) {
+          // Normal Contents API response
+          fileData = responseData;
+          currentSha = responseData.sha;
+          console.log('📥 Delete: Successfully fetched via Contents API');
+          break;
+        } else {
+          throw new Error('No content available in GitHub response');
+        }
+      }
+      
+      if (attempts === maxAttempts) {
+        console.error('❌ Delete: Failed to fetch products.json after', maxAttempts, 'attempts:', fileResponse.statusText);
+        throw new Error(`Failed to fetch products.json: ${fileResponse.statusText}`);
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 1000 * attempts));
     }
     
-    const fileData = await fileResponse.json();
+    console.log('📋 Delete: Decoding base64 content...');
     const currentContent = JSON.parse(Buffer.from(fileData.content, 'base64').toString('utf8'));
+    console.log('📋 Delete: Current products count:', currentContent.products.length);
     
     // Find product to delete
     const productIndex = currentContent.products.findIndex(p => p.id === deleteData.id);
@@ -518,41 +574,48 @@ async function deleteProduct(deleteData, config) {
     const productName = currentContent.products[productIndex].name;
     currentContent.products.splice(productIndex, 1);
     
+    console.log('📋 Delete: Product found, removing from array. New count will be:', currentContent.products.length - 1);
+    
     // Commit the updated file
+    const newJsonContent = JSON.stringify(currentContent, null, 2);
     const commitResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.json`, {
       method: 'PUT',
       headers: config.headers,
       body: JSON.stringify({
         message: `Delete product: ${productName}`,
-        content: Buffer.from(JSON.stringify(currentContent, null, 2)).toString('base64'),
-        sha: fileData.sha,
+        content: Buffer.from(newJsonContent).toString('base64'),
+        sha: currentSha || fileData.sha,
         branch: config.branch
       })
     });
     
-    console.log('📤 Commit response status:', commitResponse.status);
+    console.log('📤 Delete: Commit response status:', commitResponse.status);
     
     if (!commitResponse.ok) {
-      console.error('❌ Commit failed with status:', commitResponse.status);
-      let errorMessage = `Failed to commit with status ${commitResponse.status}`;
+      console.error('❌ Delete: Commit failed with status:', commitResponse.status);
+      let errorMessage = `Failed to commit deletion with status ${commitResponse.status}`;
       try {
-        const error = await commitResponse.json();
-        errorMessage = `Failed to commit: ${error.message}`;
-        console.error('❌ Commit error details:', error);
+        const errorText = await commitResponse.text();
+        console.error('❌ Delete: Raw commit error response:', errorText);
+        
+        const error = JSON.parse(errorText);
+        errorMessage = `Failed to commit deletion: ${error.message}`;
+        console.error('❌ Delete: Commit error details:', error);
       } catch (parseError) {
-        console.error('❌ Could not parse commit error response:', parseError);
+        console.error('❌ Delete: Could not parse commit error response:', parseError);
       }
       throw new Error(errorMessage);
     }
     
-    console.log('✅ Successfully committed to GitHub');
+    console.log('✅ Delete: Successfully committed to GitHub');
+    console.log('✅ Delete: Final product count after deletion:', currentContent.products.length);
     
     return {
       statusCode: 200,
       headers: config.responseHeaders,
       body: JSON.stringify({ 
         success: true, 
-        message: `Product "${productName}" deleted from repository` 
+        message: `Product "${productName}" deleted from repository. Total products: ${currentContent.products.length}` 
       })
     };
     
