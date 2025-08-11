@@ -553,15 +553,20 @@ document.addEventListener('DOMContentLoaded', function() {
         productsContainer.innerHTML = '';
         
         products.forEach(product => {
-            // Get thumbnail image
-            const thumbnailImage = product.images && product.images.length > 0 
-                ? product.images[product.thumbnailIndex || 0] 
-                : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik04NyA3NEg2NEMlOC42IDc0IDU0IDc4LjYgNTQgODRWMTM2QzU0IDE0MS40IDU4LjYgMTQ2IDY0IDE0Nkg4N0M5Mi40IDE0NiA5NyAxNDEuNCA5NyAxMzZWODRDOTcgNzguNiA5Mi40IDc0IDg3IDc0WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K';
+            // Get thumbnail image - handle both string and object formats
+            let thumbnailImage;
+            if (product.images && product.images.length > 0) {
+                const thumbIndex = product.thumbnailIndex || 0;
+                const imageData = product.images[thumbIndex];
+                thumbnailImage = typeof imageData === 'string' ? imageData : imageData.data;
+            } else {
+                thumbnailImage = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik04NyA3NEg2NEMlOC42IDc0IDU0IDc4LjYgNTQgODRWMTM2QzU0IDE0MS40IDU4LjYgMTQ2IDY0IDE0Nkg4N0M5Mi40IDE0NiA5NyAxNDEuNCA5NyAxMzZWODRDOTcgNzguNiA5Mi40IDc0IDg3IDc0WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K';
+            }
             
             const productHTML = `
                 <div class="product-item ${product.sold ? 'sold-out' : ''}" data-category="${product.category}" onclick="viewProduct('${product.id}')" style="cursor: pointer;">
                     <div class="product-image">
-                        <img src="${thumbnailImage}" alt="${product.name}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;" loading="lazy">
+                        <img src="${thumbnailImage}" alt="${product.name}" loading="lazy">
                         ${product.sold ? '<div class="sold-badge">SOLD OUT</div>' : ''}
                     </div>
                     <div class="product-info">
@@ -672,9 +677,15 @@ document.addEventListener('DOMContentLoaded', function() {
         homeProductsContainer.innerHTML = '';
         
         products.forEach(product => {
-            const thumbnailImage = product.images && product.images.length > 0 
-                ? product.images[product.thumbnailIndex || 0] 
-                : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik04NyA3NEg2NEMlOC42IDc0IDU0IDc4LjYgNTQgODRWMTM2QzU0IDE0MS40IDU4LjYgMTQ2IDY0IDE0Nkg4N0M5Mi40IDE0NiA5NyAxNDEuNCA5NyAxMzZWODRDOTcgNzguNiA5Mi40IDc0IDg3IDc0WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K';
+            // Get thumbnail image - handle both string and object formats
+            let thumbnailImage;
+            if (product.images && product.images.length > 0) {
+                const thumbIndex = product.thumbnailIndex || 0;
+                const imageData = product.images[thumbIndex];
+                thumbnailImage = typeof imageData === 'string' ? imageData : imageData.data;
+            } else {
+                thumbnailImage = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ci8+CjxwYXRoIGQ9Ik04NyA3NEg2NEMlOC42IDc0IDU0IDc4LjYgNTQgODRWMTM2QzU0IDE0MS40IDU4LjYgMTQ2IDY0IDE0Nkg4N0M5Mi40IDE0NiA5NyAxNDEuNCA5NyAxMzZWODRDOTcgNzguNiA5Mi40IDc0IDg3IDc0WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K';
+            }
             
             const productHTML = `
                 <div class="product-card" onclick="viewProduct('${product.id}')" style="cursor: pointer;">
