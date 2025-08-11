@@ -246,32 +246,62 @@ async function addProduct(productData, config) {
       
       // Validate JSON structure before parsing
       if (!decodedContent.trim()) {
-        console.error('❌ Decoded content is empty');
-        // Create a fallback structure if file is empty
-        console.log('🔧 Creating fallback empty products structure');
-        currentContent = { products: [] };
-      } else {
-        currentContent = JSON.parse(decodedContent);
+        console.error('❌ Decoded content is empty - this should not happen');
+        console.error('❌ This indicates a serious issue with GitHub API or file corruption');
+        throw new Error('Empty file content from GitHub API - refusing to overwrite data');
+      }
+      
+      currentContent = JSON.parse(decodedContent);
+      
+      // Validate structure
+      if (!currentContent.products || !Array.isArray(currentContent.products)) {
+        console.error('❌ Invalid JSON structure detected');
+        console.error('❌ Current content:', JSON.stringify(currentContent, null, 2).substring(0, 500));
         
-        // Validate structure
-        if (!currentContent.products || !Array.isArray(currentContent.products)) {
-          console.error('❌ Invalid structure, repairing...');
-          currentContent = { products: currentContent.products || [] };
+        // Try to repair structure if possible
+        if (currentContent.products && !Array.isArray(currentContent.products)) {
+          console.log('🔧 Attempting to repair non-array products field');
+          currentContent.products = [];
+        } else if (!currentContent.products) {
+          console.log('🔧 Adding missing products array to existing content');
+          currentContent.products = [];
+        } else {
+          throw new Error('Invalid JSON structure: unable to repair products array');
         }
       }
       
       console.log('📋 Successfully parsed JSON with', currentContent.products.length, 'products');
     } catch (decodeError) {
       console.error('❌ Failed to decode/parse products.json content:', decodeError);
-      console.error('❌ Attempting to create fallback structure...');
+      console.error('❌ Raw content preview:', fileData.content ? fileData.content.substring(0, 200) : 'undefined');
       
-      // As a last resort, create empty structure
-      currentContent = { products: [] };
-      console.log('🔧 Using fallback empty products structure');
+      // NEVER create empty fallback - this causes data loss
+      throw new Error(`Failed to decode products.json: ${decodeError.message}. Refusing to proceed to prevent data loss.`);
     }
+    
+    // Verify we have valid data before adding new product
+    if (!currentContent.products || !Array.isArray(currentContent.products)) {
+      throw new Error('Invalid products array - refusing to proceed to prevent data loss');
+    }
+    
+    const originalProductCount = currentContent.products.length;
+    console.log('📋 Adding product to existing', originalProductCount, 'products');
+    console.log('📋 Existing product IDs:', currentContent.products.map(p => p.id));
     
     // Add new product to the products array
     currentContent.products.push(productData);
+    
+    const newProductCount = currentContent.products.length;
+    console.log('📋 After adding new product, total products:', newProductCount);
+    
+    // Safety check: ensure we're not losing data
+    if (newProductCount <= originalProductCount) {
+      throw new Error(`Data loss detected: started with ${originalProductCount} products, now have ${newProductCount}`);
+    }
+    
+    if (newProductCount !== originalProductCount + 1) {
+      throw new Error(`Unexpected product count: expected ${originalProductCount + 1}, got ${newProductCount}`);
+    }
     
     // Generate the new JSON content
     const newJsonContent = JSON.stringify(currentContent, null, 2);
@@ -290,15 +320,21 @@ async function addProduct(productData, config) {
     }
     
     // Commit the updated file
+    const commitPayload = {
+      message: `Add new product: ${productData.name}`,
+      content: Buffer.from(newJsonContent).toString('base64'),
+      sha: fileData.sha,
+      branch: config.branch
+    };
+    
+    console.log('📤 Committing with SHA:', fileData.sha);
+    console.log('📤 Commit message:', commitPayload.message);
+    console.log('📤 Content preview (first 100 chars):', newJsonContent.substring(0, 100));
+    
     const commitResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.json`, {
       method: 'PUT',
       headers: config.headers,
-      body: JSON.stringify({
-        message: `Add new product: ${productData.name}`,
-        content: Buffer.from(newJsonContent).toString('base64'),
-        sha: fileData.sha,
-        branch: config.branch
-      })
+      body: JSON.stringify(commitPayload)
     });
     
     console.log('📤 Commit response status:', commitResponse.status);
@@ -307,9 +343,18 @@ async function addProduct(productData, config) {
       console.error('❌ Commit failed with status:', commitResponse.status);
       let errorMessage = `Failed to commit with status ${commitResponse.status}`;
       try {
-        const error = await commitResponse.json();
+        const errorText = await commitResponse.text();
+        console.error('❌ Raw commit error response:', errorText);
+        
+        const error = JSON.parse(errorText);
         errorMessage = `Failed to commit: ${error.message}`;
         console.error('❌ Commit error details:', error);
+        
+        // If it's a SHA mismatch, this could indicate a race condition
+        if (error.message && error.message.includes('sha')) {
+          console.error('❌ SHA mismatch detected - possible race condition');
+          console.error('❌ Used SHA:', fileData.sha);
+        }
       } catch (parseError) {
         console.error('❌ Could not parse commit error response:', parseError);
       }
@@ -317,13 +362,15 @@ async function addProduct(productData, config) {
     }
     
     console.log('✅ Successfully committed to GitHub');
+    console.log('✅ Final product count in committed file:', currentContent.products.length);
+    console.log('✅ Product IDs in committed file:', currentContent.products.map(p => `${p.name} (${p.id})`));
     
     return {
       statusCode: 200,
       headers: config.responseHeaders,
       body: JSON.stringify({ 
         success: true, 
-        message: `Product "${productData.name}" added and committed to repository` 
+        message: `Product "${productData.name}" added and committed to repository. Total products: ${currentContent.products.length}` 
       })
     };
     
