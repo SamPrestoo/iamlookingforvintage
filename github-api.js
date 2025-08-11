@@ -191,10 +191,24 @@ class GitHubUpdater {
                     })
                 });
 
-                const result = await response.json();
+                let result;
+                const responseText = await response.text();
+                console.log('📥 Delete response text:', responseText);
+                
+                if (responseText.trim()) {
+                    try {
+                        result = JSON.parse(responseText);
+                    } catch (parseError) {
+                        console.error('❌ Failed to parse delete response:', parseError);
+                        throw new Error(`Server returned invalid response: ${responseText}`);
+                    }
+                } else {
+                    console.error('❌ Empty response from delete operation');
+                    throw new Error(`Server returned empty response with status ${response.status}`);
+                }
 
                 if (!response.ok) {
-                    throw new Error(result.error || 'Failed to delete product');
+                    throw new Error(result.error || `Server error: ${response.status}`);
                 }
 
                 // Show success notification
