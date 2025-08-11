@@ -8,6 +8,8 @@ class GitHubUpdater {
         // Use secure Netlify Function endpoint
         this.functionEndpoint = '/.netlify/functions/github-api';
         this.configured = true; // Always configured with Netlify Functions
+        this.requestQueue = []; // Queue for managing concurrent requests
+        this.isProcessing = false; // Prevent concurrent API calls
     }
 
     /**
@@ -18,11 +20,50 @@ class GitHubUpdater {
     }
 
     /**
+     * Queue and execute API request to prevent concurrent issues
+     */
+    async queueRequest(requestFn) {
+        return new Promise((resolve, reject) => {
+            this.requestQueue.push({ requestFn, resolve, reject });
+            this.processQueue();
+        });
+    }
+
+    async processQueue() {
+        if (this.isProcessing || this.requestQueue.length === 0) {
+            return;
+        }
+
+        this.isProcessing = true;
+        console.log('📋 Processing request queue, length:', this.requestQueue.length);
+
+        while (this.requestQueue.length > 0) {
+            const { requestFn, resolve, reject } = this.requestQueue.shift();
+            
+            try {
+                const result = await requestFn();
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+
+            // Add delay between requests to prevent server overload
+            if (this.requestQueue.length > 0) {
+                console.log('⏳ Waiting between queued requests...');
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+        }
+
+        this.isProcessing = false;
+        console.log('✅ Request queue processing completed');
+    }
+
+    /**
      * Add a new product and commit to repository
      * @param {Object} product - Product data
      */
     async addProduct(product) {
-        try {
+        return this.queueRequest(async () => {
             console.log('🚀 Attempting to add product:', product.name);
             console.log('📍 Function endpoint:', this.functionEndpoint);
             console.log('📍 Timestamp:', new Date().toISOString());
@@ -91,6 +132,7 @@ class GitHubUpdater {
             this.showNotification(`Failed to add product: ${error.message}`, 'error');
             throw error;
         }
+        });
     }
 
     /**
@@ -100,6 +142,7 @@ class GitHubUpdater {
      * @param {string} productTitle - Product title for display
      */
     async updateSoldStatus(productId, sold, productTitle) {
+        return this.queueRequest(async () => {
         try {
             const response = await fetch(this.functionEndpoint, {
                 method: 'POST',
@@ -125,6 +168,7 @@ class GitHubUpdater {
             this.showNotification(`Failed to update status: ${error.message}`, 'error');
             throw error;
         }
+        });
     }
 
     /**
@@ -133,6 +177,7 @@ class GitHubUpdater {
      * @param {string} productTitle - Product title for display
      */
     async deleteProduct(productId, productTitle) {
+        return this.queueRequest(async () => {
         try {
             const response = await fetch(this.functionEndpoint, {
                 method: 'POST',
@@ -158,6 +203,7 @@ class GitHubUpdater {
             this.showNotification(`Failed to delete product: ${error.message}`, 'error');
             throw error;
         }
+        });
     }
 
     /**
