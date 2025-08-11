@@ -865,6 +865,7 @@
             products.forEach(product => {
                 const productDiv = document.createElement('div');
                 productDiv.className = 'product-admin-card';
+                productDiv.setAttribute('data-product-id', product.id);
                 productDiv.innerHTML = `
                     <h3>${product.name}</h3>
                     <div class="product-status ${product.sold ? 'status-sold' : 'status-available'}">
@@ -889,12 +890,33 @@
             if (confirm(`Mark "${productName}" as sold?`)) {
                 try {
                     await window.githubUpdater.updateSoldStatus(productId, true, productName);
-                    alert('Item marked as sold! ✅\n\nYour website has been automatically updated.');
                     
-                    // Refresh the product list after a brief delay to allow for GitHub propagation
-                    setTimeout(() => {
-                        loadProducts();
-                    }, 1000);
+                    // Instantly update the UI
+                    const productElement = document.querySelector(`[data-product-id="${productId}"]`);
+                    if (productElement) {
+                        const statusElement = productElement.querySelector('.product-status');
+                        const soldButton = productElement.querySelector('.sold-btn');
+                        
+                        if (statusElement) {
+                            statusElement.className = 'product-status status-sold';
+                            statusElement.textContent = 'Sold Out';
+                        }
+                        
+                        if (soldButton) {
+                            soldButton.remove(); // Remove "Mark as Sold" button
+                        }
+                        
+                        // Add a subtle animation
+                        productElement.style.transition = 'background-color 0.3s ease';
+                        productElement.style.backgroundColor = '#f0f8f0';
+                        setTimeout(() => {
+                            productElement.style.backgroundColor = '';
+                        }, 2000);
+                        
+                        console.log('✅ Product status updated instantly in UI');
+                    }
+                    
+                    alert('Item marked as sold! ✅\n\nYour website has been automatically updated.');
                 } catch (error) {
                     console.error('Failed to mark product as sold:', error);
                     alert(`Failed to mark as sold: ${error.message}\n\nPlease try again.`);
@@ -910,46 +932,36 @@
             if (confirm(`Are you sure you want to delete "${productName}"? This will permanently remove it from your website.`)) {
                 console.log('🗑️ Starting product deletion:', productName);
                 
+                // Find the product element in the DOM
+                const productElement = document.querySelector(`[data-product-id="${productId}"]`);
+                if (!productElement) {
+                    console.warn('⚠️ Product element not found in DOM, will fallback to reload');
+                }
+                
                 try {
                     const result = await window.githubUpdater.deleteProduct(productId, productName);
                     console.log('✅ Product deletion completed:', result);
                     
-                    alert('Product deleted successfully! ✅\n\nYour website has been automatically updated.');
-                    
-                    // Force a fresh reload with retry logic for GitHub propagation
-                    console.log('🔄 Refreshing product list after deletion...');
-                    let retryCount = 0;
-                    const maxRetries = 3;
-                    
-                    while (retryCount < maxRetries) {
-                        try {
-                            await loadProducts();
+                    // Instantly remove the product from the DOM
+                    if (productElement) {
+                        console.log('🎯 Removing product from DOM instantly');
+                        productElement.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                        productElement.style.opacity = '0';
+                        productElement.style.transform = 'scale(0.95)';
+                        
+                        setTimeout(() => {
+                            productElement.remove();
+                            console.log('✅ Product element removed from DOM');
                             
-                            // Verify the product was actually deleted
-                            const response = await fetch(`products.json?v=${Date.now()}`);
-                            const data = await response.json();
-                            const deletedProductExists = data.products ? data.products.some(p => p.id === productId) : false;
-                            
-                            if (!deletedProductExists) {
-                                console.log('✅ Product successfully removed from list');
-                                break;
-                            }
-                            
-                            retryCount++;
-                            if (retryCount < maxRetries) {
-                                console.log(`⏳ Retry ${retryCount}/${maxRetries} - waiting for GitHub propagation...`);
-                                await new Promise(resolve => setTimeout(resolve, 2000));
-                            }
-                        } catch (error) {
-                            console.error(`❌ Product list refresh attempt ${retryCount + 1} failed:`, error);
-                            retryCount++;
-                            if (retryCount < maxRetries) {
-                                await new Promise(resolve => setTimeout(resolve, 1000));
-                            }
-                        }
+                            // Update product count display
+                            updateProductCountDisplay();
+                        }, 300);
                     }
                     
-                    console.log('✅ Product deletion cycle completed');
+                    // Show success notification (shorter duration since UI already updated)
+                    alert('Product deleted successfully! ✅\n\nYour website has been automatically updated.');
+                    
+                    console.log('✅ Product deletion cycle completed with instant UI update');
                 } catch (error) {
                     console.error('❌ Product deletion failed:', error);
                     console.error('❌ Error details:', {
@@ -962,6 +974,18 @@
                     
                     alert(`Failed to delete product: ${error.message}\n\nPlease try again.`);
                 }
+            }
+        }
+        
+        function updateProductCountDisplay() {
+            const productElements = document.querySelectorAll('[data-product-id]');
+            const currentCount = productElements.length;
+            console.log('📊 Updated product count display:', currentCount);
+            
+            // Update any count displays if they exist
+            const countElement = document.querySelector('.product-count');
+            if (countElement) {
+                countElement.textContent = currentCount;
             }
         }
         
