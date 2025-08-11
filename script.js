@@ -291,13 +291,19 @@ document.addEventListener('DOMContentLoaded', function() {
             showCartNotification('Item already in cart!');
             return;
         } else {
+            // Handle both string and object formats for images
+            let productImage = null;
+            if (product.images && product.images.length > 0) {
+                const thumbIndex = product.thumbnailIndex || 0;
+                const imageData = product.images[thumbIndex];
+                productImage = typeof imageData === 'string' ? imageData : imageData.data;
+            }
+            
             cart.push({
                 id: product.id,
                 name: product.name,
                 price: product.price,
-                image: product.images && product.images.length > 0 
-                    ? product.images[product.thumbnailIndex || 0].data 
-                    : null
+                image: productImage
             });
         }
         

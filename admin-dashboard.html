@@ -185,19 +185,6 @@
             object-fit: cover;
         }
         
-        .remove-image {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: #8b4a47;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-            font-size: 12px;
-        }
         
         .submit-btn {
             background: #8b7355;
@@ -854,6 +841,7 @@
                 // Add drag and drop event listeners
                 imageDiv.addEventListener('dragstart', handleDragStart);
                 imageDiv.addEventListener('dragover', handleDragOver);
+                imageDiv.addEventListener('dragleave', handleDragLeave);
                 imageDiv.addEventListener('drop', handleDrop);
                 imageDiv.addEventListener('dragend', handleDragEnd);
                 
@@ -867,7 +855,8 @@
             dragSrcEl = this;
             e.dataTransfer.effectAllowed = 'move';
             e.dataTransfer.setData('text/html', this.outerHTML);
-            this.style.opacity = '0.5';
+            this.classList.add('dragging');
+            console.log('🖼️ Drag started for image', this.dataset.index);
         }
 
         function handleDragOver(e) {
@@ -875,17 +864,29 @@
                 e.preventDefault();
             }
             e.dataTransfer.dropEffect = 'move';
+            this.style.borderTop = '3px solid #8b7355';
             return false;
+        }
+
+        function handleDragLeave(e) {
+            this.style.borderTop = '';
         }
 
         function handleDrop(e) {
             if (e.stopPropagation) {
                 e.stopPropagation();
             }
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+
+            this.style.borderTop = '';
 
             if (dragSrcEl !== this) {
                 const draggedIndex = parseInt(dragSrcEl.dataset.index);
                 const targetIndex = parseInt(this.dataset.index);
+
+                console.log(`🖼️ Dropping image ${draggedIndex} onto ${targetIndex}`);
 
                 // Reorder the images array
                 const draggedImage = uploadedImages.splice(draggedIndex, 1)[0];
@@ -894,14 +895,19 @@
                 // Refresh the display
                 displayUploadedImages();
                 
-                console.log(`🖼️ Image reordered from position ${draggedIndex + 1} to ${targetIndex + 1}`);
+                console.log(`✅ Image reordered from position ${draggedIndex + 1} to ${targetIndex + 1}`);
             }
 
             return false;
         }
 
         function handleDragEnd(e) {
-            this.style.opacity = '1';
+            // Remove dragging class from all elements
+            document.querySelectorAll('.uploaded-image').forEach(img => {
+                img.classList.remove('dragging');
+                img.style.borderTop = '';
+            });
+            console.log('🖼️ Drag ended');
         }
         
         function removeImage(index) {
