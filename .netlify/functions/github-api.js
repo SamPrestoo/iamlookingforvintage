@@ -102,6 +102,8 @@ exports.handler = async (event, context) => {
         return await addProduct(data, { apiBase, headers: githubHeaders, owner, repo, branch, responseHeaders: headers });
       case 'update_sold_status':
         return await updateSoldStatus(data, { apiBase, headers: githubHeaders, owner, repo, branch, responseHeaders: headers });
+      case 'update_product':
+        return await updateProduct(data, { apiBase, headers: githubHeaders, owner, repo, branch, responseHeaders: headers });
       case 'delete_product':
         return await deleteProduct(data, { apiBase, headers: githubHeaders, owner, repo, branch, responseHeaders: headers });
       case 'test_connection':
@@ -483,6 +485,176 @@ async function updateSoldStatus(updateData, config) {
       body: JSON.stringify({ 
         success: true, 
         message: `Product "${product.name}" marked as ${updateData.sold ? 'sold' : 'available'}` 
+      })
+    };
+    
+  } catch (error) {
+    return {
+      statusCode: 500,
+      headers: config.responseHeaders,
+      body: JSON.stringify({ error: error.message })
+    };
+  }
+}
+
+async function updateProduct(productData, config) {
+  try {
+    console.log('📝 Server: Starting product update for ID:', productData.id);
+    console.log('📝 Server: Product name:', productData.name);
+    
+    // Add delay for cold starts to ensure proper initialization
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    // Use the same robust file fetching as addProduct for large files
+    let fileData;
+    let currentSha;
+    let attempts = 0;
+    const maxAttempts = 3;
+    
+    while (attempts < maxAttempts) {
+      attempts++;
+      console.log(`📥 Update: Attempt ${attempts}/${maxAttempts} to fetch products.json`);
+      
+      // Try Contents API first with error handling for cold starts
+      let fileResponse;
+      try {
+        fileResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.json`, {
+          headers: config.headers
+        });
+      } catch (fetchError) {
+        console.error(`❌ Update: Fetch error on attempt ${attempts}:`, fetchError.message);
+        if (attempts === maxAttempts) {
+          throw new Error(`GitHub API fetch failed after ${maxAttempts} attempts: ${fetchError.message}`);
+        }
+        // Wait longer on fetch failures (likely cold start issues)
+        await new Promise(resolve => setTimeout(resolve, 2000 * attempts));
+        continue;
+      }
+      
+      console.log('📥 Update: Contents API response status:', fileResponse.status);
+      
+      if (fileResponse.ok) {
+        const responseText = await fileResponse.text();
+        const responseData = JSON.parse(responseText);
+        
+        // Check if file is too large for Contents API
+        if (!responseData.content && responseData.size > 1000000) {
+          console.log('📥 Update: File too large for Contents API, using Git Data API...');
+          // Use Git Data API for large files with error handling
+          let blobResponse;
+          try {
+            blobResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/git/blobs/${responseData.sha}`, {
+              headers: config.headers
+            });
+          } catch (blobFetchError) {
+            console.error(`❌ Update: Git Data API fetch error:`, blobFetchError.message);
+            throw new Error(`Git Data API fetch failed: ${blobFetchError.message}`);
+          }
+          
+          if (blobResponse.ok) {
+            const blobData = await blobResponse.json();
+            fileData = {
+              content: blobData.content,
+              encoding: blobData.encoding,
+              sha: responseData.sha,
+              size: responseData.size
+            };
+            currentSha = responseData.sha;
+            console.log('📥 Update: Successfully fetched via Git Data API');
+            break;
+          } else {
+            throw new Error(`Failed to fetch blob via Git Data API: ${blobResponse.statusText}`);
+          }
+        } else if (responseData.content) {
+          // Normal Contents API response
+          fileData = responseData;
+          currentSha = responseData.sha;
+          console.log('📥 Update: Successfully fetched via Contents API');
+          break;
+        } else {
+          throw new Error('No content available in GitHub response');
+        }
+      }
+      
+      if (attempts === maxAttempts) {
+        console.error('❌ Update: Failed to fetch products.json after', maxAttempts, 'attempts:', fileResponse.statusText);
+        throw new Error(`Failed to fetch products.json: ${fileResponse.statusText}`);
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 1000 * attempts));
+    }
+    
+    console.log('📋 Update: Decoding base64 content...');
+    const currentContent = JSON.parse(Buffer.from(fileData.content, 'base64').toString('utf8'));
+    console.log('📋 Update: Current products count:', currentContent.products.length);
+    
+    // Find product to update
+    const productIndex = currentContent.products.findIndex(p => p.id === productData.id);
+    if (productIndex === -1) {
+      throw new Error(`Product with ID ${productData.id} not found`);
+    }
+    
+    const oldProduct = currentContent.products[productIndex];
+    console.log('📋 Update: Found product to update:', oldProduct.name);
+    
+    // Update the product while preserving images and other data
+    const updatedProduct = {
+      ...oldProduct,
+      ...productData,
+      // Preserve images and thumbnailIndex from original product
+      images: oldProduct.images,
+      thumbnailIndex: oldProduct.thumbnailIndex
+    };
+    
+    currentContent.products[productIndex] = updatedProduct;
+    console.log('📋 Update: Product updated in array');
+    
+    // Commit the updated file with error handling for cold starts
+    const newJsonContent = JSON.stringify(currentContent, null, 2);
+    let commitResponse;
+    try {
+      commitResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.json`, {
+        method: 'PUT',
+        headers: config.headers,
+        body: JSON.stringify({
+          message: `Update product: ${productData.name}`,
+          content: Buffer.from(newJsonContent).toString('base64'),
+          sha: currentSha || fileData.sha,
+          branch: config.branch
+        })
+      });
+    } catch (commitFetchError) {
+      console.error('❌ Update: Commit fetch error:', commitFetchError.message);
+      throw new Error(`GitHub commit fetch failed: ${commitFetchError.message}`);
+    }
+    
+    console.log('📤 Update: Commit response status:', commitResponse.status);
+    
+    if (!commitResponse.ok) {
+      console.error('❌ Update: Commit failed with status:', commitResponse.status);
+      let errorMessage = `Failed to commit update with status ${commitResponse.status}`;
+      try {
+        const errorText = await commitResponse.text();
+        console.error('❌ Update: Raw commit error response:', errorText);
+        
+        const error = JSON.parse(errorText);
+        errorMessage = `Failed to commit update: ${error.message}`;
+        console.error('❌ Update: Commit error details:', error);
+      } catch (parseError) {
+        console.error('❌ Update: Could not parse commit error response:', parseError);
+      }
+      throw new Error(errorMessage);
+    }
+    
+    console.log('✅ Update: Successfully committed to GitHub');
+    console.log('✅ Update: Product updated:', productData.name);
+    
+    return {
+      statusCode: 200,
+      headers: config.responseHeaders,
+      body: JSON.stringify({ 
+        success: true, 
+        message: `Product "${productData.name}" updated successfully` 
       })
     };
     

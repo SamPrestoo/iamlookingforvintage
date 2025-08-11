@@ -85,8 +85,8 @@ class GitHubUpdater {
             const lastSubmission = this.lastSubmissionTime || 0;
             const timeSinceLastSubmission = now - lastSubmission;
             
-            if (timeSinceLastSubmission < 2000) { // Less than 2 seconds
-                const delay = 2000 - timeSinceLastSubmission;
+            if (timeSinceLastSubmission < 3000) { // Less than 3 seconds
+                const delay = 3000 - timeSinceLastSubmission;
                 console.log(`⏳ Waiting ${delay}ms to avoid race conditions...`);
                 await new Promise(resolve => setTimeout(resolve, delay));
             }
@@ -133,6 +133,57 @@ class GitHubUpdater {
             this.showNotification(`Failed to add product: ${error.message}`, 'error');
             throw error;
         }
+        });
+    }
+
+    /**
+     * Update product data and commit to repository
+     * @param {string} productId - Product ID
+     * @param {Object} updatedProduct - Updated product data
+     */
+    async updateProductData(productId, updatedProduct) {
+        return this.queueRequest(async () => {
+            try {
+                console.log('📝 Updating product data:', updatedProduct.name);
+                
+                const response = await fetch(this.functionEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        action: 'update_product',
+                        data: updatedProduct
+                    })
+                });
+
+                let result;
+                const responseText = await response.text();
+                console.log('📥 Update response text:', responseText);
+                
+                if (responseText.trim()) {
+                    try {
+                        result = JSON.parse(responseText);
+                    } catch (parseError) {
+                        console.error('❌ Failed to parse update response:', parseError);
+                        throw new Error(`Server returned invalid response: ${responseText}`);
+                    }
+                } else {
+                    console.error('❌ Empty response from update operation');
+                    throw new Error(`Server returned empty response with status ${response.status}`);
+                }
+
+                if (!response.ok) {
+                    throw new Error(result.error || `Server error: ${response.status}`);
+                }
+
+                // Show success notification
+                this.showNotification(result.message, 'success');
+                return result;
+            } catch (error) {
+                this.showNotification(`Failed to update product: ${error.message}`, 'error');
+                throw error;
+            }
         });
     }
 
