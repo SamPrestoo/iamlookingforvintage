@@ -725,8 +725,12 @@
             const grid = document.getElementById('productsGrid');
             
             try {
-                // Load all products from products.json (which includes all products via GitHub API)
-                const response = await fetch('products.json');
+                // Clear any cached products from localStorage
+                localStorage.removeItem('adminProducts');
+                
+                // Load all products from products.json with cache-busting
+                const timestamp = new Date().getTime();
+                const response = await fetch(`products.json?v=${timestamp}`);
                 const data = await response.json();
                 const allProducts = data.products || [];
                 displayProducts(allProducts);

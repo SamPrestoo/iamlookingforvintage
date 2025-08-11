@@ -170,17 +170,33 @@ async function addProduct(productData, config) {
     console.log('🏗️ Adding product:', productData.name);
     console.log('📦 Product data size:', JSON.stringify(productData).length, 'bytes');
     
-    // Get current products.json file
+    // Get current products.json file with retry logic
     console.log('📥 Fetching current products.json...');
-    const fileResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.json`, {
-      headers: config.headers
-    });
+    let fileResponse;
+    let attempts = 0;
+    const maxAttempts = 3;
     
-    console.log('📥 File fetch response status:', fileResponse.status);
-    
-    if (!fileResponse.ok) {
-      console.error('❌ Failed to fetch products.json:', fileResponse.statusText);
-      throw new Error(`Failed to fetch products.json: ${fileResponse.statusText}`);
+    while (attempts < maxAttempts) {
+      attempts++;
+      console.log(`📥 Attempt ${attempts}/${maxAttempts} to fetch products.json`);
+      
+      fileResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.json`, {
+        headers: config.headers
+      });
+      
+      console.log('📥 File fetch response status:', fileResponse.status);
+      
+      if (fileResponse.ok) {
+        break;
+      }
+      
+      if (attempts === maxAttempts) {
+        console.error('❌ Failed to fetch products.json after', maxAttempts, 'attempts:', fileResponse.statusText);
+        throw new Error(`Failed to fetch products.json: ${fileResponse.statusText}`);
+      }
+      
+      // Wait before retry
+      await new Promise(resolve => setTimeout(resolve, 1000 * attempts));
     }
     
     console.log('📋 Parsing GitHub response...');
@@ -197,7 +213,22 @@ async function addProduct(productData, config) {
     try {
       const decodedContent = Buffer.from(fileData.content, 'base64').toString('utf8');
       console.log('📋 Decoded content length:', decodedContent.length);
+      console.log('📋 First 200 chars:', decodedContent.substring(0, 200));
+      console.log('📋 Last 200 chars:', decodedContent.substring(decodedContent.length - 200));
+      
+      // Validate JSON structure before parsing
+      if (!decodedContent.trim()) {
+        throw new Error('Empty file content');
+      }
+      
       currentContent = JSON.parse(decodedContent);
+      
+      // Validate structure
+      if (!currentContent.products || !Array.isArray(currentContent.products)) {
+        throw new Error('Invalid JSON structure: missing or invalid products array');
+      }
+      
+      console.log('📋 Successfully parsed JSON with', currentContent.products.length, 'products');
     } catch (decodeError) {
       console.error('❌ Failed to decode/parse products.json content:', decodeError);
       throw new Error(`Failed to decode products.json: ${decodeError.message}`);
@@ -206,13 +237,24 @@ async function addProduct(productData, config) {
     // Add new product to the products array
     currentContent.products.push(productData);
     
+    // Generate the new JSON content
+    const newJsonContent = JSON.stringify(currentContent, null, 2);
+    const newContentSize = Buffer.byteLength(newJsonContent, 'utf8');
+    
+    console.log('📊 New content size:', newContentSize, 'bytes');
+    
+    // Check if the new content exceeds reasonable limits
+    if (newContentSize > 100 * 1024 * 1024) { // 100MB limit
+      throw new Error(`File size too large: ${Math.round(newContentSize / (1024 * 1024))}MB. Maximum allowed: 100MB`);
+    }
+    
     // Commit the updated file
     const commitResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.json`, {
       method: 'PUT',
       headers: config.headers,
       body: JSON.stringify({
         message: `Add new product: ${productData.name}`,
-        content: Buffer.from(JSON.stringify(currentContent, null, 2)).toString('base64'),
+        content: Buffer.from(newJsonContent).toString('base64'),
         sha: fileData.sha,
         branch: config.branch
       })

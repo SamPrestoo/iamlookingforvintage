@@ -356,32 +356,26 @@ document.addEventListener('DOMContentLoaded', function() {
         productsContainer.innerHTML = '<div class="loading-message">Loading products...</div>';
         isLoading = true;
 
-        // Load admin products from localStorage
-        let adminProducts = JSON.parse(localStorage.getItem('adminProducts') || '[]');
+        // Clear localStorage cache to prevent stale data
+        localStorage.removeItem('adminProducts');
 
-        fetch('products.json')
+        // Add cache-busting parameter to prevent browser caching
+        const timestamp = new Date().getTime();
+        fetch(`products.json?v=${timestamp}`)
             .then(response => response.json())
             .then(data => {
-                // Merge admin products with products.json products
+                // Use products from JSON file only (no localStorage cache)
                 const jsonProducts = data.products || [];
-                const adminProductIds = new Set(adminProducts.map(p => p.id));
-                const filteredJsonProducts = jsonProducts.filter(p => !adminProductIds.has(p.id));
                 
-                allProducts = [...adminProducts, ...filteredJsonProducts];
-                console.log(`Loaded ${allProducts.length} products (${adminProducts.length} admin, ${filteredJsonProducts.length} from JSON)`);
+                allProducts = jsonProducts;
+                console.log(`Loaded ${allProducts.length} products from JSON`);
                 displayProductsPaginated();
             })
             .catch(error => {
-                console.error('Failed to load products.json, using admin products only:', error);
-                allProducts = adminProducts;
-                if (allProducts.length > 0) {
-                    console.log(`Loaded ${allProducts.length} admin products`);
-                    displayProductsPaginated();
-                } else {
-                    const productsContainer = document.getElementById('products-container');
-                    if (productsContainer) {
-                        productsContainer.innerHTML = '<div class="error-message">Unable to load products. Please try again later.</div>';
-                    }
+                console.error('Failed to load products.json:', error);
+                const productsContainer = document.getElementById('products-container');
+                if (productsContainer) {
+                    productsContainer.innerHTML = '<div class="error-message">Unable to load products. Please try again later.</div>';
                 }
             });
         
