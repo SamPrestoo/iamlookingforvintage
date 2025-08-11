@@ -179,45 +179,68 @@ class GitHubUpdater {
      */
     async deleteProduct(productId, productTitle) {
         return this.queueRequest(async () => {
-            try {
-                const response = await fetch(this.functionEndpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        action: 'delete_product',
-                        data: { id: productId }
-                    })
-                });
-
-                let result;
-                const responseText = await response.text();
-                console.log('📥 Delete response text:', responseText);
+            let attempts = 0;
+            const maxAttempts = 2;
+            
+            while (attempts < maxAttempts) {
+                attempts++;
+                console.log(`🗑️ Delete attempt ${attempts}/${maxAttempts} for product:`, productTitle);
                 
-                if (responseText.trim()) {
-                    try {
-                        result = JSON.parse(responseText);
-                    } catch (parseError) {
-                        console.error('❌ Failed to parse delete response:', parseError);
-                        throw new Error(`Server returned invalid response: ${responseText}`);
+                try {
+                    const response = await fetch(this.functionEndpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            action: 'delete_product',
+                            data: { id: productId }
+                        })
+                    });
+
+                    let result;
+                    const responseText = await response.text();
+                    console.log('📥 Delete response text:', responseText);
+                    
+                    if (responseText.trim()) {
+                        try {
+                            result = JSON.parse(responseText);
+                        } catch (parseError) {
+                            console.error('❌ Failed to parse delete response:', parseError);
+                            throw new Error(`Server returned invalid response: ${responseText}`);
+                        }
+                    } else {
+                        console.error('❌ Empty response from delete operation');
+                        throw new Error(`Server returned empty response with status ${response.status}`);
                     }
-                } else {
-                    console.error('❌ Empty response from delete operation');
-                    throw new Error(`Server returned empty response with status ${response.status}`);
-                }
 
-                if (!response.ok) {
-                    throw new Error(result.error || `Server error: ${response.status}`);
-                }
+                    if (!response.ok) {
+                        // Check if this is a cold start error that we should retry
+                        if ((response.status === 500 || result.error === 'fetch failed') && attempts < maxAttempts) {
+                            console.log(`⏳ Cold start error detected, retrying in ${attempts * 1000}ms...`);
+                            await new Promise(resolve => setTimeout(resolve, attempts * 1000));
+                            continue;
+                        }
+                        throw new Error(result.error || `Server error: ${response.status}`);
+                    }
 
-                // Show success notification
-                this.showNotification(result.message, 'success');
-                return result;
-            } catch (error) {
-                this.showNotification(`Failed to delete product: ${error.message}`, 'error');
-                throw error;
+                    // Show success notification
+                    this.showNotification(result.message, 'success');
+                    return result;
+                    
+                } catch (fetchError) {
+                    console.error(`❌ Delete attempt ${attempts} failed:`, fetchError.message);
+                    if (attempts === maxAttempts) {
+                        this.showNotification(`Failed to delete product: ${fetchError.message}`, 'error');
+                        throw fetchError;
+                    }
+                    // Wait before retry on fetch errors
+                    await new Promise(resolve => setTimeout(resolve, attempts * 1000));
+                }
             }
+            
+            // This should not be reached, but just in case
+            throw new Error('All delete attempts failed');
         });
     }
 

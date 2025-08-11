@@ -498,6 +498,11 @@ async function updateSoldStatus(updateData, config) {
 async function deleteProduct(deleteData, config) {
   try {
     console.log('🗑️ Server: Starting product deletion for ID:', deleteData.id);
+    console.log('🔧 Server: Environment check - Node version:', process.version);
+    console.log('🔧 Server: Native fetch available:', typeof fetch !== 'undefined');
+    
+    // Add delay for cold starts to ensure proper initialization
+    await new Promise(resolve => setTimeout(resolve, 100));
     
     // Use the same robust file fetching as addProduct for large files
     let fileData;
@@ -509,10 +514,21 @@ async function deleteProduct(deleteData, config) {
       attempts++;
       console.log(`📥 Delete: Attempt ${attempts}/${maxAttempts} to fetch products.json`);
       
-      // Try Contents API first
-      const fileResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.json`, {
-        headers: config.headers
-      });
+      // Try Contents API first with error handling for cold starts
+      let fileResponse;
+      try {
+        fileResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.json`, {
+          headers: config.headers
+        });
+      } catch (fetchError) {
+        console.error(`❌ Delete: Fetch error on attempt ${attempts}:`, fetchError.message);
+        if (attempts === maxAttempts) {
+          throw new Error(`GitHub API fetch failed after ${maxAttempts} attempts: ${fetchError.message}`);
+        }
+        // Wait longer on fetch failures (likely cold start issues)
+        await new Promise(resolve => setTimeout(resolve, 2000 * attempts));
+        continue;
+      }
       
       console.log('📥 Delete: Contents API response status:', fileResponse.status);
       
@@ -523,10 +539,16 @@ async function deleteProduct(deleteData, config) {
         // Check if file is too large for Contents API
         if (!responseData.content && responseData.size > 1000000) {
           console.log('📥 Delete: File too large for Contents API, using Git Data API...');
-          // Use Git Data API for large files
-          const blobResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/git/blobs/${responseData.sha}`, {
-            headers: config.headers
-          });
+          // Use Git Data API for large files with error handling
+          let blobResponse;
+          try {
+            blobResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/git/blobs/${responseData.sha}`, {
+              headers: config.headers
+            });
+          } catch (blobFetchError) {
+            console.error(`❌ Delete: Git Data API fetch error:`, blobFetchError.message);
+            throw new Error(`Git Data API fetch failed: ${blobFetchError.message}`);
+          }
           
           if (blobResponse.ok) {
             const blobData = await blobResponse.json();
@@ -576,18 +598,24 @@ async function deleteProduct(deleteData, config) {
     
     console.log('📋 Delete: Product found, removing from array. New count will be:', currentContent.products.length - 1);
     
-    // Commit the updated file
+    // Commit the updated file with error handling for cold starts
     const newJsonContent = JSON.stringify(currentContent, null, 2);
-    const commitResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.json`, {
-      method: 'PUT',
-      headers: config.headers,
-      body: JSON.stringify({
-        message: `Delete product: ${productName}`,
-        content: Buffer.from(newJsonContent).toString('base64'),
-        sha: currentSha || fileData.sha,
-        branch: config.branch
-      })
-    });
+    let commitResponse;
+    try {
+      commitResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.json`, {
+        method: 'PUT',
+        headers: config.headers,
+        body: JSON.stringify({
+          message: `Delete product: ${productName}`,
+          content: Buffer.from(newJsonContent).toString('base64'),
+          sha: currentSha || fileData.sha,
+          branch: config.branch
+        })
+      });
+    } catch (commitFetchError) {
+      console.error('❌ Delete: Commit fetch error:', commitFetchError.message);
+      throw new Error(`GitHub commit fetch failed: ${commitFetchError.message}`);
+    }
     
     console.log('📤 Delete: Commit response status:', commitResponse.status);
     
