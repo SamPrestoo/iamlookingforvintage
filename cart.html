@@ -253,7 +253,7 @@
     <script>
         let cart = JSON.parse(localStorage.getItem('vintageCart')) || [];
 
-        function loadCartItems() {
+        async function loadCartItems() {
             const cartContent = document.getElementById('cart-content');
             
             if (cart.length === 0) {
@@ -267,6 +267,17 @@
                 return;
             }
 
+            // Try to fetch products.json for image data if needed
+            let allProducts = [];
+            try {
+                const response = await fetch('products.json');
+                const data = await response.json();
+                allProducts = data.products || [];
+                console.log(`📦 Loaded ${allProducts.length} products for cart image lookup`);
+            } catch (error) {
+                console.warn('Could not load products.json for cart images:', error);
+            }
+
             let total = 0;
             let itemsHtml = '<div class="cart-items">';
             
@@ -278,7 +289,32 @@
                     imageStart: item.image ? item.image.substring(0, 50) + '...' : 'none'
                 });
                 
-                const imageUrl = item.image || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRjVGNUY1Ci8+CjxwYXRoIGQ9Ik00My41IDM3SDMyQzMwLjMgMzcgMjkgMzguMyAyOSA0MFY2OEMyOSA2OS43IDMwLjMgNzEgMzIgNzFINDMuNUM0NS4yIDcxIDQ2LjUgNjkuNyA0Ni41IDY4VjQwQzQ2LjUgMzguMyA0NS4yIDM3IDQzLjUgMzdaIiBmaWxsPSIjOUNBM0FGIi8+Cjwvc3ZnPgo=';
+                // Enhanced image retrieval - if item.image is missing, try to get it from products
+                let imageUrl = item.image;
+                if (!imageUrl && item.id) {
+                    console.log(`🔍 No image in cart item, attempting to retrieve for product: ${item.name}`);
+                    
+                    // Try fetched products first
+                    let fullProduct = allProducts.find(p => p.id === item.id);
+                    
+                    // Fallback to localStorage admin products
+                    if (!fullProduct) {
+                        const adminProducts = JSON.parse(localStorage.getItem('adminProducts') || '[]');
+                        fullProduct = adminProducts.find(p => p.id === item.id);
+                    }
+                    
+                    if (fullProduct && fullProduct.images && fullProduct.images.length > 0) {
+                        const thumbIndex = fullProduct.thumbnailIndex || 0;
+                        const imageData = fullProduct.images[thumbIndex];
+                        imageUrl = typeof imageData === 'string' ? imageData : imageData.data;
+                        console.log(`✅ Retrieved image from products data for: ${item.name}`);
+                    } else {
+                        console.warn(`⚠️ Could not find product or images for: ${item.name} (ID: ${item.id})`);
+                    }
+                }
+                
+                // Fallback to default SVG if still no image
+                imageUrl = imageUrl || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRjVGNUY1Ci8+CjxwYXRoIGQ9Ik00My41IDM3SDMyQzMwLjMgMzcgMjkgMzguMyAyOSA0MFY2OEMyOSA2OS43IDMwLjMgNzEgMzIgNzFINDMuNUM0NS4yIDcxIDQ2LjUgNjkuNyA4Ni41IDY4VjQwQzQ2LjUgMzguMyA0NS4yIDM3IDQzLjUgMzdaIiBmaWxsPSIjOUNBM0FGIi8+Cjwvc3ZnPgo=';
                 
                 itemsHtml += `
                     <div class="cart-item">

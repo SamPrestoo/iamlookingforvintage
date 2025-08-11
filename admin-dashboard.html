@@ -381,17 +381,6 @@
             cursor: grabbing;
         }
 
-        .image-controls {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            background: rgba(0,0,0,0.7);
-            border-radius: 6px;
-            padding: 4px 6px;
-        }
 
 
         .image-order {
@@ -404,6 +393,25 @@
             border-radius: 12px;
             font-size: 12px;
             font-weight: 500;
+        }
+
+        .image-remove {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            user-select: none;
+        }
+
+        .image-remove:hover {
+            background: rgba(220,53,69,0.8);
         }
 
         .uploaded-image.dragging {
@@ -820,9 +828,7 @@
                 imageDiv.dataset.index = index;
                 imageDiv.innerHTML = `
                     <img src="${image.data}" alt="${image.name}">
-                    <div class="image-controls">
-                        <button class="remove-image" onclick="removeImage(${index})" title="Remove image">×</button>
-                    </div>
+                    <div class="image-remove" onclick="removeImage(${index})" title="Remove image">×</div>
                     <div class="image-order">${index + 1}</div>
                 `;
                 
