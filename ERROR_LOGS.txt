@@ -2,14 +2,14 @@ Checking auth...
 admin-dashboard.html:401 adminAuthenticated: true
 admin-dashboard.html:402 adminLoginTime: 1754886887699
 admin-dashboard.html:826 🔄 Loading products...
-admin-dashboard.html:834 📥 Fetching products.json?v=1754890381035
+admin-dashboard.html:834 📥 Fetching products.json?v=1754891105977
 admin-dashboard.html:837 📥 Products fetch response: 200 
-admin-dashboard.html:845 ✅ Loaded 5 products for admin display
+admin-dashboard.html:845 ✅ Loaded 6 products for admin display
 admin-dashboard.html:826 🔄 Loading products...
-admin-dashboard.html:834 📥 Fetching products.json?v=1754890386565
+admin-dashboard.html:834 📥 Fetching products.json?v=1754891107507
 admin-dashboard.html:837 📥 Products fetch response: 200 
-admin-dashboard.html:845 ✅ Loaded 5 products for admin display
-admin-dashboard.html:911 🗑️ Starting product deletion: Polo
+admin-dashboard.html:845 ✅ Loaded 6 products for admin display
+admin-dashboard.html:933 🗑️ Starting product deletion: White Jacket
 github-api.js:38 📋 Processing request queue, length: 1
 github-api.js:183  POST https://splendid-madeleine-249932.netlify.app/.netlify/functions/github-api 500 (Internal Server Error)
 (anonymous) @ github-api.js:183
@@ -17,83 +17,35 @@ processQueue @ github-api.js:44
 (anonymous) @ github-api.js:28
 queueRequest @ github-api.js:26
 deleteProduct @ github-api.js:181
-deleteProduct @ admin-dashboard.html:914
+deleteProduct @ admin-dashboard.html:942
 onclick @ admin-dashboard.html:1Understand this error
+github-api.js:196 📥 Delete response text: {"error":"fetch failed"}
 github-api.js:58 ✅ Request queue processing completed
-admin-dashboard.html:954 ❌ Product deletion failed: Error: Unexpected end of JSON input
-    at github-api.js:197:27
+admin-dashboard.html:966 ❌ Product deletion failed: Error: fetch failed
+    at github-api.js:211:27
     at async GitHubUpdater.processQueue (github-api.js:44:32)
-deleteProduct @ admin-dashboard.html:954
+deleteProduct @ admin-dashboard.html:966
 await in deleteProduct
 onclick @ admin-dashboard.html:1Understand this error
-admin-dashboard.html:955 ❌ Error details: {message: 'Unexpected end of JSON input', stack: 'Error: Unexpected end of JSON input\n    at https:/…madeleine-249932.netlify.app/github-api.js:44:32)', productId: '1754889704231', productName: 'Polo', timestamp: '2025-08-11T05:33:12.697Z'}
-deleteProduct @ admin-dashboard.html:955
+admin-dashboard.html:967 ❌ Error details: {message: 'fetch failed', stack: 'Error: fetch failed\n    at https://splendid-madele…madeleine-249932.netlify.app/github-api.js:44:32)', productId: '1754890509195', productName: 'White Jacket', timestamp: '2025-08-11T05:45:11.796Z'}
+deleteProduct @ admin-dashboard.html:967
 await in deleteProduct
 onclick @ admin-dashboard.html:1Understand this error
-admin-dashboard.html:634 📸 Compressed IMG_4743.jpg: 552868 bytes → 608259 bytes (-10% reduction) at quality 0.92
-admin-dashboard.html:634 📸 Compressed IMG_4742.jpg: 584049 bytes → 645183 bytes (-10% reduction) at quality 0.92
-admin-dashboard.html:634 📸 Compressed IMG_4743.jpg: 552868 bytes → 608259 bytes (-10% reduction) at quality 0.92
-admin-dashboard.html:680 🔒 Form submission started, preventing duplicates
-admin-dashboard.html:400 Checking auth...
-admin-dashboard.html:401 adminAuthenticated: true
-admin-dashboard.html:402 adminLoginTime: 1754886887699
-admin-dashboard.html:712 📦 Product payload size: 1253658 bytes
-admin-dashboard.html:720 🚀 Starting product addition process...
+admin-dashboard.html:933 🗑️ Starting product deletion: KU Med Center Tee
 github-api.js:38 📋 Processing request queue, length: 1
-github-api.js:68 🚀 Attempting to add product: KU Med Center Tee
-github-api.js:69 📍 Function endpoint: /.netlify/functions/github-api
-github-api.js:70 📍 Timestamp: 2025-08-11T05:34:15.755Z
-github-api.js:76 📤 Request body: {action: 'add_product', data: {…}}
-github-api.js:77 📦 Request body size: 1253690 bytes
-github-api.js:78 🖼️ Number of images: 2
-github-api.js:80 🖼️ First image size: 645183 bytes
-github-api.js:104 📥 Response status: 200
-github-api.js:105 📥 Response headers: {access-control-allow-headers: 'Content-Type', access-control-allow-methods: 'POST, OPTIONS', access-control-allow-origin: '*', age: '6', cache-control: 'no-cache', …}
-github-api.js:109 📥 Raw response text: {"success":true,"message":"Product \"KU Med Center Tee\" added and committed to repository. Total products: 6"}
-github-api.js:115 📥 Parsed response: {success: true, message: 'Product "KU Med Center Tee" added and committed to repository. Total products: 6'}
+github-api.js:196 📥 Delete response text: {"success":true,"message":"Product \"KU Med Center Tee\" deleted from repository. Total products: 5"}
 github-api.js:58 ✅ Request queue processing completed
-admin-dashboard.html:724 ✅ Product addition completed: {success: true, message: 'Product "KU Med Center Tee" added and committed to repository. Total products: 6'}
-admin-dashboard.html:729 🧹 Clearing form and resetting state...
-admin-dashboard.html:748 ✅ Form state completely reset
-admin-dashboard.html:751 🔄 Refreshing product list...
-admin-dashboard.html:826 🔄 Loading products...
-admin-dashboard.html:834 📥 Fetching products.json?v=1754890462988
-admin-dashboard.html:837 📥 Products fetch response: 200 
-admin-dashboard.html:845 ✅ Loaded 5 products for admin display
-admin-dashboard.html:765 📊 Product count check: 5 (expecting increase from previous)
-admin-dashboard.html:785 ✅ Product addition cycle completed successfully
-admin-dashboard.html:802 🔓 Form submission completed, re-enabling form
-admin-dashboard.html:805 🔧 Resetting button state...
-admin-dashboard.html:634 📸 Compressed IMG_4744.jpg: 493571 bytes → 534699 bytes (-8% reduction) at quality 0.92
-admin-dashboard.html:634 📸 Compressed IMG_4745.jpg: 517929 bytes → 562519 bytes (-9% reduction) at quality 0.92
-admin-dashboard.html:680 🔒 Form submission started, preventing duplicates
-admin-dashboard.html:400 Checking auth...
-admin-dashboard.html:401 adminAuthenticated: true
-admin-dashboard.html:402 adminLoginTime: 1754886887699
-admin-dashboard.html:712 📦 Product payload size: 1097420 bytes
-admin-dashboard.html:720 🚀 Starting product addition process...
+admin-dashboard.html:943 ✅ Product deletion completed: {success: true, message: 'Product "KU Med Center Tee" deleted from repository. Total products: 5'}
+admin-dashboard.html:947 🎯 Removing product from DOM instantly
+admin-dashboard.html:964 ✅ Product deletion cycle completed with instant UI update
+admin-dashboard.html:954 ✅ Product element removed from DOM
+admin-dashboard.html:983 📊 Updated product count display: 5
+admin-dashboard.html:933 🗑️ Starting product deletion: White Jacket
 github-api.js:38 📋 Processing request queue, length: 1
-github-api.js:68 🚀 Attempting to add product: White Jacket
-github-api.js:69 📍 Function endpoint: /.netlify/functions/github-api
-github-api.js:70 📍 Timestamp: 2025-08-11T05:35:09.197Z
-github-api.js:76 📤 Request body: {action: 'add_product', data: {…}}
-github-api.js:77 📦 Request body size: 1097452 bytes
-github-api.js:78 🖼️ Number of images: 2
-github-api.js:80 🖼️ First image size: 534699 bytes
-github-api.js:104 📥 Response status: 200
-github-api.js:105 📥 Response headers: {access-control-allow-headers: 'Content-Type', access-control-allow-methods: 'POST, OPTIONS', access-control-allow-origin: '*', age: '5', cache-control: 'no-cache', …}
-github-api.js:109 📥 Raw response text: {"success":true,"message":"Product \"White Jacket\" added and committed to repository. Total products: 7"}
-github-api.js:115 📥 Parsed response: {success: true, message: 'Product "White Jacket" added and committed to repository. Total products: 7'}
+github-api.js:196 📥 Delete response text: {"success":true,"message":"Product \"White Jacket\" deleted from repository. Total products: 4"}
 github-api.js:58 ✅ Request queue processing completed
-admin-dashboard.html:724 ✅ Product addition completed: {success: true, message: 'Product "White Jacket" added and committed to repository. Total products: 7'}
-admin-dashboard.html:729 🧹 Clearing form and resetting state...
-admin-dashboard.html:748 ✅ Form state completely reset
-admin-dashboard.html:751 🔄 Refreshing product list...
-admin-dashboard.html:826 🔄 Loading products...
-admin-dashboard.html:834 📥 Fetching products.json?v=1754890515745
-admin-dashboard.html:837 📥 Products fetch response: 200 
-admin-dashboard.html:845 ✅ Loaded 6 products for admin display
-admin-dashboard.html:765 📊 Product count check: 6 (expecting increase from previous)
-admin-dashboard.html:785 ✅ Product addition cycle completed successfully
-admin-dashboard.html:802 🔓 Form submission completed, re-enabling form
-admin-dashboard.html:805 🔧 Resetting button state...
+admin-dashboard.html:943 ✅ Product deletion completed: {success: true, message: 'Product "White Jacket" deleted from repository. Total products: 4'}
+admin-dashboard.html:947 🎯 Removing product from DOM instantly
+admin-dashboard.html:964 ✅ Product deletion cycle completed with instant UI update
+admin-dashboard.html:954 ✅ Product element removed from DOM
+admin-dashboard.html:983 📊 Updated product count display: 4
