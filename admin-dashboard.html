@@ -658,14 +658,26 @@
             displayUploadedImages();
         }
         
+        // Track submission state to prevent double-submission
+        let isSubmitting = false;
+        
         // Product form submission
         document.getElementById('productForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
+            // Prevent double submission
+            if (isSubmitting) {
+                console.warn('⚠️  Form already submitting, ignoring duplicate submission');
+                return;
+            }
             
             if (uploadedImages.length === 0) {
                 alert('Please add at least one product image');
                 return;
             }
+            
+            isSubmitting = true;
+            console.log('🔒 Form submission started, preventing duplicates');
             
             const newProduct = {
                 id: Date.now().toString(),
@@ -689,6 +701,7 @@
             try {
                 // Check authentication before adding product
                 if (!checkAuth()) {
+                    console.error('Authentication check failed for product submission');
                     submitBtn.textContent = originalText;
                     submitBtn.disabled = false;
                     return;
@@ -704,31 +717,82 @@
                     return;
                 }
                 
+                console.log('🚀 Starting product addition process...');
+                
                 // Add directly to website via secure backend
-                await window.githubUpdater.addProduct(newProduct);
+                const result = await window.githubUpdater.addProduct(newProduct);
+                console.log('✅ Product addition completed:', result);
+                
                 alert('Product added successfully! ✅\n\nYour product is now live on the website.');
                 
-                // Clear form
-                document.getElementById('productForm').reset();
+                // Clear form completely and reset all state
+                console.log('🧹 Clearing form and resetting state...');
+                const form = document.getElementById('productForm');
+                form.reset();
+                
+                // Force clear all input values to ensure no stale data
+                form.querySelectorAll('input, textarea, select').forEach(field => {
+                    if (field.type === 'file') {
+                        field.value = '';
+                    } else if (field.tagName === 'SELECT') {
+                        field.selectedIndex = 0;
+                    } else {
+                        field.value = '';
+                    }
+                });
+                
+                // Clear uploaded images completely
                 uploadedImages = [];
                 displayUploadedImages();
                 
-                // Refresh the product list after a brief delay to allow for GitHub propagation
-                setTimeout(() => {
-                    loadProducts();
-                }, 1000);
+                console.log('✅ Form state completely reset');
+                
+                // Force a fresh reload of products without delay
+                console.log('🔄 Refreshing product list...');
+                await loadProducts();
+                
+                console.log('✅ Product addition cycle completed successfully');
             } catch (error) {
-                console.error('Failed to add product:', error);
+                console.error('❌ Product addition failed:', error);
+                console.error('❌ Error details:', {
+                    message: error.message,
+                    stack: error.stack,
+                    productName: newProduct?.name,
+                    timestamp: new Date().toISOString()
+                });
+                
                 alert(`Failed to add product: ${error.message}\n\nPlease try again.`);
+                
+                // Don't reload products on error to avoid clearing any valid state
+                console.log('❌ Product addition failed, not refreshing product list');
             } finally {
+                // Always reset submission flag
+                isSubmitting = false;
+                console.log('🔓 Form submission completed, re-enabling form');
+                
+                // Ensure button is always re-enabled and reset
+                console.log('🔧 Resetting button state...');
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
+                
+                // Add small delay to ensure UI updates properly
+                setTimeout(() => {
+                    if (submitBtn.disabled) {
+                        console.warn('⚠️  Button still disabled, force enabling...');
+                        submitBtn.disabled = false;
+                    }
+                    if (isSubmitting) {
+                        console.warn('⚠️  Submission flag still set, force clearing...');
+                        isSubmitting = false;
+                    }
+                }, 100);
             }
         });
         
         // Load and display products
         async function loadProducts() {
             const grid = document.getElementById('productsGrid');
+            console.log('🔄 Loading products...');
             
             try {
                 // Clear any cached products from localStorage
@@ -736,9 +800,19 @@
                 
                 // Load all products from products.json with cache-busting
                 const timestamp = new Date().getTime();
+                console.log(`📥 Fetching products.json?v=${timestamp}`);
+                
                 const response = await fetch(`products.json?v=${timestamp}`);
+                console.log('📥 Products fetch response:', response.status, response.statusText);
+                
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch products: ${response.status} ${response.statusText}`);
+                }
+                
                 const data = await response.json();
                 const allProducts = data.products || [];
+                console.log(`✅ Loaded ${allProducts.length} products for admin display`);
+                
                 displayProducts(allProducts);
             } catch (error) {
                 console.error('Failed to load products:', error);

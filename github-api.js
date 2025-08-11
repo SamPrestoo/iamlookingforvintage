@@ -25,6 +25,7 @@ class GitHubUpdater {
         try {
             console.log('🚀 Attempting to add product:', product.name);
             console.log('📍 Function endpoint:', this.functionEndpoint);
+            console.log('📍 Timestamp:', new Date().toISOString());
             
             const requestBody = {
                 action: 'add_product',
@@ -36,6 +37,19 @@ class GitHubUpdater {
             if (product.images && product.images.length > 0) {
                 console.log('🖼️ First image size:', product.images[0].length, 'bytes');
             }
+            
+            // Add a small delay to avoid potential race conditions with rapid submissions
+            const now = Date.now();
+            const lastSubmission = this.lastSubmissionTime || 0;
+            const timeSinceLastSubmission = now - lastSubmission;
+            
+            if (timeSinceLastSubmission < 2000) { // Less than 2 seconds
+                const delay = 2000 - timeSinceLastSubmission;
+                console.log(`⏳ Waiting ${delay}ms to avoid race conditions...`);
+                await new Promise(resolve => setTimeout(resolve, delay));
+            }
+            
+            this.lastSubmissionTime = Date.now();
             
             const response = await fetch(this.functionEndpoint, {
                 method: 'POST',

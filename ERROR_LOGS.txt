@@ -3,24 +3,48 @@ admin-dashboard.html:401 adminAuthenticated: true
 admin-dashboard.html:402 adminLoginTime: 1754886887699
 admin-dashboard.html:634 📸 Compressed IMG_4718.jpg: 1518454 bytes → 596907 bytes (61% reduction) at quality 0.92
 admin-dashboard.html:634 📸 Compressed IMG_4719.jpg: 1483781 bytes → 584407 bytes (61% reduction) at quality 0.92
+admin-dashboard.html:634 📸 Compressed IMG_4720.jpg: 1642577 bytes → 671515 bytes (59% reduction) at quality 0.92
 admin-dashboard.html:634 📸 Compressed IMG_4721.jpg: 1945904 bytes → 757719 bytes (61% reduction) at quality 0.92
 admin-dashboard.html:634 📸 Compressed IMG_4722.jpg: 1775338 bytes → 728791 bytes (59% reduction) at quality 0.92
-admin-dashboard.html:634 📸 Compressed IMG_4720.jpg: 1642577 bytes → 671515 bytes (59% reduction) at quality 0.92
 admin-dashboard.html:400 Checking auth...
 admin-dashboard.html:401 adminAuthenticated: true
 admin-dashboard.html:402 adminLoginTime: 1754886887699
 admin-dashboard.html:699 📦 Product payload size: 3339544 bytes
 github-api.js:26 🚀 Attempting to add product: Blue Tee
 github-api.js:27 📍 Function endpoint: /.netlify/functions/github-api
-github-api.js:33 📤 Request body: Object
+github-api.js:33 📤 Request body: 
+Object
 github-api.js:34 📦 Request body size: 3339576 bytes
 github-api.js:35 🖼️ Number of images: 5
 github-api.js:37 🖼️ First image size: 596907 bytes
-.netlify/functions/github-api:1  Failed to load resource: the server responded with a status of 500 ()Understand this error
+github-api.js:48 📥 Response status: 200
+github-api.js:49 📥 Response headers: 
+Object
+github-api.js:53 📥 Raw response text: {"success":true,"message":"Product \"Blue Tee\" added and committed to repository. Total products: 2"}
+github-api.js:59 📥 Parsed response: 
+Object
+admin-dashboard.html:634 📸 Compressed IMG_4714.jpg: 1430352 bytes → 606367 bytes (58% reduction) at quality 0.92
+admin-dashboard.html:634 📸 Compressed IMG_4715.jpg: 1525224 bytes → 640283 bytes (58% reduction) at quality 0.92
+admin-dashboard.html:400 Checking auth...
+admin-dashboard.html:401 adminAuthenticated: true
+admin-dashboard.html:402 adminLoginTime: 1754886887699
+admin-dashboard.html:699 📦 Product payload size: 1246863 bytes
+github-api.js:26 🚀 Attempting to add product: Black Korean Jacket
+github-api.js:27 📍 Function endpoint: /.netlify/functions/github-api
+github-api.js:33 📤 Request body: 
+Object
+github-api.js:34 📦 Request body size: 1246895 bytes
+github-api.js:35 🖼️ Number of images: 2
+github-api.js:37 🖼️ First image size: 606367 bytes
+.netlify/functions/github-api:1 
+ Failed to load resource: the server responded with a status of 500 ()
 github-api.js:48 📥 Response status: 500
-github-api.js:49 📥 Response headers: Object
-github-api.js:53 📥 Raw response text: {"error":"Failed to decode products.json: No content field in GitHub API response. Refusing to proceed to prevent data loss."}
-github-api.js:59 📥 Parsed response: Object
-admin-dashboard.html:721 Failed to add product: Error: Failed to decode products.json: No content field in GitHub API response. Refusing to proceed to prevent data loss.
+github-api.js:49 📥 Response headers: 
+Object
+github-api.js:53 📥 Raw response text: {"error":"fetch failed"}
+github-api.js:59 📥 Parsed response: 
+Object
+admin-dashboard.html:721 Failed to add product: Error: fetch failed
     at GitHubUpdater.addProduct (github-api.js:70:23)
     at async HTMLFormElement.<anonymous> (admin-dashboard.html:708:17)
+(anonymous)	@	admin-dashboard.html:721
