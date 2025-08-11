@@ -168,11 +168,20 @@ exports.handler = async (event, context) => {
 async function addProduct(productData, config) {
   try {
     console.log('🏗️ Adding product:', productData.name);
-    console.log('📦 Product data size:', JSON.stringify(productData).length, 'bytes');
+    const productSize = JSON.stringify(productData).length;
+    console.log('📦 Product data size:', productSize, 'bytes');
     
-    // Get current products.json file with retry logic
+    // Warn about large product sizes
+    if (productSize > 5000000) { // 5MB
+      console.log('⚠️  Very large product data (>5MB) - this may cause issues');
+    } else if (productSize > 2000000) { // 2MB
+      console.log('⚠️  Large product data (>2MB) - consider optimizing images');
+    }
+    
+    // Get current products.json file - try Contents API first, fallback to Git Data API for large files
     console.log('📥 Fetching current products.json...');
-    let fileResponse;
+    let fileData;
+    let currentSha;
     let attempts = 0;
     const maxAttempts = 3;
     
@@ -180,14 +189,48 @@ async function addProduct(productData, config) {
       attempts++;
       console.log(`📥 Attempt ${attempts}/${maxAttempts} to fetch products.json`);
       
-      fileResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.json`, {
+      // Try Contents API first
+      const fileResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.json`, {
         headers: config.headers
       });
       
-      console.log('📥 File fetch response status:', fileResponse.status);
+      console.log('📥 Contents API response status:', fileResponse.status);
       
       if (fileResponse.ok) {
-        break;
+        const responseText = await fileResponse.text();
+        const responseData = JSON.parse(responseText);
+        
+        // Check if file is too large for Contents API
+        if (!responseData.content && responseData.size > 1000000) {
+          console.log('📥 File too large for Contents API, using Git Data API...');
+          // Use Git Data API for large files
+          const blobResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/git/blobs/${responseData.sha}`, {
+            headers: config.headers
+          });
+          
+          if (blobResponse.ok) {
+            const blobData = await blobResponse.json();
+            fileData = {
+              content: blobData.content,
+              encoding: blobData.encoding,
+              sha: responseData.sha,
+              size: responseData.size
+            };
+            currentSha = responseData.sha;
+            console.log('📥 Successfully fetched via Git Data API');
+            break;
+          } else {
+            throw new Error(`Failed to fetch blob via Git Data API: ${blobResponse.statusText}`);
+          }
+        } else if (responseData.content) {
+          // Normal Contents API response
+          fileData = responseData;
+          currentSha = responseData.sha;
+          console.log('📥 Successfully fetched via Contents API');
+          break;
+        } else {
+          throw new Error('No content available in GitHub response');
+        }
       }
       
       if (attempts === maxAttempts) {
@@ -210,24 +253,15 @@ async function addProduct(productData, config) {
       await new Promise(resolve => setTimeout(resolve, waitTime));
     }
     
-    console.log('📋 Parsing GitHub response...');
-    let fileData;
-    try {
-      const responseText = await fileResponse.text();
-      console.log('📋 Raw GitHub response length:', responseText.length);
-      console.log('📋 Raw GitHub response preview:', responseText.substring(0, 200));
-      
-      if (!responseText || responseText.trim() === '') {
-        throw new Error('Empty response from GitHub API');
-      }
-      
-      fileData = JSON.parse(responseText);
-      console.log('📋 GitHub file data keys:', Object.keys(fileData));
-      console.log('📋 Content length from GitHub:', fileData.content ? fileData.content.length : 'undefined');
-    } catch (jsonError) {
-      console.error('❌ Failed to parse GitHub response as JSON:', jsonError);
-      throw new Error(`Failed to parse GitHub response: ${jsonError.message}`);
+    // fileData should now be populated from the fetch logic above
+    if (!fileData) {
+      throw new Error('Failed to obtain file data from GitHub API');
     }
+    
+    console.log('📋 GitHub file data keys:', Object.keys(fileData));
+    console.log('📋 Content length from GitHub:', fileData.content ? fileData.content.length : 'undefined');
+    console.log('📋 File size:', fileData.size || 'undefined');
+    console.log('📋 File encoding:', fileData.encoding || 'undefined');
     
     console.log('📋 Decoding base64 content...');
     let currentContent;
@@ -236,7 +270,16 @@ async function addProduct(productData, config) {
       if (!fileData.content) {
         console.error('❌ No content field in GitHub response');
         console.error('❌ Available fields:', Object.keys(fileData));
-        throw new Error('No content field in GitHub API response');
+        console.error('❌ Response size:', fileData.size || 'undefined');
+        console.error('❌ File encoding:', fileData.encoding || 'undefined');
+        console.error('❌ Full response object:', JSON.stringify(fileData, null, 2));
+        
+        // GitHub might truncate large files - check if this is a truncation issue
+        if (fileData.size && fileData.size > 1000000) { // > 1MB
+          throw new Error(`File too large for GitHub Contents API (${Math.round(fileData.size/1024/1024*100)/100}MB). Attempting Git Data API fallback...`);
+        }
+        
+        throw new Error('No content field in GitHub API response. This may indicate the file is too large or corrupted.');
       }
       
       const decodedContent = Buffer.from(fileData.content, 'base64').toString('utf8');
@@ -323,11 +366,11 @@ async function addProduct(productData, config) {
     const commitPayload = {
       message: `Add new product: ${productData.name}`,
       content: Buffer.from(newJsonContent).toString('base64'),
-      sha: fileData.sha,
+      sha: currentSha || fileData.sha,
       branch: config.branch
     };
     
-    console.log('📤 Committing with SHA:', fileData.sha);
+    console.log('📤 Committing with SHA:', currentSha || fileData.sha);
     console.log('📤 Commit message:', commitPayload.message);
     console.log('📤 Content preview (first 100 chars):', newJsonContent.substring(0, 100));
     
