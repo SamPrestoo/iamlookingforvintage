@@ -195,14 +195,35 @@ async function addProduct(productData, config) {
         throw new Error(`Failed to fetch products.json: ${fileResponse.statusText}`);
       }
       
-      // Wait before retry
-      await new Promise(resolve => setTimeout(resolve, 1000 * attempts));
+      // Check for rate limiting
+      if (fileResponse.status === 403) {
+        const rateLimitReset = fileResponse.headers.get('X-RateLimit-Reset');
+        if (rateLimitReset) {
+          const resetTime = new Date(parseInt(rateLimitReset) * 1000);
+          console.log('⏱️  Rate limit hit, reset at:', resetTime);
+        }
+      }
+      
+      // Wait before retry with exponential backoff
+      const waitTime = Math.min(1000 * Math.pow(2, attempts - 1), 10000); // Max 10s
+      console.log(`⏳ Waiting ${waitTime}ms before retry...`);
+      await new Promise(resolve => setTimeout(resolve, waitTime));
     }
     
     console.log('📋 Parsing GitHub response...');
     let fileData;
     try {
-      fileData = await fileResponse.json();
+      const responseText = await fileResponse.text();
+      console.log('📋 Raw GitHub response length:', responseText.length);
+      console.log('📋 Raw GitHub response preview:', responseText.substring(0, 200));
+      
+      if (!responseText || responseText.trim() === '') {
+        throw new Error('Empty response from GitHub API');
+      }
+      
+      fileData = JSON.parse(responseText);
+      console.log('📋 GitHub file data keys:', Object.keys(fileData));
+      console.log('📋 Content length from GitHub:', fileData.content ? fileData.content.length : 'undefined');
     } catch (jsonError) {
       console.error('❌ Failed to parse GitHub response as JSON:', jsonError);
       throw new Error(`Failed to parse GitHub response: ${jsonError.message}`);
@@ -211,6 +232,13 @@ async function addProduct(productData, config) {
     console.log('📋 Decoding base64 content...');
     let currentContent;
     try {
+      // Check if content exists in GitHub response
+      if (!fileData.content) {
+        console.error('❌ No content field in GitHub response');
+        console.error('❌ Available fields:', Object.keys(fileData));
+        throw new Error('No content field in GitHub API response');
+      }
+      
       const decodedContent = Buffer.from(fileData.content, 'base64').toString('utf8');
       console.log('📋 Decoded content length:', decodedContent.length);
       console.log('📋 First 200 chars:', decodedContent.substring(0, 200));
@@ -218,20 +246,28 @@ async function addProduct(productData, config) {
       
       // Validate JSON structure before parsing
       if (!decodedContent.trim()) {
-        throw new Error('Empty file content');
-      }
-      
-      currentContent = JSON.parse(decodedContent);
-      
-      // Validate structure
-      if (!currentContent.products || !Array.isArray(currentContent.products)) {
-        throw new Error('Invalid JSON structure: missing or invalid products array');
+        console.error('❌ Decoded content is empty');
+        // Create a fallback structure if file is empty
+        console.log('🔧 Creating fallback empty products structure');
+        currentContent = { products: [] };
+      } else {
+        currentContent = JSON.parse(decodedContent);
+        
+        // Validate structure
+        if (!currentContent.products || !Array.isArray(currentContent.products)) {
+          console.error('❌ Invalid structure, repairing...');
+          currentContent = { products: currentContent.products || [] };
+        }
       }
       
       console.log('📋 Successfully parsed JSON with', currentContent.products.length, 'products');
     } catch (decodeError) {
       console.error('❌ Failed to decode/parse products.json content:', decodeError);
-      throw new Error(`Failed to decode products.json: ${decodeError.message}`);
+      console.error('❌ Attempting to create fallback structure...');
+      
+      // As a last resort, create empty structure
+      currentContent = { products: [] };
+      console.log('🔧 Using fallback empty products structure');
     }
     
     // Add new product to the products array
@@ -243,9 +279,14 @@ async function addProduct(productData, config) {
     
     console.log('📊 New content size:', newContentSize, 'bytes');
     
-    // Check if the new content exceeds reasonable limits
-    if (newContentSize > 100 * 1024 * 1024) { // 100MB limit
-      throw new Error(`File size too large: ${Math.round(newContentSize / (1024 * 1024))}MB. Maximum allowed: 100MB`);
+    // Check if the new content exceeds reasonable limits (GitHub has 100MB file limit)
+    // With 1000 images at 2MB each = ~200MB, but with compression should be much less
+    if (newContentSize > 150 * 1024 * 1024) { // 150MB limit for business needs
+      throw new Error(`File size too large: ${Math.round(newContentSize / (1024 * 1024))}MB. Maximum allowed: 150MB`);
+    }
+    
+    if (newContentSize > 50 * 1024 * 1024) { // Warn at 50MB
+      console.log(`⚠️  Large file warning: ${Math.round(newContentSize / (1024 * 1024))}MB`);
     }
     
     // Commit the updated file

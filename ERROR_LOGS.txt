@@ -6,18 +6,18 @@ admin-dashboard.html:628 📸 Compressed IMG_4715.jpg: 1525224 bytes → 398119 
 admin-dashboard.html:400 Checking auth...
 admin-dashboard.html:401 adminAuthenticated: true
 admin-dashboard.html:402 adminLoginTime: 1754886887699
-admin-dashboard.html:693 📦 Product payload size: 772429 bytes
+admin-dashboard.html:693 📦 Product payload size: 772431 bytes
 github-api.js:26 🚀 Attempting to add product: Black Korean Jacket
 github-api.js:27 📍 Function endpoint: /.netlify/functions/github-api
 github-api.js:33 📤 Request body: Object
-github-api.js:34 📦 Request body size: 772461 bytes
+github-api.js:34 📦 Request body size: 772463 bytes
 github-api.js:35 🖼️ Number of images: 2
 github-api.js:37 🖼️ First image size: 374099 bytes
 .netlify/functions/github-api:1  Failed to load resource: the server responded with a status of 500 ()Understand this error
 github-api.js:48 📥 Response status: 500
 github-api.js:49 📥 Response headers: Object
-github-api.js:53 📥 Raw response text: {"error":"Failed to decode products.json: Unexpected end of JSON input"}
+github-api.js:53 📥 Raw response text: {"error":"Failed to decode products.json: Empty file content"}
 github-api.js:59 📥 Parsed response: Object
-admin-dashboard.html:715 Failed to add product: Error: Failed to decode products.json: Unexpected end of JSON input
+admin-dashboard.html:715 Failed to add product: Error: Failed to decode products.json: Empty file content
     at GitHubUpdater.addProduct (github-api.js:70:23)
     at async HTMLFormElement.<anonymous> (admin-dashboard.html:702:17)

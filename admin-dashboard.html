@@ -598,8 +598,8 @@
             const img = new Image();
             
             img.onload = function() {
-                // Calculate new dimensions (max 1200px on longest side)
-                const maxSize = 1200;
+                // Calculate new dimensions (max 1600px for better quality)
+                const maxSize = 1600;
                 let { width, height } = img;
                 
                 if (width > height && width > maxSize) {
@@ -613,19 +613,25 @@
                 canvas.width = width;
                 canvas.height = height;
                 
-                // Draw and compress
+                // Draw and compress with better quality settings
                 ctx.drawImage(img, 0, 0, width, height);
                 
-                // Try different quality levels until under 1MB per image
-                let quality = 0.8;
+                // Start with higher quality for business photos
+                let quality = 0.92;
                 let compressedDataUrl;
                 
+                // Try compression levels - aim for under 2MB per image for better quality
                 do {
                     compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
-                    quality -= 0.1;
-                } while (compressedDataUrl.length > 1000000 && quality > 0.1); // 1MB limit per image
+                    quality -= 0.05; // Smaller steps for better quality control
+                } while (compressedDataUrl.length > 2000000 && quality > 0.3); // 2MB limit per image, minimum quality 0.3
                 
-                console.log(`📸 Compressed ${file.name}: ${file.size} bytes → ${compressedDataUrl.length} bytes (${Math.round((1 - compressedDataUrl.length / file.size) * 100)}% reduction)`);
+                // If still too large, try WebP format (better compression)
+                if (compressedDataUrl.length > 2000000) {
+                    compressedDataUrl = canvas.toDataURL('image/webp', 0.85);
+                }
+                
+                console.log(`📸 Compressed ${file.name}: ${file.size} bytes → ${compressedDataUrl.length} bytes (${Math.round((1 - compressedDataUrl.length / file.size) * 100)}% reduction) at quality ${quality + 0.05}`);
                 callback(compressedDataUrl);
             };
             
