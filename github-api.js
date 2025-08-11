@@ -64,9 +64,10 @@ class GitHubUpdater {
      */
     async addProduct(product) {
         return this.queueRequest(async () => {
-            console.log('🚀 Attempting to add product:', product.name);
-            console.log('📍 Function endpoint:', this.functionEndpoint);
-            console.log('📍 Timestamp:', new Date().toISOString());
+            try {
+                console.log('🚀 Attempting to add product:', product.name);
+                console.log('📍 Function endpoint:', this.functionEndpoint);
+                console.log('📍 Timestamp:', new Date().toISOString());
             
             const requestBody = {
                 action: 'add_product',
@@ -143,31 +144,31 @@ class GitHubUpdater {
      */
     async updateSoldStatus(productId, sold, productTitle) {
         return this.queueRequest(async () => {
-        try {
-            const response = await fetch(this.functionEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    action: 'update_sold_status',
-                    data: { id: productId, sold: sold }
-                })
-            });
+            try {
+                const response = await fetch(this.functionEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        action: 'update_sold_status',
+                        data: { id: productId, sold: sold }
+                    })
+                });
 
-            const result = await response.json();
+                const result = await response.json();
 
-            if (!response.ok) {
-                throw new Error(result.error || 'Failed to update product status');
+                if (!response.ok) {
+                    throw new Error(result.error || 'Failed to update product status');
+                }
+
+                // Show success notification
+                this.showNotification(result.message, 'success');
+                return result;
+            } catch (error) {
+                this.showNotification(`Failed to update status: ${error.message}`, 'error');
+                throw error;
             }
-
-            // Show success notification
-            this.showNotification(result.message, 'success');
-            return result;
-        } catch (error) {
-            this.showNotification(`Failed to update status: ${error.message}`, 'error');
-            throw error;
-        }
         });
     }
 
@@ -178,31 +179,31 @@ class GitHubUpdater {
      */
     async deleteProduct(productId, productTitle) {
         return this.queueRequest(async () => {
-        try {
-            const response = await fetch(this.functionEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    action: 'delete_product',
-                    data: { id: productId }
-                })
-            });
+            try {
+                const response = await fetch(this.functionEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        action: 'delete_product',
+                        data: { id: productId }
+                    })
+                });
 
-            const result = await response.json();
+                const result = await response.json();
 
-            if (!response.ok) {
-                throw new Error(result.error || 'Failed to delete product');
+                if (!response.ok) {
+                    throw new Error(result.error || 'Failed to delete product');
+                }
+
+                // Show success notification
+                this.showNotification(result.message, 'success');
+                return result;
+            } catch (error) {
+                this.showNotification(`Failed to delete product: ${error.message}`, 'error');
+                throw error;
             }
-
-            // Show success notification
-            this.showNotification(result.message, 'success');
-            return result;
-        } catch (error) {
-            this.showNotification(`Failed to delete product: ${error.message}`, 'error');
-            throw error;
-        }
         });
     }
 
