@@ -297,6 +297,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 const thumbIndex = product.thumbnailIndex || 0;
                 const imageData = product.images[thumbIndex];
                 productImage = typeof imageData === 'string' ? imageData : imageData.data;
+                console.log('🖼️ Adding product to cart:', {
+                    name: product.name,
+                    thumbIndex,
+                    imageDataType: typeof imageData,
+                    hasImageData: !!productImage,
+                    imageStart: productImage ? productImage.substring(0, 50) + '...' : 'none'
+                });
+            } else {
+                console.log('⚠️ No images found for product:', product.name, product.images);
             }
             
             cart.push({

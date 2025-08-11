@@ -393,17 +393,6 @@
             padding: 4px 6px;
         }
 
-        .drag-handle {
-            color: white;
-            cursor: grab;
-            font-size: 16px;
-            line-height: 1;
-            user-select: none;
-        }
-
-        .drag-handle:active {
-            cursor: grabbing;
-        }
 
         .image-order {
             position: absolute;
@@ -832,7 +821,6 @@
                 imageDiv.innerHTML = `
                     <img src="${image.data}" alt="${image.name}">
                     <div class="image-controls">
-                        <span class="drag-handle" title="Drag to reorder">⋮⋮</span>
                         <button class="remove-image" onclick="removeImage(${index})" title="Remove image">×</button>
                     </div>
                     <div class="image-order">${index + 1}</div>
