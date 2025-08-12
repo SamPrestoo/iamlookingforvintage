@@ -60,17 +60,17 @@ body {
 .navigation ul {
     list-style: none;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    gap: 30px;
-    flex-wrap: wrap;
     position: relative;
+    flex-wrap: wrap;
 }
 
 .navigation ul .nav-main-group {
     display: flex;
     gap: 30px;
-    margin: 0 auto;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .navigation ul .nav-cart-group {
@@ -963,6 +963,8 @@ body {
     }
     
     .navigation ul .nav-main-group {
+        position: static;
+        transform: none;
         gap: 15px;
         margin: 0;
     }
