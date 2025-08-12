@@ -586,7 +586,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     <div class="product-info">
                         <h3>${product.name}</h3>
-                        <p class="product-description">${product.description ? (product.description.length > 100 ? product.description.substring(0, 100) + '...' : product.description) : 'Premium vintage item'}</p>
                         <div class="product-details">
                             <p class="product-type">${product.type} • ${product.size}</p>
                         </div>
@@ -597,10 +596,10 @@ document.addEventListener('DOMContentLoaded', function() {
                                     Sold Out
                                 </button>` :
                                 `<button class="add-to-cart" onclick="event.stopPropagation(); addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})">
-                                    <img src="Frame 31.png" alt="Cart" class="cart-icon">Add to Cart
+                                    Add to Cart
                                 </button>
-                                <button class="buy-now" onclick="event.stopPropagation(); buyNow('${product.id}')">
-                                    Buy Now
+                                <button class="view-details" onclick="event.stopPropagation(); viewProduct('${product.id}')">
+                                    View Details
                                 </button>`
                             }
                         </div>
@@ -711,7 +710,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <h4>${product.name}</h4>
                         <p class="product-price">$${product.price.toFixed(2)}</p>
                         <button class="add-to-cart" onclick="event.stopPropagation(); addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})">
-                            <img src="Frame 31.png" alt="Cart" class="cart-icon">Add to Cart
+                            Add to Cart
                         </button>
                     </div>
                 </div>
