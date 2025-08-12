@@ -430,17 +430,92 @@ async function addProduct(productData, config) {
 
 async function updateSoldStatus(updateData, config) {
   try {
-    // Get current products.json file
-    const fileResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.json`, {
-      headers: config.headers
-    });
+    console.log('🏷️ Server: Starting sold status update for ID:', updateData.id);
+    console.log('🏷️ Server: New sold status:', updateData.sold);
     
-    if (!fileResponse.ok) {
-      throw new Error(`Failed to fetch products.json: ${fileResponse.statusText}`);
+    // Add delay for cold starts to ensure proper initialization
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    // Use the same robust file fetching as other functions for large files
+    let fileData;
+    let currentSha;
+    let attempts = 0;
+    const maxAttempts = 3;
+    
+    while (attempts < maxAttempts) {
+      attempts++;
+      console.log(`📥 SoldStatus: Attempt ${attempts}/${maxAttempts} to fetch products.json`);
+      
+      // Try Contents API first with error handling for cold starts
+      let fileResponse;
+      try {
+        fileResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.json`, {
+          headers: config.headers
+        });
+      } catch (fetchError) {
+        console.error(`❌ SoldStatus: Fetch error on attempt ${attempts}:`, fetchError.message);
+        if (attempts === maxAttempts) {
+          throw new Error(`GitHub API fetch failed after ${maxAttempts} attempts: ${fetchError.message}`);
+        }
+        await new Promise(resolve => setTimeout(resolve, 2000 * attempts));
+        continue;
+      }
+      
+      console.log('📥 SoldStatus: Contents API response status:', fileResponse.status);
+      
+      if (fileResponse.ok) {
+        const responseText = await fileResponse.text();
+        const responseData = JSON.parse(responseText);
+        
+        // Check if file is too large for Contents API
+        if (!responseData.content && responseData.size > 1000000) {
+          console.log('📥 SoldStatus: File too large for Contents API, using Git Data API...');
+          let blobResponse;
+          try {
+            blobResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/git/blobs/${responseData.sha}`, {
+              headers: config.headers
+            });
+          } catch (blobFetchError) {
+            console.error(`❌ SoldStatus: Git Data API fetch error:`, blobFetchError.message);
+            throw new Error(`Git Data API fetch failed: ${blobFetchError.message}`);
+          }
+          
+          if (blobResponse.ok) {
+            const blobData = await blobResponse.json();
+            fileData = {
+              content: blobData.content,
+              encoding: blobData.encoding,
+              sha: responseData.sha,
+              size: responseData.size
+            };
+            currentSha = responseData.sha;
+            console.log('📥 SoldStatus: Successfully fetched via Git Data API');
+            break;
+          } else {
+            throw new Error(`Failed to fetch blob via Git Data API: ${blobResponse.statusText}`);
+          }
+        } else if (responseData.content) {
+          // Normal Contents API response
+          fileData = responseData;
+          currentSha = responseData.sha;
+          console.log('📥 SoldStatus: Successfully fetched via Contents API');
+          break;
+        } else {
+          throw new Error('No content available in GitHub response');
+        }
+      }
+      
+      if (attempts === maxAttempts) {
+        console.error('❌ SoldStatus: Failed to fetch products.json after', maxAttempts, 'attempts:', fileResponse.statusText);
+        throw new Error(`Failed to fetch products.json: ${fileResponse.statusText}`);
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 1000 * attempts));
     }
     
-    const fileData = await fileResponse.json();
+    console.log('📋 SoldStatus: Decoding base64 content...');
     const currentContent = JSON.parse(Buffer.from(fileData.content, 'base64').toString('utf8'));
+    console.log('📋 SoldStatus: Current products count:', currentContent.products.length);
     
     // Find and update product
     const product = currentContent.products.find(p => p.id === updateData.id);
@@ -448,36 +523,49 @@ async function updateSoldStatus(updateData, config) {
       throw new Error(`Product with ID ${updateData.id} not found`);
     }
     
+    const oldStatus = product.sold;
     product.sold = updateData.sold;
+    console.log(`📋 SoldStatus: Updated product "${product.name}" from ${oldStatus} to ${updateData.sold}`);
     
-    // Commit the updated file
-    const commitResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.json`, {
-      method: 'PUT',
-      headers: config.headers,
-      body: JSON.stringify({
-        message: `Mark "${product.name}" as ${updateData.sold ? 'sold' : 'available'}`,
-        content: Buffer.from(JSON.stringify(currentContent, null, 2)).toString('base64'),
-        sha: fileData.sha,
-        branch: config.branch
-      })
-    });
+    // Commit the updated file with error handling for cold starts
+    const newJsonContent = JSON.stringify(currentContent, null, 2);
+    let commitResponse;
+    try {
+      commitResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/products.json`, {
+        method: 'PUT',
+        headers: config.headers,
+        body: JSON.stringify({
+          message: `Mark "${product.name}" as ${updateData.sold ? 'sold' : 'available'}`,
+          content: Buffer.from(newJsonContent).toString('base64'),
+          sha: currentSha || fileData.sha,
+          branch: config.branch
+        })
+      });
+    } catch (commitFetchError) {
+      console.error('❌ SoldStatus: Commit fetch error:', commitFetchError.message);
+      throw new Error(`GitHub commit fetch failed: ${commitFetchError.message}`);
+    }
     
-    console.log('📤 Commit response status:', commitResponse.status);
+    console.log('📤 SoldStatus: Commit response status:', commitResponse.status);
     
     if (!commitResponse.ok) {
-      console.error('❌ Commit failed with status:', commitResponse.status);
-      let errorMessage = `Failed to commit with status ${commitResponse.status}`;
+      console.error('❌ SoldStatus: Commit failed with status:', commitResponse.status);
+      let errorMessage = `Failed to commit sold status with status ${commitResponse.status}`;
       try {
-        const error = await commitResponse.json();
-        errorMessage = `Failed to commit: ${error.message}`;
-        console.error('❌ Commit error details:', error);
+        const errorText = await commitResponse.text();
+        console.error('❌ SoldStatus: Raw commit error response:', errorText);
+        
+        const error = JSON.parse(errorText);
+        errorMessage = `Failed to commit sold status: ${error.message}`;
+        console.error('❌ SoldStatus: Commit error details:', error);
       } catch (parseError) {
-        console.error('❌ Could not parse commit error response:', parseError);
+        console.error('❌ SoldStatus: Could not parse commit error response:', parseError);
       }
       throw new Error(errorMessage);
     }
     
-    console.log('✅ Successfully committed to GitHub');
+    console.log('✅ SoldStatus: Successfully committed to GitHub');
+    console.log('✅ SoldStatus: Product marked as:', updateData.sold ? 'sold' : 'available');
     
     return {
       statusCode: 200,
