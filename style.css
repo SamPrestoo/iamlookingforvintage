@@ -826,15 +826,107 @@ body {
 .footer {
     background-color: #f8f8f8;
     border-top: 1px solid #e0e0e0;
-    padding: 20px;
-    text-align: center;
+    padding: 40px 20px 20px;
     margin-top: auto;
 }
 
-.footer-content p {
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 40px;
+    align-items: start;
+}
+
+.footer-column h3 {
+    color: #2c2c2c;
+    font-size: 16px;
+    margin-bottom: 15px;
+    font-family: 'Workbench', Arial, sans-serif;
+    font-weight: 500;
+}
+
+.footer-column p {
     color: #6a6a6a;
     font-size: 12px;
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.social-links {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background-color: #8b7355;
+    color: white;
+    border-radius: 50%;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 16px;
+}
+
+.social-link:hover {
+    background-color: #6d5a43;
+    transform: translateY(-2px);
+}
+
+.footer-nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-nav li {
+    margin-bottom: 8px;
+}
+
+.footer-nav a {
+    color: #6a6a6a;
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.3s ease;
+}
+
+.footer-nav a:hover {
+    color: #8b7355;
+}
+
+.website-credit {
+    color: #6a6a6a;
+    font-size: 11px;
     margin-bottom: 5px;
+}
+
+.creator-name {
+    margin: 0;
+}
+
+.creator-link {
+    color: #8b7355;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.creator-link:hover {
+    color: #6d5a43;
+}
+
+.creator-link i {
+    font-size: 14px;
 }
 
 /* Responsive design */
@@ -946,6 +1038,21 @@ body {
     .contact-content {
         grid-template-columns: 1fr;
         gap: 20px;
+    }
+    
+    /* Footer responsive */
+    .footer {
+        padding: 30px 15px 15px;
+    }
+    
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 25px;
+        text-align: center;
+    }
+    
+    .social-links {
+        justify-content: center;
     }
 }
 
