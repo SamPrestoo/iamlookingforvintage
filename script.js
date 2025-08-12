@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function initializeFilters() {
         const filterButtons = document.querySelectorAll('.filter-btn');
-        const sortButtons = document.querySelectorAll('.sort-btn');
+        const sortSelect = document.getElementById('sortSelect');
         
         // Category filter buttons
         if (filterButtons.length > 0) {
@@ -41,19 +41,13 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        // Sort buttons
-        if (sortButtons.length > 0) {
-            sortButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    currentSort = this.getAttribute('data-sort');
-                    
-                    // Update active button
-                    sortButtons.forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Apply filters and sorting
-                    applyFiltersAndSort();
-                });
+        // Sort dropdown
+        if (sortSelect) {
+            sortSelect.addEventListener('change', function() {
+                currentSort = this.value;
+                
+                // Apply filters and sorting
+                applyFiltersAndSort();
             });
         }
     }

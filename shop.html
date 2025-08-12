@@ -9,6 +9,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Workbench&display=swap" rel="stylesheet">
+    
+    <!-- Coming Soon Check Script -->
+    <script src="coming-soon-check.js"></script>
 </head>
 <body>
     <div class="container">
@@ -49,10 +52,12 @@
                     </div>
                     <div class="filter-section">
                         <label class="filter-label">Sort by Price:</label>
-                        <div class="sort-buttons">
-                            <button class="sort-btn active" data-sort="default">Default</button>
-                            <button class="sort-btn" data-sort="price-low">Low to High</button>
-                            <button class="sort-btn" data-sort="price-high">High to Low</button>
+                        <div class="sort-dropdown">
+                            <select class="sort-select" id="sortSelect">
+                                <option value="default">Default</option>
+                                <option value="price-low">Low to High</option>
+                                <option value="price-high">High to Low</option>
+                            </select>
                         </div>
                     </div>
                 </div>

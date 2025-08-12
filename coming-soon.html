@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coming Soon - iamlookingforvintage</title>
+    
+    <!-- Google Fonts - Mozilla Headline and Workbench -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mozilla+Headline:wght@200..700&family=Workbench&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            font-family: "Workbench", sans-serif;
+        }
+
+        .matrix-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: #1a1a1a;
+            overflow: hidden;
+        }
+
+        .text-column {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: verticalMove 8s linear infinite;
+            z-index: 10;
+        }
+
+        .background-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: "Mozilla Headline", sans-serif;
+            font-size: clamp(32px, 8vw, 80px);
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.05);
+            z-index: 1;
+            pointer-events: none;
+            white-space: nowrap;
+            user-select: none;
+            letter-spacing: 2px;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.03);
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .background-text:hover {
+            color: rgba(255, 255, 255, 0.1);
+            pointer-events: auto;
+        }
+
+        .admin-link {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: "Mozilla Headline", sans-serif;
+            font-size: clamp(32px, 8vw, 80px);
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.05);
+            z-index: 2;
+            white-space: nowrap;
+            user-select: none;
+            letter-spacing: 2px;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.03);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .admin-link:hover {
+            color: rgba(139, 115, 85, 0.3);
+            text-shadow: 0 0 10px rgba(139, 115, 85, 0.2);
+            transform: translate(-50%, -50%) scale(1.02);
+        }
+
+        .text-character {
+            color: #ffffff;
+            font-size: clamp(16px, 4vw, 28px);
+            font-weight: 400;
+            margin: 2px 0;
+        }
+
+        .word-space {
+            height: 20px;
+        }
+
+        @keyframes verticalMove {
+            0% {
+                transform: translateY(-100vh);
+            }
+            100% {
+                transform: translateY(100vh);
+            }
+        }
+
+        @keyframes verticalMoveReverse {
+            0% {
+                transform: translateY(100vh);
+            }
+            100% {
+                transform: translateY(-100vh);
+            }
+        }
+
+        @keyframes brightness1 {
+            0% {
+                opacity: 0.4;
+            }
+            25% {
+                opacity: 0.7;
+            }
+            50% {
+                opacity: 0.9;
+            }
+            75% {
+                opacity: 0.6;
+            }
+            100% {
+                opacity: 0.4;
+            }
+        }
+
+        @keyframes brightness2 {
+            0% {
+                opacity: 0.6;
+            }
+            30% {
+                opacity: 0.3;
+            }
+            60% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.5;
+            }
+            100% {
+                opacity: 0.6;
+            }
+        }
+
+        @keyframes brightness3 {
+            0% {
+                opacity: 0.8;
+            }
+            20% {
+                opacity: 0.5;
+            }
+            40% {
+                opacity: 0.2;
+            }
+            70% {
+                opacity: 0.9;
+            }
+            100% {
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes brightness4 {
+            0% {
+                opacity: 0.3;
+            }
+            35% {
+                opacity: 0.8;
+            }
+            65% {
+                opacity: 0.4;
+            }
+            85% {
+                opacity: 0.7;
+            }
+            100% {
+                opacity: 0.3;
+            }
+        }
+
+        @keyframes brightness5 {
+            0% {
+                opacity: 0.7;
+            }
+            15% {
+                opacity: 0.9;
+            }
+            45% {
+                opacity: 0.3;
+            }
+            80% {
+                opacity: 0.6;
+            }
+            100% {
+                opacity: 0.7;
+            }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .text-character {
+                font-size: clamp(14px, 4vw, 24px);
+                margin: 2px 0;
+            }
+            
+            .word-space {
+                height: 12px;
+            }
+            
+            .admin-link {
+                font-size: clamp(24px, 12vw, 60px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .text-character {
+                font-size: clamp(12px, 5vw, 20px);
+                margin: 1px 0;
+            }
+            
+            .word-space {
+                height: 10px;
+            }
+            
+            .admin-link {
+                font-size: clamp(18px, 15vw, 40px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="matrix-container" id="container">
+        <a href="admin-login.html" class="admin-link">Coming Soon</a>
+    </div>
+
+    <script>
+        const text = "I am looking for vintage";
+        const words = text.split(' ');
+        const container = document.getElementById('container');
+        
+        function createTextColumn(xPosition) {
+            const textColumn = document.createElement('div');
+            textColumn.className = 'text-column';
+            
+            // Set initial horizontal position
+            textColumn.style.position = 'absolute';
+            textColumn.style.left = xPosition + '%';
+            
+            // Simple vertical movement only
+            const goingUp = Math.random() > 0.5;
+            const moveSpeed = 6 + Math.random() * 20; // Wide range: 6-26 seconds
+            
+            // Random brightness pattern
+            const brightnessPatterns = ['brightness1', 'brightness2', 'brightness3', 'brightness4', 'brightness5'];
+            const randomBrightness = brightnessPatterns[Math.floor(Math.random() * brightnessPatterns.length)];
+            const brightnessSpeed = 4 + Math.random() * 16; // Wider range: 4-20 seconds
+            
+            // Apply vertical movement with brightness
+            if (goingUp) {
+                textColumn.style.animation = `verticalMoveReverse ${moveSpeed}s linear infinite, ${randomBrightness} ${brightnessSpeed}s ease-in-out infinite`;
+            } else {
+                textColumn.style.animation = `verticalMove ${moveSpeed}s linear infinite, ${randomBrightness} ${brightnessSpeed}s ease-in-out infinite`;
+            }
+            
+            // Much more varied random delays to break up synchronization
+            const moveDelay = Math.random() * -moveSpeed * 2; // Can be up to 2x the animation duration
+            const brightnessDelay = Math.random() * -brightnessSpeed * 1.5; // More varied brightness delays
+            textColumn.style.animationDelay = `${moveDelay}s, ${brightnessDelay}s`;
+            
+            // Create characters with word spacing
+            words.forEach((word, wordIndex) => {
+                // Add word spacing before each word (except first)
+                if (wordIndex > 0) {
+                    const wordSpace = document.createElement('div');
+                    wordSpace.className = 'word-space';
+                    textColumn.appendChild(wordSpace);
+                }
+                
+                // Add each character of the word
+                word.split('').forEach((char, charIndex) => {
+                    const characterSpan = document.createElement('span');
+                    characterSpan.className = 'text-character';
+                    characterSpan.textContent = char;
+                    textColumn.appendChild(characterSpan);
+                });
+            });
+            
+            return textColumn;
+        }
+        
+        // Create multiple text columns with completely random positioning - overlaps allowed
+        function initializeColumns() {
+            const isMobile = window.innerWidth <= 768;
+            
+            // Increased column count for better coverage
+            const numColumns = isMobile ? 20 + Math.floor(Math.random() * 15) : 18 + Math.floor(Math.random() * 12); // 20-35 on mobile, 18-30 on desktop
+            
+            // Create columns with true random distribution
+            const positions = [];
+            
+            // Generate truly random positions across the full width
+            for (let i = 0; i < numColumns; i++) {
+                // Use Math.random() multiple times for better distribution
+                let randomPosition;
+                
+                if (Math.random() > 0.3) {
+                    // 70% chance for completely random position across full width
+                    randomPosition = Math.random() * 98 + 1; // 1-99%
+                } else {
+                    // 30% chance for edge positions to fill corners
+                    randomPosition = Math.random() > 0.5 ? Math.random() * 15 + 1 : Math.random() * 15 + 84; // 1-16% or 84-99%
+                }
+                
+                positions.push(randomPosition);
+            }
+            
+            // Shuffle the positions array for even more randomness
+            for (let i = positions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [positions[i], positions[j]] = [positions[j], positions[i]];
+            }
+            
+            // Create columns at the randomized positions
+            positions.forEach(position => {
+                const column = createTextColumn(position);
+                container.appendChild(column);
+            });
+            
+            // Add some extra completely random columns for more density
+            const extraColumns = Math.floor(Math.random() * (isMobile ? 10 : 8)); // 0-10 on mobile, 0-8 on desktop
+            for (let i = 0; i < extraColumns; i++) {
+                const randomPosition = Math.random() * 98 + 1; // 1-99%
+                const column = createTextColumn(randomPosition);
+                container.appendChild(column);
+            }
+        }
+        
+        // Initialize on load
+        window.addEventListener('load', initializeColumns);
+        
+        // Reinitialize on resize for responsiveness
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                container.innerHTML = '<a href="admin-login.html" class="admin-link">Coming Soon</a>';
+                initializeColumns();
+            }, 250);
+        });
+    </script>
+</body>
+</html>

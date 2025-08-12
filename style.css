@@ -624,7 +624,12 @@ body {
     border-color: #8b7355;
 }
 
-.sort-btn {
+.sort-dropdown {
+    display: flex;
+    justify-content: center;
+}
+
+.sort-select {
     background-color: #ffffff;
     border: 1px solid #e0e0e0;
     color: #2c2c2c;
@@ -640,13 +645,21 @@ body {
     font-variation-settings:
       "BLED" 0,
       "SCAN" 0;
+    min-width: 140px;
+    outline: none;
 }
 
-.sort-btn:hover,
-.sort-btn.active {
+.sort-select:hover,
+.sort-select:focus {
     background-color: #8b7355;
     color: #ffffff;
     border-color: #8b7355;
+}
+
+.sort-select option {
+    background-color: #ffffff;
+    color: #2c2c2c;
+    font-family: 'Workbench', Arial, sans-serif;
 }
 
 /* About page styles */
@@ -869,15 +882,19 @@ body {
         gap: 20px;
     }
     
-    .filter-buttons,
-    .sort-buttons {
+    .filter-buttons {
         gap: 10px;
     }
     
-    .filter-btn,
-    .sort-btn {
+    .filter-btn {
         padding: 6px 12px;
         font-size: 11px;
+    }
+    
+    .sort-select {
+        padding: 8px 14px;
+        font-size: 11px;
+        min-width: 120px;
     }
     
     .about-section {

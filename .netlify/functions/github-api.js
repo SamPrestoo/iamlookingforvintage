@@ -106,6 +106,8 @@ exports.handler = async (event, context) => {
         return await updateProduct(data, { apiBase, headers: githubHeaders, owner, repo, branch, responseHeaders: headers });
       case 'delete_product':
         return await deleteProduct(data, { apiBase, headers: githubHeaders, owner, repo, branch, responseHeaders: headers });
+      case 'update_store_status':
+        return await updateStoreStatus(data, { apiBase, headers: githubHeaders, owner, repo, branch, responseHeaders: headers });
       case 'test_connection':
         console.log('🧪 Testing connection...');
         return {
@@ -166,6 +168,92 @@ exports.handler = async (event, context) => {
     };
   }
 };
+
+async function updateStoreStatus(statusData, config) {
+  try {
+    console.log('🏪 Server: Starting store status update');
+    console.log('🏪 Server: New status:', statusData);
+    
+    // Add delay for cold starts
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    // Create store-status.json content
+    const statusContent = {
+      isComingSoon: statusData.isComingSoon,
+      openDateTime: statusData.openDateTime,
+      lastUpdated: new Date().toISOString()
+    };
+    
+    const jsonContent = JSON.stringify(statusContent, null, 2);
+    
+    console.log('📊 Store status content:', statusContent);
+    
+    // Check if store-status.json exists
+    let currentSha = null;
+    try {
+      const fileResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/store-status.json`, {
+        headers: config.headers
+      });
+      
+      if (fileResponse.ok) {
+        const fileData = await fileResponse.json();
+        currentSha = fileData.sha;
+        console.log('📄 Found existing store-status.json, SHA:', currentSha);
+      }
+    } catch (error) {
+      console.log('📄 store-status.json does not exist, will create new file');
+    }
+    
+    // Commit the store status file
+    const commitPayload = {
+      message: `Update store status: ${statusData.isComingSoon ? 'Coming Soon' : 'Live'}${statusData.openDateTime ? ` (opens ${new Date(statusData.openDateTime).toLocaleDateString()})` : ''}`,
+      content: Buffer.from(jsonContent).toString('base64'),
+      branch: config.branch
+    };
+    
+    // Add SHA if file exists
+    if (currentSha) {
+      commitPayload.sha = currentSha;
+    }
+    
+    console.log('📤 StoreStatus: Committing with message:', commitPayload.message);
+    
+    const commitResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/store-status.json`, {
+      method: 'PUT',
+      headers: config.headers,
+      body: JSON.stringify(commitPayload)
+    });
+    
+    console.log('📤 StoreStatus: Commit response status:', commitResponse.status);
+    
+    if (!commitResponse.ok) {
+      console.error('❌ StoreStatus: Commit failed with status:', commitResponse.status);
+      const errorText = await commitResponse.text();
+      console.error('❌ StoreStatus: Error response:', errorText);
+      throw new Error(`Failed to update store status: ${commitResponse.statusText}`);
+    }
+    
+    console.log('✅ StoreStatus: Successfully committed to GitHub');
+    
+    return {
+      statusCode: 200,
+      headers: config.responseHeaders,
+      body: JSON.stringify({ 
+        success: true, 
+        message: `Store status updated: ${statusData.isComingSoon ? 'Coming Soon' : 'Live'}`,
+        status: statusContent
+      })
+    };
+    
+  } catch (error) {
+    console.error('❌ StoreStatus: Update failed:', error);
+    return {
+      statusCode: 500,
+      headers: config.responseHeaders,
+      body: JSON.stringify({ error: error.message })
+    };
+  }
+}
 
 async function addProduct(productData, config) {
   try {
