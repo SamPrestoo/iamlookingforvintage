@@ -3,11 +3,32 @@
  * Creates a Stripe checkout session for vintage items
  */
 
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-
 exports.handler = async (event, context) => {
   console.log('🛒 Stripe checkout function called');
   console.log('📍 HTTP Method:', event.httpMethod);
+  
+  // Debug environment variables
+  console.log('🔑 Environment check:');
+  console.log('- STRIPE_SECRET_KEY exists:', !!process.env.STRIPE_SECRET_KEY);
+  console.log('- STRIPE_SECRET_KEY length:', process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY.length : 0);
+  console.log('- STRIPE_SECRET_KEY starts with sk_:', process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY.startsWith('sk_') : false);
+  
+  if (!process.env.STRIPE_SECRET_KEY) {
+    console.error('❌ STRIPE_SECRET_KEY not found in environment variables');
+    return {
+      statusCode: 500,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ 
+        error: 'Stripe configuration missing',
+        message: 'STRIPE_SECRET_KEY environment variable not found'
+      })
+    };
+  }
+
+  const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
   
   // Add CORS headers
   const headers = {

@@ -1,18 +1,9 @@
-Checking auth...
-admin-dashboard.html:580 adminAuthenticated: true
-admin-dashboard.html:581 adminLoginTime: 1754961897361
-admin-dashboard.html:1080 🔄 Loading products...
-admin-dashboard.html:1088 📥 Fetching products.json?v=1754961897436
-admin-dashboard.html:1091 📥 Products fetch response: 200 
-admin-dashboard.html:1099 ✅ Loaded 6 products for admin display
-admin-dashboard.html:1080 🔄 Loading products...
-admin-dashboard.html:1088 📥 Fetching products.json?v=1754961900460
-admin-dashboard.html:1091 📥 Products fetch response: 200 
-admin-dashboard.html:1099 ✅ Loaded 6 products for admin display
-github-api.js:38 📋 Processing request queue, length: 1
-github-api.js:58 ✅ Request queue processing completed
-admin-dashboard.html:1170 ✅ Product status updated instantly in UI
-admin-dashboard.html:1080 🔄 Loading products...
-admin-dashboard.html:1088 📥 Fetching products.json?v=1754961912707
-admin-dashboard.html:1091 📥 Products fetch response: 200 
-admin-dashboard.html:1099 ✅ Loaded 6 products for admin display
+🕰️ iamlookingforvintage website loaded successfully!
+cart:311 📦 Loaded 6 products for cart image lookup
+cart:320 🛒 Cart item 0: Object
+cart:350 ✅ Retrieved image from products data for: Blue Tee
+cart:449 🛒 Starting checkout process...
+cart:489 💳 Creating Stripe checkout session...
+.netlify/functions/stripe-checkout:1  Failed to load resource: the server responded with a status of 500 ()Understand this error
+cart:515 ❌ Checkout error: Error: You did not provide an API key. You need to provide your API key in the Authorization header, using Bearer auth (e.g. 'Authorization: Bearer YOUR_SECRET_KEY'). See https://stripe.com/docs/api#authentication for details, or we can help at https://support.stripe.com/.
+    at proceedToCheckout (cart:511:27)
