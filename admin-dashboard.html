@@ -57,6 +57,12 @@
             font-family: inherit;
         }
         
+        /* Default dropdown styling - will be overridden by updateStoreStatusSelect() */
+        #storeStatusSelect {
+            background: #28a745;
+            color: white;
+        }
+        
         .admin-nav button:hover,
         .admin-nav select:hover {
             background: #6d5a43;
@@ -530,8 +536,7 @@
             </div>
             <div class="admin-nav">
                 <select id="storeStatusSelect" onchange="handleStoreStatusChange()">
-                    <option value="">Store: Loading...</option>
-                    <option value="open">Open Store</option>
+                    <option value="open" selected>Open Store</option>
                     <option value="closed">Coming Soon</option>
                     <option value="scheduled">Schedule Opening</option>
                 </select>
@@ -1563,16 +1568,20 @@
                     storeStatus = { isComingSoon: false, openDateTime: null };
                     console.log('📋 Using default store status');
                 }
-                updateComingSoonButton();
+                updateStoreStatusSelect();
             } catch (error) {
                 console.log('📋 Store status file not found, using defaults');
                 storeStatus = { isComingSoon: false, openDateTime: null };
-                updateComingSoonButton();
+                updateStoreStatusSelect();
             }
         }
         
         function updateStoreStatusSelect() {
             const select = document.getElementById('storeStatusSelect');
+            
+            // Reset any loading state
+            select.disabled = false;
+            
             if (storeStatus.isComingSoon) {
                 if (storeStatus.openDateTime) {
                     select.value = 'scheduled';
