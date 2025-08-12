@@ -167,7 +167,8 @@ body {
 
 .featured-image {
     width: 100%;
-    height: 400px;
+    max-width: 500px;
+    height: 300px;
     object-fit: cover;
     object-position: center;
     border-radius: 8px;
@@ -1023,7 +1024,8 @@ body {
     }
     
     .featured-image {
-        height: 300px;
+        max-width: 100%;
+        height: 250px;
     }
     
     .product-grid,
@@ -1154,6 +1156,11 @@ body {
     
     .main-content {
         padding: 15px;
+    }
+    
+    .featured-image {
+        max-width: 100%;
+        height: 200px;
     }
 }
 
