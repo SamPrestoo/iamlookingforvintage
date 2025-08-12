@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coming Soon - iamlookingforvintage</title>
+    
+    <!-- Google Fonts - Workbench and Mozilla Headline -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mozilla+Headline:wght@200..700&family=Workbench&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #1a1a1a;
+            overflow: hidden;
+        }
+
+        .logo-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            z-index: 10;
+        }
+        
+        .admin-link {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: "Mozilla Headline", sans-serif;
+            font-size: clamp(32px, 8vw, 80px);
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.05);
+            z-index: 1;
+            white-space: nowrap;
+            user-select: none;
+            letter-spacing: 2px;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.03);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .admin-link:hover {
+            color: rgba(139, 115, 85, 0.3);
+            text-shadow: 0 0 10px rgba(139, 115, 85, 0.2);
+            transform: translate(-50%, -50%) scale(1.02);
+        }
+
+        .text-character {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            font-family: "Workbench", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: normal;
+            font-variation-settings: "BLED" 0, "SCAN" 0;
+            color: #ffffff;
+            font-size: 30px;
+            transform-origin: center;
+            animation: moveAround 10s linear infinite;
+        }
+
+        @keyframes moveAround {
+            from {
+                transform: rotate(var(--start-angle)) translateY(-140px) rotate(calc(-1 * var(--start-angle)));
+            }
+            to {
+                transform: rotate(calc(360deg + var(--start-angle))) translateY(-140px) rotate(calc(-1 * (360deg + var(--start-angle))));
+            }
+        }
+
+        @keyframes opacityChange {
+            0%, 100% {
+                opacity: var(--min-opacity);
+            }
+            25% {
+                opacity: var(--max-opacity);
+            }
+            75% {
+                opacity: var(--min-opacity);
+            }
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .admin-link {
+                font-size: clamp(24px, 12vw, 60px);
+            }
+            
+            .logo-container {
+                width: 250px;
+                height: 250px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .admin-link {
+                font-size: clamp(18px, 15vw, 40px);
+            }
+            
+            .logo-container {
+                width: 200px;
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="admin-login.html" class="admin-link">Coming Soon</a>
+    <div class="logo-container">
+        <div id="textContainer"></div>
+    </div>
+
+    <script>
+        const text = "iamlookingforvintage";
+        const textContainer = document.getElementById('textContainer');
+        
+        text.split('').forEach((char, index) => {
+            const characterSpan = document.createElement('span');
+            characterSpan.className = 'text-character';
+            characterSpan.textContent = char;
+            
+            // Calculate the starting angle for each character
+            const startAngle = (index / text.length) * 360;
+            
+            // Set the custom property for the starting angle
+            characterSpan.style.setProperty('--start-angle', `${startAngle}deg`);
+            
+            // Set opacity animation
+            const animationDelay = (startAngle / 360) * -10; // Sync with rotation
+            characterSpan.style.setProperty('--min-opacity', '0.2');
+            characterSpan.style.setProperty('--max-opacity', '1');
+            characterSpan.style.animation = `
+                moveAround 10s linear infinite,
+                opacityChange 10s linear ${animationDelay}s infinite
+            `;
+            
+            textContainer.appendChild(characterSpan);
+        });
+        
+        // Check if store is actually open and redirect if needed
+        async function checkStoreStatus() {
+            try {
+                const response = await fetch('store-status.json?v=' + Date.now());
+                if (response.ok) {
+                    const storeStatus = await response.json();
+                    
+                    // If store is not in coming soon mode, redirect to home
+                    if (!storeStatus.isComingSoon) {
+                        console.log('🏪 Store is open, redirecting from Coming Soon page');
+                        window.location.replace('index.html');
+                        return;
+                    }
+                    
+                    // If store has scheduled opening time that has passed
+                    if (storeStatus.openDateTime) {
+                        const openDate = new Date(storeStatus.openDateTime);
+                        const now = new Date();
+                        
+                        if (now >= openDate) {
+                            console.log('🏪 Store scheduled opening time has passed, redirecting');
+                            window.location.replace('index.html');
+                            return;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('🏪 Error checking store status:', error);
+                // If error, allow staying on coming soon page
+            }
+        }
+        
+        // Check store status on load
+        window.addEventListener('load', checkStoreStatus);
+    </script>
+</body>
+</html>

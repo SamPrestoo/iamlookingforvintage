@@ -123,7 +123,7 @@
                 }
                 
                 console.log('🏪 Store is in Coming Soon mode - redirecting...');
-                window.location.replace('coming-soon.html');
+                window.location.replace('spinning-logo.html');
                 return;
             }
             

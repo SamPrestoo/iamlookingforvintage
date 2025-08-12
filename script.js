@@ -69,8 +69,19 @@ document.addEventListener('DOMContentLoaded', function() {
             item.style.opacity = '0';
         });
         
-        // Sort visible products if needed
-        if (currentSort !== 'default') {
+        // Sort visible products
+        if (currentSort === 'default') {
+            // Randomize products for default sort
+            visibleProducts.sort(() => Math.random() - 0.5);
+        } else if (currentSort === 'recently-added') {
+            // Sort by recently added (assuming higher index = more recent)
+            visibleProducts.sort((a, b) => {
+                const indexA = Array.from(productItems).indexOf(a);
+                const indexB = Array.from(productItems).indexOf(b);
+                return indexB - indexA; // Reverse order for newest first
+            });
+        } else if (currentSort === 'price-low' || currentSort === 'price-high') {
+            // Sort by price
             visibleProducts.sort((a, b) => {
                 const priceA = parseFloat(a.querySelector('.product-price').textContent.replace('$', ''));
                 const priceB = parseFloat(b.querySelector('.product-price').textContent.replace('$', ''));
@@ -82,13 +93,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 return 0;
             });
-            
-            // Reorder DOM elements
-            const container = document.getElementById('products-container');
-            visibleProducts.forEach(item => {
-                container.appendChild(item);
-            });
         }
+        
+        // Reorder DOM elements
+        const container = document.getElementById('products-container');
+        visibleProducts.forEach(item => {
+            container.appendChild(item);
+        });
         
         // Show filtered products with animation
         visibleProducts.forEach((item, index) => {
