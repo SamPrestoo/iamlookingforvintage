@@ -1171,6 +1171,10 @@
                     }
                     
                     alert('Item marked as sold! ✅\n\nYour website has been automatically updated.');
+                    
+                    // Refresh the product list like edit feature does
+                    await loadProducts();
+                    
                 } catch (error) {
                     console.error('Failed to mark product as sold:', error);
                     alert(`Failed to mark as sold: ${error.message}\n\nPlease try again.`);
