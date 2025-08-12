@@ -73,6 +73,19 @@ document.addEventListener('DOMContentLoaded', function() {
         if (currentSort === 'default') {
             // Randomize products for default sort
             visibleProducts.sort(() => Math.random() - 0.5);
+        } else if (currentSort === 'available') {
+            // Sort by availability - available products first, sold products last
+            visibleProducts.sort((a, b) => {
+                const isSoldA = a.classList.contains('sold-out');
+                const isSoldB = b.classList.contains('sold-out');
+                
+                // If one is sold and the other is not, prioritize the available one
+                if (isSoldA && !isSoldB) return 1;
+                if (!isSoldA && isSoldB) return -1;
+                
+                // If both have the same availability status, maintain current order
+                return 0;
+            });
         } else if (currentSort === 'recently-added') {
             // Sort by recently added (assuming higher index = more recent)
             visibleProducts.sort((a, b) => {
