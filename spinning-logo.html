@@ -33,9 +33,10 @@
         
         .admin-link {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             font-family: "Mozilla Headline", sans-serif;
             font-size: clamp(28px, 6vw, 64px);
             font-weight: 500;
@@ -43,17 +44,23 @@
             z-index: 100;
             white-space: nowrap;
             user-select: none;
-            letter-spacing: 2px;
+            letter-spacing: 0px;
             text-shadow: 0 0 8px rgba(255, 255, 255, 0.05);
             text-decoration: none;
             transition: all 0.3s ease;
             pointer-events: auto;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
         }
 
         .admin-link:hover {
             color: rgba(139, 115, 85, 0.4);
             text-shadow: 0 0 15px rgba(139, 115, 85, 0.3);
-            transform: translate(-50%, -50%) scale(1.03);
+            transform: scale(1.03);
         }
 
         .text-character {
