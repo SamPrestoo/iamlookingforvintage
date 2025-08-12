@@ -17,47 +17,95 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Product filter functionality for shop page
+    // Enhanced filter and sort functionality for shop page
+    let currentCategory = 'all';
+    let currentSort = 'default';
+    
     function initializeFilters() {
         const filterButtons = document.querySelectorAll('.filter-btn');
-        const productItems = document.querySelectorAll('.product-item');
+        const sortButtons = document.querySelectorAll('.sort-btn');
         
+        // Category filter buttons
         if (filterButtons.length > 0) {
             filterButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    const category = this.getAttribute('data-category');
+                    currentCategory = this.getAttribute('data-category');
                     
                     // Update active button
                     filterButtons.forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
                     
-                    // Filter products with animation
-                    productItems.forEach(item => {
-                        const itemCategory = item.getAttribute('data-category');
-                        
-                        if (category === 'all' || itemCategory === category) {
-                            item.style.display = 'block';
-                            item.style.opacity = '0';
-                            item.style.transform = 'scale(0.8)';
-                            
-                            setTimeout(() => {
-                                item.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-                                item.style.opacity = '1';
-                                item.style.transform = 'scale(1)';
-                            }, 50);
-                        } else {
-                            item.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-                            item.style.opacity = '0';
-                            item.style.transform = 'scale(0.8)';
-                            
-                            setTimeout(() => {
-                                item.style.display = 'none';
-                            }, 300);
-                        }
-                    });
+                    // Apply filters and sorting
+                    applyFiltersAndSort();
                 });
             });
         }
+        
+        // Sort buttons
+        if (sortButtons.length > 0) {
+            sortButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    currentSort = this.getAttribute('data-sort');
+                    
+                    // Update active button
+                    sortButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Apply filters and sorting
+                    applyFiltersAndSort();
+                });
+            });
+        }
+    }
+    
+    function applyFiltersAndSort() {
+        const productItems = document.querySelectorAll('.product-item');
+        
+        if (productItems.length === 0) return;
+        
+        // First, filter by category
+        let visibleProducts = Array.from(productItems).filter(item => {
+            const itemCategory = item.getAttribute('data-category');
+            return currentCategory === 'all' || itemCategory === currentCategory;
+        });
+        
+        // Hide all products first
+        productItems.forEach(item => {
+            item.style.display = 'none';
+            item.style.opacity = '0';
+        });
+        
+        // Sort visible products if needed
+        if (currentSort !== 'default') {
+            visibleProducts.sort((a, b) => {
+                const priceA = parseFloat(a.querySelector('.product-price').textContent.replace('$', ''));
+                const priceB = parseFloat(b.querySelector('.product-price').textContent.replace('$', ''));
+                
+                if (currentSort === 'price-low') {
+                    return priceA - priceB;
+                } else if (currentSort === 'price-high') {
+                    return priceB - priceA;
+                }
+                return 0;
+            });
+            
+            // Reorder DOM elements
+            const container = document.getElementById('products-container');
+            visibleProducts.forEach(item => {
+                container.appendChild(item);
+            });
+        }
+        
+        // Show filtered products with animation
+        visibleProducts.forEach((item, index) => {
+            item.style.display = 'block';
+            
+            setTimeout(() => {
+                item.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                item.style.opacity = '1';
+                item.style.transform = 'scale(1)';
+            }, index * 50);
+        });
     }
     
     // Add to cart animation
@@ -612,6 +660,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // Re-initialize interactive features for new products
         initializeCartButtons();
         initializeHoverEffects();
+        
+        // Initialize filters after products are loaded (only for shop page)
+        if (document.querySelector('.filter-btn')) {
+            initializeFilters();
+        }
     }
     
     // Navigate to product detail page
@@ -736,7 +789,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         updateCartCount(); // Update cart count on page load
-        initializeFilters();
         initializeCartButtons();
         initializeHoverEffects();
         initializeNavigation();

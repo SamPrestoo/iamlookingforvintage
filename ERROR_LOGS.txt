@@ -1,51 +1,18 @@
 Checking auth...
-admin-dashboard.html:401 adminAuthenticated: true
-admin-dashboard.html:402 adminLoginTime: 1754886887699
-admin-dashboard.html:826 🔄 Loading products...
-admin-dashboard.html:834 📥 Fetching products.json?v=1754891105977
-admin-dashboard.html:837 📥 Products fetch response: 200 
-admin-dashboard.html:845 ✅ Loaded 6 products for admin display
-admin-dashboard.html:826 🔄 Loading products...
-admin-dashboard.html:834 📥 Fetching products.json?v=1754891107507
-admin-dashboard.html:837 📥 Products fetch response: 200 
-admin-dashboard.html:845 ✅ Loaded 6 products for admin display
-admin-dashboard.html:933 🗑️ Starting product deletion: White Jacket
+admin-dashboard.html:580 adminAuthenticated: true
+admin-dashboard.html:581 adminLoginTime: 1754961897361
+admin-dashboard.html:1080 🔄 Loading products...
+admin-dashboard.html:1088 📥 Fetching products.json?v=1754961897436
+admin-dashboard.html:1091 📥 Products fetch response: 200 
+admin-dashboard.html:1099 ✅ Loaded 6 products for admin display
+admin-dashboard.html:1080 🔄 Loading products...
+admin-dashboard.html:1088 📥 Fetching products.json?v=1754961900460
+admin-dashboard.html:1091 📥 Products fetch response: 200 
+admin-dashboard.html:1099 ✅ Loaded 6 products for admin display
 github-api.js:38 📋 Processing request queue, length: 1
-github-api.js:183  POST https://splendid-madeleine-249932.netlify.app/.netlify/functions/github-api 500 (Internal Server Error)
-(anonymous) @ github-api.js:183
-processQueue @ github-api.js:44
-(anonymous) @ github-api.js:28
-queueRequest @ github-api.js:26
-deleteProduct @ github-api.js:181
-deleteProduct @ admin-dashboard.html:942
-onclick @ admin-dashboard.html:1Understand this error
-github-api.js:196 📥 Delete response text: {"error":"fetch failed"}
 github-api.js:58 ✅ Request queue processing completed
-admin-dashboard.html:966 ❌ Product deletion failed: Error: fetch failed
-    at github-api.js:211:27
-    at async GitHubUpdater.processQueue (github-api.js:44:32)
-deleteProduct @ admin-dashboard.html:966
-await in deleteProduct
-onclick @ admin-dashboard.html:1Understand this error
-admin-dashboard.html:967 ❌ Error details: {message: 'fetch failed', stack: 'Error: fetch failed\n    at https://splendid-madele…madeleine-249932.netlify.app/github-api.js:44:32)', productId: '1754890509195', productName: 'White Jacket', timestamp: '2025-08-11T05:45:11.796Z'}
-deleteProduct @ admin-dashboard.html:967
-await in deleteProduct
-onclick @ admin-dashboard.html:1Understand this error
-admin-dashboard.html:933 🗑️ Starting product deletion: KU Med Center Tee
-github-api.js:38 📋 Processing request queue, length: 1
-github-api.js:196 📥 Delete response text: {"success":true,"message":"Product \"KU Med Center Tee\" deleted from repository. Total products: 5"}
-github-api.js:58 ✅ Request queue processing completed
-admin-dashboard.html:943 ✅ Product deletion completed: {success: true, message: 'Product "KU Med Center Tee" deleted from repository. Total products: 5'}
-admin-dashboard.html:947 🎯 Removing product from DOM instantly
-admin-dashboard.html:964 ✅ Product deletion cycle completed with instant UI update
-admin-dashboard.html:954 ✅ Product element removed from DOM
-admin-dashboard.html:983 📊 Updated product count display: 5
-admin-dashboard.html:933 🗑️ Starting product deletion: White Jacket
-github-api.js:38 📋 Processing request queue, length: 1
-github-api.js:196 📥 Delete response text: {"success":true,"message":"Product \"White Jacket\" deleted from repository. Total products: 4"}
-github-api.js:58 ✅ Request queue processing completed
-admin-dashboard.html:943 ✅ Product deletion completed: {success: true, message: 'Product "White Jacket" deleted from repository. Total products: 4'}
-admin-dashboard.html:947 🎯 Removing product from DOM instantly
-admin-dashboard.html:964 ✅ Product deletion cycle completed with instant UI update
-admin-dashboard.html:954 ✅ Product element removed from DOM
-admin-dashboard.html:983 📊 Updated product count display: 4
+admin-dashboard.html:1170 ✅ Product status updated instantly in UI
+admin-dashboard.html:1080 🔄 Loading products...
+admin-dashboard.html:1088 📥 Fetching products.json?v=1754961912707
+admin-dashboard.html:1091 📥 Products fetch response: 200 
+admin-dashboard.html:1099 ✅ Loaded 6 products for admin display

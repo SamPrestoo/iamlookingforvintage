@@ -191,6 +191,41 @@
             margin-bottom: 30px;
         }
         
+        /* Sold out item styles */
+        .sold-out-item {
+            opacity: 0.7;
+            background-color: #f9f9f9;
+        }
+        
+        .sold-out-item .cart-item-image {
+            position: relative;
+        }
+        
+        .sold-out-item .sold-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .sold-out-price {
+            text-decoration: line-through;
+            color: #999 !important;
+        }
+        
+        .sold-notice {
+            color: #dc3545;
+            font-weight: 600;
+            font-style: italic;
+        }
+        
         @media (max-width: 768px) {
             .cart-item {
                 flex-direction: column;
@@ -282,20 +317,20 @@
             let itemsHtml = '<div class="cart-items">';
             
             cart.forEach((item, index) => {
-                total += item.price;
                 console.log(`🛒 Cart item ${index}:`, {
                     name: item.name,
                     hasImage: !!item.image,
                     imageStart: item.image ? item.image.substring(0, 50) + '...' : 'none'
                 });
                 
-                // Enhanced image retrieval - if item.image is missing, try to get it from products
+                // Enhanced image retrieval and sold status check
                 let imageUrl = item.image;
-                if (!imageUrl && item.id) {
-                    console.log(`🔍 No image in cart item, attempting to retrieve for product: ${item.name}`);
-                    
+                let isItemSold = false;
+                let fullProduct = null;
+                
+                if (item.id) {
                     // Try fetched products first
-                    let fullProduct = allProducts.find(p => p.id === item.id);
+                    fullProduct = allProducts.find(p => p.id === item.id);
                     
                     // Fallback to localStorage admin products
                     if (!fullProduct) {
@@ -303,27 +338,42 @@
                         fullProduct = adminProducts.find(p => p.id === item.id);
                     }
                     
-                    if (fullProduct && fullProduct.images && fullProduct.images.length > 0) {
-                        const thumbIndex = fullProduct.thumbnailIndex || 0;
-                        const imageData = fullProduct.images[thumbIndex];
-                        imageUrl = typeof imageData === 'string' ? imageData : imageData.data;
-                        console.log(`✅ Retrieved image from products data for: ${item.name}`);
+                    if (fullProduct) {
+                        // Check if item is now sold
+                        isItemSold = fullProduct.sold === true;
+                        
+                        // Get image if not already available
+                        if (!imageUrl && fullProduct.images && fullProduct.images.length > 0) {
+                            const thumbIndex = fullProduct.thumbnailIndex || 0;
+                            const imageData = fullProduct.images[thumbIndex];
+                            imageUrl = typeof imageData === 'string' ? imageData : imageData.data;
+                            console.log(`✅ Retrieved image from products data for: ${item.name}`);
+                        }
                     } else {
-                        console.warn(`⚠️ Could not find product or images for: ${item.name} (ID: ${item.id})`);
+                        console.warn(`⚠️ Could not find product data for: ${item.name} (ID: ${item.id})`);
                     }
                 }
                 
                 // Fallback to default SVG if still no image
                 imageUrl = imageUrl || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRjVGNUY1Ci8+CjxwYXRoIGQ9Ik00My41IDM3SDMyQzMwLjMgMzcgMjkgMzguMyAyOSA0MFY2OEMyOSA2OS43IDMwLjMgNzEgMzIgNzFINDMuNUM0NS4yIDcxIDQ2LjUgNjkuNyA4Ni41IDY4VjQwQzQ2LjUgMzguMyA0NS4yIDM3IDQzLjUgMzdaIiBmaWxsPSIjOUNBM0FGIi8+Cjwvc3ZnPgo=';
                 
+                // Only add to total if item is not sold
+                if (!isItemSold) {
+                    total += item.price;
+                }
+                
                 itemsHtml += `
-                    <div class="cart-item">
+                    <div class="cart-item ${isItemSold ? 'sold-out-item' : ''}">
                         <div class="cart-item-image">
                             <img src="${imageUrl}" alt="${item.name}">
+                            ${isItemSold ? '<div class="sold-badge">SOLD OUT</div>' : ''}
                         </div>
                         <div class="cart-item-details">
                             <h3>${item.name}</h3>
-                            <div class="cart-item-price">$${item.price.toFixed(2)}</div>
+                            <div class="cart-item-price ${isItemSold ? 'sold-out-price' : ''}">
+                                $${item.price.toFixed(2)}
+                                ${isItemSold ? '<span class="sold-notice"> - No longer available</span>' : ''}
+                            </div>
                             <div class="cart-item-actions">
                                 <button class="remove-btn" onclick="removeFromCart(${index})">Remove</button>
                                 <button class="view-btn" onclick="viewProduct('${item.id}')">View Details</button>
