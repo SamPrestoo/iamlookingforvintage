@@ -632,21 +632,21 @@ body {
 
 .sort-select {
     background-color: #ffffff;
-    border: 2px solid #e0e0e0;
+    border: 1px solid #e0e0e0;
     color: #2c2c2c;
-    padding: 12px 40px 12px 16px;
+    padding: 10px 36px 10px 16px;
     cursor: pointer;
-    border-radius: 8px;
-    font-size: 13px;
+    border-radius: 4px;
+    font-size: 12px;
     font-weight: 500;
-    text-transform: uppercase;
+    text-transform: lowercase;
     letter-spacing: 0.5px;
     transition: all 0.3s ease;
     font-family: 'Workbench', Arial, sans-serif;
     font-variation-settings:
       "BLED" 0,
       "SCAN" 0;
-    min-width: 160px;
+    min-width: 140px;
     outline: none;
     appearance: none;
     -webkit-appearance: none;
@@ -655,8 +655,8 @@ body {
         linear-gradient(45deg, transparent 50%, #2c2c2c 50%),
         linear-gradient(135deg, #2c2c2c 50%, transparent 50%);
     background-position: 
-        calc(100% - 16px) calc(1em + 2px),
-        calc(100% - 12px) calc(1em + 2px);
+        calc(100% - 14px) calc(1em + 2px),
+        calc(100% - 10px) calc(1em + 2px);
     background-size: 
         4px 4px,
         4px 4px;
@@ -672,8 +672,8 @@ body {
         linear-gradient(45deg, transparent 50%, #ffffff 50%),
         linear-gradient(135deg, #ffffff 50%, transparent 50%);
     background-position: 
-        calc(100% - 16px) calc(1em + 2px),
-        calc(100% - 12px) calc(1em + 2px);
+        calc(100% - 14px) calc(1em + 2px),
+        calc(100% - 10px) calc(1em + 2px);
     background-size: 
         4px 4px,
         4px 4px;

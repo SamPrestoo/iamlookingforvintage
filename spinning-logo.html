@@ -26,31 +26,32 @@
             position: relative;
             width: 300px;
             height: 300px;
-            z-index: 10;
+            z-index: 1;
         }
         
         .admin-link {
-            position: absolute;
+            position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             font-family: "Mozilla Headline", sans-serif;
-            font-size: clamp(32px, 8vw, 80px);
+            font-size: clamp(28px, 6vw, 64px);
             font-weight: 500;
-            color: rgba(255, 255, 255, 0.05);
-            z-index: 1;
+            color: rgba(255, 255, 255, 0.08);
+            z-index: 100;
             white-space: nowrap;
             user-select: none;
             letter-spacing: 2px;
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.03);
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.05);
             text-decoration: none;
             transition: all 0.3s ease;
+            pointer-events: auto;
         }
 
         .admin-link:hover {
-            color: rgba(139, 115, 85, 0.3);
-            text-shadow: 0 0 10px rgba(139, 115, 85, 0.2);
-            transform: translate(-50%, -50%) scale(1.02);
+            color: rgba(139, 115, 85, 0.4);
+            text-shadow: 0 0 15px rgba(139, 115, 85, 0.3);
+            transform: translate(-50%, -50%) scale(1.03);
         }
 
         .text-character {
@@ -66,6 +67,8 @@
             font-size: 30px;
             transform-origin: center;
             animation: moveAround 10s linear infinite;
+            pointer-events: none;
+            z-index: 2;
         }
 
         @keyframes moveAround {
@@ -92,23 +95,31 @@
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .admin-link {
-                font-size: clamp(24px, 12vw, 60px);
+                font-size: clamp(20px, 8vw, 48px);
             }
             
             .logo-container {
                 width: 250px;
                 height: 250px;
             }
+            
+            .text-character {
+                font-size: 24px;
+            }
         }
 
         @media (max-width: 480px) {
             .admin-link {
-                font-size: clamp(18px, 15vw, 40px);
+                font-size: clamp(16px, 10vw, 36px);
             }
             
             .logo-container {
                 width: 200px;
                 height: 200px;
+            }
+            
+            .text-character {
+                font-size: 20px;
             }
         }
     </style>
