@@ -60,9 +60,21 @@ body {
 .navigation ul {
     list-style: none;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: center;
     gap: 30px;
     flex-wrap: wrap;
+    position: relative;
+}
+
+.navigation ul .nav-main-group {
+    display: flex;
+    gap: 30px;
+    margin: 0 auto;
+}
+
+.navigation ul .nav-cart-group {
+    margin-left: auto;
 }
 
 .nav-link {
@@ -945,7 +957,19 @@ body {
     }
     
     .navigation ul {
+        flex-direction: column;
         gap: 15px;
+        justify-content: center;
+    }
+    
+    .navigation ul .nav-main-group {
+        gap: 15px;
+        margin: 0;
+    }
+    
+    .navigation ul .nav-cart-group {
+        margin-left: 0;
+        margin-top: 10px;
     }
     
     .nav-link {
