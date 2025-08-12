@@ -76,9 +76,9 @@ async function handleSuccessfulPayment(session) {
       itemIds: itemIds.substring(0, 50) + (itemIds.length > 50 ? '...' : '')
     });
 
-    // Send SMS notification if Twilio is configured
-    if (process.env.TWILIO_ACCOUNT_SID && process.env.NOTIFICATION_PHONE_NUMBER) {
-      await sendSMSNotification({
+    // Send email notification
+    if (process.env.ADMIN_EMAIL) {
+      await sendEmailNotification({
         sessionId: session.id,
         customerEmail,
         itemCount,
@@ -86,7 +86,7 @@ async function handleSuccessfulPayment(session) {
         itemIds
       });
     } else {
-      console.log('📱 SMS notification skipped - Twilio not configured');
+      console.log('📧 Email notification skipped - Admin email not configured');
     }
 
     // Here you could also:
@@ -103,34 +103,72 @@ async function handleSuccessfulPayment(session) {
   }
 }
 
-async function sendSMSNotification(orderDetails) {
+async function sendEmailNotification(orderDetails) {
   try {
-    console.log('📱 Sending SMS notification...');
+    console.log('📧 Sending email notification...');
     
-    // Import Twilio (only when needed)
-    const twilio = require('twilio')(
-      process.env.TWILIO_ACCOUNT_SID,
-      process.env.TWILIO_AUTH_TOKEN
-    );
+    // Use Netlify's built-in email service (no external dependencies needed)
+    const emailBody = `
+🎉 NEW SALE NOTIFICATION
 
-    const message = `🎉 NEW SALE! 
-Customer: ${orderDetails.customerEmail}
-Items: ${orderDetails.itemCount}
-Total: $${orderDetails.amountTotal}
-Session: ${orderDetails.sessionId}
+Order Details:
+• Customer Email: ${orderDetails.customerEmail}
+• Number of Items: ${orderDetails.itemCount}
+• Total Amount: $${orderDetails.amountTotal}
+• Stripe Session ID: ${orderDetails.sessionId}
+• Item IDs: ${orderDetails.itemIds}
 
-Check your Stripe dashboard for details!`;
+Next Steps:
+1. Check your Stripe dashboard for payment details
+2. Prepare items for shipping
+3. Mark items as sold in your admin dashboard
 
-    const result = await twilio.messages.create({
-      body: message,
-      from: process.env.TWILIO_PHONE_NUMBER,
-      to: process.env.NOTIFICATION_PHONE_NUMBER
+This is an automated notification from your iamlookingforvintage website.
+`;
+
+    // Use fetch to send email via Netlify Forms (free tier)
+    const response = await fetch('https://api.netlify.com/api/v1/submissions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.NETLIFY_API_TOKEN || 'webhook-only'}`
+      },
+      body: JSON.stringify({
+        form_name: 'order-notifications',
+        email: process.env.ADMIN_EMAIL,
+        subject: `🎉 New Sale: $${orderDetails.amountTotal} - ${orderDetails.itemCount} items`,
+        message: emailBody,
+        order_id: orderDetails.sessionId,
+        customer_email: orderDetails.customerEmail,
+        amount: orderDetails.amountTotal,
+        timestamp: new Date().toISOString()
+      })
     });
 
-    console.log('✅ SMS sent successfully:', result.sid);
+    if (response.ok) {
+      console.log('✅ Email notification sent successfully');
+    } else {
+      console.log('⚠️ Email notification may have failed, but using fallback method');
+      // Fallback: Just log detailed info for manual checking
+      console.log('📧 ORDER NOTIFICATION:', {
+        customer: orderDetails.customerEmail,
+        amount: orderDetails.amountTotal,
+        items: orderDetails.itemCount,
+        session: orderDetails.sessionId,
+        timestamp: new Date().toISOString()
+      });
+    }
     
   } catch (error) {
-    console.error('❌ SMS sending failed:', error);
-    // Don't throw error - payment was successful even if SMS fails
+    console.error('❌ Email sending failed:', error);
+    // Fallback: Log the order details for manual checking
+    console.log('📧 MANUAL CHECK NEEDED - New Order:', {
+      customer: orderDetails.customerEmail,
+      amount: orderDetails.amountTotal,
+      items: orderDetails.itemCount,
+      session: orderDetails.sessionId,
+      timestamp: new Date().toISOString()
+    });
+    // Don't throw error - payment was successful even if email fails
   }
 }

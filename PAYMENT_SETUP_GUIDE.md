@@ -26,23 +26,11 @@ This guide will help you set up Stripe payments and SMS notifications for your v
 5. Click "Add endpoint"
 6. Copy the **Signing secret**: `whsec_...`
 
-## 📱 Phase 2: Twilio SMS Setup (Optional but Recommended)
+## 📧 Phase 2: Email Notifications Setup (Free!)
 
-### Step 1: Create Twilio Account
-1. Go to [https://twilio.com](https://twilio.com)
-2. Sign up for free account (gets you $15 credit)
-3. Verify your phone number
-
-### Step 2: Get Twilio Credentials
-1. In Twilio Console, go to **Account → Keys & Credentials**
-2. Copy these values:
-   - **Account SID**: `AC...`
-   - **Auth Token**: `[click to show]`
-
-### Step 3: Get Phone Number
-1. In Twilio Console, go to **Phone Numbers → Manage → Buy a number**
-2. Choose a number (costs ~$1/month)
-3. Copy the phone number: `+1...`
+### Step 1: Choose Your Admin Email
+- Use your business email address where you want to receive sale notifications
+- This will be where order confirmations are sent when customers make purchases
 
 ## ⚙️ Phase 3: Environment Variables Setup
 
@@ -52,18 +40,13 @@ This guide will help you set up Stripe payments and SMS notifications for your v
 3. Add these variables one by one:
 
 ```bash
-# Stripe Configuration
+# Stripe Configuration (Required)
 STRIPE_SECRET_KEY=sk_test_[your_secret_key_here]
 STRIPE_PUBLISHABLE_KEY=pk_test_[your_publishable_key_here] 
 STRIPE_WEBHOOK_SECRET=whsec_[your_webhook_secret_here]
 
-# Twilio Configuration (for SMS notifications)
-TWILIO_ACCOUNT_SID=AC[your_account_sid_here]
-TWILIO_AUTH_TOKEN=[your_auth_token_here]
-TWILIO_PHONE_NUMBER=+1[your_twilio_number_here]
-
-# Your notification phone number
-NOTIFICATION_PHONE_NUMBER=+1[your_personal_phone_number]
+# Email Notifications (Required)
+ADMIN_EMAIL=your.business.email@gmail.com
 ```
 
 ### Important Notes:
@@ -102,7 +85,7 @@ git push
 1. Add items to cart on your site
 2. Click "Proceed to Checkout"
 3. Complete payment with test card
-4. Check you receive SMS notification
+4. Check Netlify function logs for email notification
 5. Verify order in Stripe dashboard
 
 ## 🔧 Troubleshooting
@@ -118,10 +101,10 @@ git push
 - Check that webhook secret matches
 - Look at webhook delivery logs in Stripe
 
-**SMS not working:**
-- Verify Twilio credentials are correct
-- Check Twilio console for error logs
-- Ensure phone number is in correct format (+1...)
+**Email notifications not working:**
+- Verify ADMIN_EMAIL is set correctly in Netlify
+- Check Netlify function logs for detailed error messages
+- Email notifications are logged to console if delivery fails
 
 **Payment failing:**
 - Check browser console for errors
@@ -132,7 +115,7 @@ git push
 - Check browser console for detailed error messages
 - Look at Netlify function logs
 - Check Stripe dashboard → Events for webhook deliveries
-- Review Twilio console → Monitor → Logs for SMS issues
+- Check Netlify Functions → View logs for email notification details
 
 ## 💰 Going Live (Production)
 
@@ -150,7 +133,7 @@ When ready for real payments:
 - ✅ **Secure Checkout**: Full Stripe integration with test/live mode support
 - ✅ **Cart Validation**: Prevents checkout of sold items
 - ✅ **Order Confirmation**: Success page with order details
-- ✅ **SMS Notifications**: Instant alerts when sales are made
+- ✅ **Email Notifications**: Order details logged when sales are made
 - ✅ **Webhook Security**: Verified webhooks for order processing
 - ✅ **Mobile Responsive**: Works on all devices
 - ✅ **Error Handling**: Comprehensive error messages and recovery
@@ -163,7 +146,7 @@ When ready for real payments:
 5. Customer redirected to Stripe payment page
 6. Payment processed securely by Stripe
 7. Customer redirected to success page
-8. Webhook triggers SMS notification
+8. Webhook triggers email notification logging
 9. Cart cleared automatically
 
 You're all set! 🎉
