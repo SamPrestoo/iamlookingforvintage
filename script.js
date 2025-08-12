@@ -370,7 +370,7 @@ document.addEventListener('DOMContentLoaded', function() {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: #28a745;
+            background: #8b7355;
             color: white;
             padding: 15px 20px;
             border-radius: 8px;
