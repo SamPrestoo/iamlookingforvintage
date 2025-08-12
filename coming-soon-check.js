@@ -20,25 +20,29 @@
     // Check if user is authenticated admin
     function isAdminAuthenticated() {
         try {
-            const adminAuth = localStorage.getItem('adminAuthenticated');
-            const loginTime = localStorage.getItem('adminLoginTime');
+            // Check sessionStorage (where admin login actually stores auth data)
+            const adminAuth = sessionStorage.getItem('adminAuthenticated');
+            const loginTime = sessionStorage.getItem('adminLoginTime');
             
             if (adminAuth !== 'true' || !loginTime) {
+                console.log('🏪 Admin not authenticated or missing login time');
                 return false;
             }
             
-            // Check if login is still valid (24 hours)
+            // Check if login is still valid (2 hours, matching admin-login session duration)
             const loginTimeMs = parseInt(loginTime);
             const currentTime = Date.now();
-            const twentyFourHours = 24 * 60 * 60 * 1000;
+            const sessionDuration = 2 * 60 * 60 * 1000; // 2 hours
             
-            if (currentTime - loginTimeMs > twentyFourHours) {
+            if (currentTime - loginTimeMs > sessionDuration) {
                 console.log('🏪 Admin session expired');
-                localStorage.removeItem('adminAuthenticated');
-                localStorage.removeItem('adminLoginTime');
+                sessionStorage.removeItem('adminAuthenticated');
+                sessionStorage.removeItem('adminLoginTime');
+                sessionStorage.removeItem('adminUser');
                 return false;
             }
             
+            console.log('🏪 Admin authenticated successfully');
             return true;
         } catch (error) {
             console.error('🏪 Error checking admin auth:', error);

@@ -1409,12 +1409,15 @@
         async function loadStoreStatus() {
             try {
                 console.log('📋 Loading store status...');
-                const response = await fetch('store-status.json');
+                // Use cache-busting to get fresh store status
+                const response = await fetch(`store-status.json?v=${Date.now()}`);
                 if (response.ok) {
                     storeStatus = await response.json();
+                    console.log('📋 Loaded store status:', storeStatus);
                 } else {
                     // File doesn't exist yet, create default
                     storeStatus = { isComingSoon: false, openDateTime: null };
+                    console.log('📋 Using default store status');
                 }
                 updateComingSoonButton();
             } catch (error) {
@@ -1494,11 +1497,11 @@
                 });
                 
                 if (response && response.ok) {
-                    storeStatus = newStatus;
-                    updateComingSoonButton();
+                    // Reload store status to reflect changes
+                    await loadStoreStatus();
                     
-                    const statusText = newStatus.isComingSoon ? 
-                        (newStatus.openDateTime ? `Coming Soon (opens ${new Date(newStatus.openDateTime).toLocaleString()})` : 'Coming Soon') :
+                    const statusText = storeStatus.isComingSoon ? 
+                        (storeStatus.openDateTime ? `Coming Soon (opens ${new Date(storeStatus.openDateTime).toLocaleString()})` : 'Coming Soon') :
                         'Live';
                     
                     alert(`Store status updated to: ${statusText} ✅`);
