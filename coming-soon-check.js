@@ -23,6 +23,9 @@
             // Check sessionStorage (where admin login actually stores auth data)
             const adminAuth = sessionStorage.getItem('adminAuthenticated');
             const loginTime = sessionStorage.getItem('adminLoginTime');
+            const adminUser = sessionStorage.getItem('adminUser');
+            
+            console.log('🏪 Auth check - adminAuth:', adminAuth, 'loginTime:', loginTime, 'user:', adminUser);
             
             if (adminAuth !== 'true' || !loginTime) {
                 console.log('🏪 Admin not authenticated or missing login time');
@@ -33,8 +36,11 @@
             const loginTimeMs = parseInt(loginTime);
             const currentTime = Date.now();
             const sessionDuration = 2 * 60 * 60 * 1000; // 2 hours
+            const timeDiff = currentTime - loginTimeMs;
             
-            if (currentTime - loginTimeMs > sessionDuration) {
+            console.log('🏪 Session age:', Math.floor(timeDiff / (1000 * 60)), 'minutes');
+            
+            if (timeDiff > sessionDuration) {
                 console.log('🏪 Admin session expired');
                 sessionStorage.removeItem('adminAuthenticated');
                 sessionStorage.removeItem('adminLoginTime');
@@ -55,8 +61,22 @@
         try {
             console.log('🏪 Checking store status...');
             
+            // First check admin authentication with retry logic
+            let isAdmin = false;
+            let retryCount = 0;
+            const maxRetries = 3;
+            
+            while (!isAdmin && retryCount < maxRetries) {
+                isAdmin = isAdminAuthenticated();
+                if (!isAdmin && retryCount < maxRetries - 1) {
+                    console.log(`🏪 Admin check attempt ${retryCount + 1} failed, retrying...`);
+                    await new Promise(resolve => setTimeout(resolve, 50));
+                }
+                retryCount++;
+            }
+            
             // If admin is authenticated, allow access but show indicator
-            if (isAdminAuthenticated()) {
+            if (isAdmin) {
                 console.log('🏪 Admin authenticated - allowing access');
                 showAdminIndicator();
                 return;
@@ -140,11 +160,16 @@
         }
     }
     
-    // Run the check when page loads
+    // Run the check when page loads with a small delay to ensure proper authentication
+    function runStoreCheck() {
+        // Small delay to ensure sessionStorage is fully accessible
+        setTimeout(checkStoreStatus, 100);
+    }
+    
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', checkStoreStatus);
+        document.addEventListener('DOMContentLoaded', runStoreCheck);
     } else {
-        checkStoreStatus();
+        runStoreCheck();
     }
     
 })();
