@@ -196,10 +196,22 @@
             // Simulate authentication delay
             setTimeout(() => {
                 if (validateCredentials(username, password)) {
-                    // Set secure session data
-                    sessionStorage.setItem('adminAuthenticated', 'true');
-                    sessionStorage.setItem('adminLoginTime', Date.now());
-                    sessionStorage.setItem('adminUser', username);
+                    // Set secure session data in both sessionStorage and localStorage
+                    // sessionStorage for current tab, localStorage for cross-tab access
+                    const authData = {
+                        authenticated: 'true',
+                        loginTime: Date.now(),
+                        user: username
+                    };
+                    
+                    sessionStorage.setItem('adminAuthenticated', authData.authenticated);
+                    sessionStorage.setItem('adminLoginTime', authData.loginTime);
+                    sessionStorage.setItem('adminUser', authData.user);
+                    
+                    // Also store in localStorage for cross-tab access (View Store functionality)
+                    localStorage.setItem('adminAuthenticated', authData.authenticated);
+                    localStorage.setItem('adminLoginTime', authData.loginTime);
+                    localStorage.setItem('adminUser', authData.user);
                     
                     // In production: create server-side session
                     // const response = await fetch('/admin/create-session', {

@@ -610,8 +610,13 @@
         }
         
         function logout() {
-            // Clear all session data
+            // Clear all session data from both storage types
             sessionStorage.clear();
+            
+            // Also clear localStorage admin data
+            localStorage.removeItem('adminAuthenticated');
+            localStorage.removeItem('adminLoginTime');
+            localStorage.removeItem('adminUser');
             
             // In production: invalidate session on server
             // fetch('/admin/logout', { method: 'POST' });
@@ -638,10 +643,22 @@
         }
         
         function quickLogin() {
-            // Quick login for testing - sets admin session
-            sessionStorage.setItem('adminAuthenticated', 'true');
-            sessionStorage.setItem('adminLoginTime', Date.now());
-            sessionStorage.setItem('adminUser', 'admin');
+            // Quick login for testing - sets admin session in both storage types
+            const authData = {
+                authenticated: 'true',
+                loginTime: Date.now(),
+                user: 'admin'
+            };
+            
+            sessionStorage.setItem('adminAuthenticated', authData.authenticated);
+            sessionStorage.setItem('adminLoginTime', authData.loginTime);
+            sessionStorage.setItem('adminUser', authData.user);
+            
+            // Also store in localStorage for cross-tab access
+            localStorage.setItem('adminAuthenticated', authData.authenticated);
+            localStorage.setItem('adminLoginTime', authData.loginTime);
+            localStorage.setItem('adminUser', authData.user);
+            
             alert('Quick login successful! You are now authenticated as admin.');
             location.reload();
         }

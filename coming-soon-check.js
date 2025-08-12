@@ -20,10 +20,18 @@
     // Check if user is authenticated admin
     function isAdminAuthenticated() {
         try {
-            // Check sessionStorage (where admin login actually stores auth data)
-            const adminAuth = sessionStorage.getItem('adminAuthenticated');
-            const loginTime = sessionStorage.getItem('adminLoginTime');
-            const adminUser = sessionStorage.getItem('adminUser');
+            // Check both sessionStorage and localStorage for admin auth
+            // sessionStorage for current tab, localStorage for cross-tab access
+            let adminAuth = sessionStorage.getItem('adminAuthenticated');
+            let loginTime = sessionStorage.getItem('adminLoginTime');
+            let adminUser = sessionStorage.getItem('adminUser');
+            
+            // If not found in sessionStorage, check localStorage (for cross-tab access)
+            if (adminAuth !== 'true' || !loginTime) {
+                adminAuth = localStorage.getItem('adminAuthenticated');
+                loginTime = localStorage.getItem('adminLoginTime');
+                adminUser = localStorage.getItem('adminUser');
+            }
             
             console.log('🏪 Auth check - adminAuth:', adminAuth, 'loginTime:', loginTime, 'user:', adminUser);
             
@@ -42,9 +50,13 @@
             
             if (timeDiff > sessionDuration) {
                 console.log('🏪 Admin session expired');
+                // Clear both session and localStorage
                 sessionStorage.removeItem('adminAuthenticated');
                 sessionStorage.removeItem('adminLoginTime');
                 sessionStorage.removeItem('adminUser');
+                localStorage.removeItem('adminAuthenticated');
+                localStorage.removeItem('adminLoginTime');
+                localStorage.removeItem('adminUser');
                 return false;
             }
             
