@@ -19,6 +19,8 @@
   "author": "iamlookingforvintage",
   "license": "MIT",
   "dependencies": {
-    "@shopify/storefront-api-client": "^1.0.9"
+    "@shopify/storefront-api-client": "^1.0.9",
+    "stripe": "^14.21.0",
+    "twilio": "^4.20.0"
   }
 }

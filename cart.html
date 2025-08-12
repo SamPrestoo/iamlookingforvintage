@@ -392,7 +392,9 @@
                     </div>
                     <div class="cart-actions">
                         <a href="shop.html" class="continue-shopping">Continue Shopping</a>
-                        <a href="checkout.html" class="checkout-btn">Proceed to Checkout</a>
+                        <button class="checkout-btn" onclick="proceedToCheckout()" id="checkoutBtn">
+                            Proceed to Checkout
+                        </button>
                     </div>
                 </div>
             `;
@@ -441,6 +443,82 @@
         function updateCartCount() {
             const totalItems = cart.length;
             document.getElementById('cartCount').textContent = totalItems;
+        }
+
+        async function proceedToCheckout() {
+            console.log('🛒 Starting checkout process...');
+            
+            if (cart.length === 0) {
+                alert('Your cart is empty! Add some items before checkout.');
+                return;
+            }
+            
+            // Filter out sold items from cart
+            const availableItems = cart.filter(item => {
+                // Check if item is sold by looking up current product data
+                // This ensures we don't checkout sold items
+                return !item.sold; // For now, assume cart items track sold status
+            });
+            
+            if (availableItems.length === 0) {
+                alert('All items in your cart are no longer available. Please refresh and try again.');
+                return;
+            }
+            
+            if (availableItems.length !== cart.length) {
+                const soldCount = cart.length - availableItems.length;
+                if (!confirm(`${soldCount} item(s) in your cart are no longer available and will be removed. Continue with ${availableItems.length} available item(s)?`)) {
+                    return;
+                }
+                // Update cart to remove sold items
+                cart = availableItems;
+                localStorage.setItem('vintageCart', JSON.stringify(cart));
+                loadCartItems(); // Refresh display
+            }
+            
+            // Get customer email (optional)
+            const customerEmail = prompt('Enter your email address (optional):');
+            
+            // Update button state
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            const originalText = checkoutBtn.textContent;
+            checkoutBtn.textContent = 'Creating checkout...';
+            checkoutBtn.disabled = true;
+            
+            try {
+                console.log('💳 Creating Stripe checkout session...');
+                
+                const response = await fetch('/.netlify/functions/stripe-checkout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        items: availableItems,
+                        customerEmail: customerEmail || undefined,
+                        successUrl: `${window.location.origin}/success.html?session_id={CHECKOUT_SESSION_ID}`,
+                        cancelUrl: `${window.location.origin}/cart.html`
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.url) {
+                    console.log('✅ Checkout session created, redirecting...');
+                    // Redirect to Stripe checkout
+                    window.location.href = data.url;
+                } else {
+                    throw new Error(data.message || 'Failed to create checkout session');
+                }
+                
+            } catch (error) {
+                console.error('❌ Checkout error:', error);
+                alert(`Checkout failed: ${error.message}\n\nPlease try again or contact support.`);
+                
+                // Reset button
+                checkoutBtn.textContent = originalText;
+                checkoutBtn.disabled = false;
+            }
         }
 
         // Initialize cart page
