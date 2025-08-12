@@ -854,6 +854,17 @@ body {
         font-size: 14px;
     }
     
+    .hero-content {
+        text-align: center;
+    }
+    
+    .cta-button {
+        display: block;
+        margin: 0 auto;
+        text-align: center;
+        width: fit-content;
+    }
+    
     .product-grid,
     .products-grid {
         grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));

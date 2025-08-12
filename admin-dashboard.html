@@ -1517,9 +1517,10 @@
                     // Reload store status to reflect changes
                     await loadStoreStatus();
                     
-                    const statusText = storeStatus.isComingSoon ? 
-                        (storeStatus.openDateTime ? `Coming Soon (opens ${new Date(storeStatus.openDateTime).toLocaleString()})` : 'Coming Soon') :
-                        'Live';
+                    // Use the new status for the alert message
+                    const statusText = newStatus.isComingSoon ? 
+                        (newStatus.openDateTime ? `Coming Soon (opens ${new Date(newStatus.openDateTime).toLocaleString()})` : 'Coming Soon') :
+                        'Live and Open';
                     
                     alert(`Store status updated to: ${statusText} ✅`);
                 } else {

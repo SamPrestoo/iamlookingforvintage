@@ -756,9 +756,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="product-info">
                         <h4>${product.name}</h4>
                         <p class="product-price">$${product.price.toFixed(2)}</p>
-                        <button class="add-to-cart" onclick="event.stopPropagation(); addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})">
-                            Add to Cart
-                        </button>
+                        <div class="product-buttons">
+                            ${product.sold ? 
+                                `<button class="sold-out-btn" disabled>
+                                    Sold Out
+                                </button>` :
+                                `<button class="add-to-cart" onclick="event.stopPropagation(); addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})">
+                                    Add to Cart
+                                </button>
+                                <button class="view-details" onclick="event.stopPropagation(); viewProduct('${product.id}')">
+                                    View Details
+                                </button>`
+                            }
+                        </div>
                     </div>
                 </div>
             `;

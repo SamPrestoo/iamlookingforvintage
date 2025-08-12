@@ -348,8 +348,43 @@
             }
         }
         
+        // Check if store is actually open and redirect if needed
+        async function checkStoreStatus() {
+            try {
+                const response = await fetch('store-status.json?v=' + Date.now());
+                if (response.ok) {
+                    const storeStatus = await response.json();
+                    
+                    // If store is not in coming soon mode, redirect to home
+                    if (!storeStatus.isComingSoon) {
+                        console.log('🏪 Store is open, redirecting from Coming Soon page');
+                        window.location.replace('index.html');
+                        return;
+                    }
+                    
+                    // If store has scheduled opening time that has passed
+                    if (storeStatus.openDateTime) {
+                        const openDate = new Date(storeStatus.openDateTime);
+                        const now = new Date();
+                        
+                        if (now >= openDate) {
+                            console.log('🏪 Store scheduled opening time has passed, redirecting');
+                            window.location.replace('index.html');
+                            return;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('🏪 Error checking store status:', error);
+                // If error, allow staying on coming soon page
+            }
+        }
+        
         // Initialize on load
-        window.addEventListener('load', initializeColumns);
+        window.addEventListener('load', () => {
+            checkStoreStatus();
+            initializeColumns();
+        });
         
         // Reinitialize on resize for responsiveness
         let resizeTimeout;
