@@ -1,259 +1,161 @@
-
-﻿
-admin/:195 🔐 Attempting authentication for: admin
-.netlify/functions/admin-auth:1 
- Failed to load resource: the server responded with a status of 404 ()
-admin/:208 📡 Response status: 404
-admin/:209 📡 Response headers: 
-Headers
-admin/:213 ❌ Response not OK: 404 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Page not found</title>
-    <style>
-      :root {
-        --colorRgbFacetsTeal600: 2 128 125;
-        --colorTealAction: var(--colorRgbFacetsTeal600);
-        --colorRgbFacetsNeutralLight200: 233 235 237;
-        --colorHr: var(--colorRgbFacetsNeutralLight200);
-        --colorRgbFacetsNeutralLight700: 53 58 62;
-        --colorGrayDarkest: var(--colorRgbFacetsNeutralLight700);
-        --colorGrayLighter: var(--colorRgbFacetsNeutralLight200);
-        --colorText: var(--colorGrayDarkest);
-        --effectShadowLightShallow: 0 1px 10px 0 rgb(53 58 62 / 6%),
-          0 2px 4px 0 rgb(53 58 62 / 8%);
-        --colorRgbFacetsNeutralDark900: 6 11 16;
-      }
-      body {
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-          Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji",
-          "Segoe UI Emoji", "Segoe UI Symbol";
-        background: white;
-        overflow: hidden;
-        margin: 0;
-        padding: 0;
-        line-height: 1.5;
-        color: rgb(var(--colorText));
-      }
-
-      @media (prefers-color-scheme: dark) {
-        body {
-          background: rgb(var(--colorRgbFacetsNeutralDark900));
-        }
-      }
-
-      h1 {
-        margin: 0;
-        font-size: 1.375rem;
-        line-height: 1;
-      }
-
-      h1 + p {
-        margin-top: 8px;
-      }
-
-      .main {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-        width: 100vw;
-      }
-
-      .card {
-        position: relative;
-        width: 75%;
-        max-width: 364px;
-        padding: 24px;
-        background: white;
-        border-radius: 8px;
-        box-shadow: var(--effectShadowLightShallow);
-        border: 1px solid rgb(var(--colorGrayLighter));
-      }
-
-      a {
-        margin: 0;
-        font-weight: 600;
-        color: rgb(var(--colorTealAction));
-        text-decoration-skip-ink: all;
-        text-decoration-thickness: 1px;
-        text-underline-offset: 2px;
-        text-decoration-color: rgb(var(--colorTealAction) / 0.5);
-        transition: text-decoration-color 0.15s ease-in-out;
-      }
-
-      a:hover,
-      a:focus-visible {
-        text-decoration-color: rgb(var(--colorTealAction));
-      }
-
-      p:last-of-type {
-        margin-bottom: 0;
-      }
-
-      hr {
-        border: 0;
-        height: 1px;
-        background: rgb(var(--colorHr));
-        margin-top: 16px;
-        margin-bottom: 16px;
-      }
-
-      .your-site {
-        font-size: 0.875rem;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="main">
-      <div class="card">
-        <h1>Page not found</h1>
-        <p>
-          Looks like you’ve followed a broken link or entered a URL that doesn’t
-          exist on this site.
-        </p>
-        <hr />
-        <p class="your-site">
-          If this is your site, and you weren’t expecting a 404 for this path,
-          please visit Netlify’s
-          <a
-            href="https://answers.netlify.com/t/support-guide-i-ve-deployed-my-site-but-i-sti…-see-page-not-found/125?utm_source=404page&utm_campaign=community_tracking"
-            >“page not found” support guide</a
-          >
-          for troubleshooting tips.
-        </p>
-      </div>
-    </div>
-  </body>
-</html>
-admin/:221 ❌ Authentication error: Error: HTTP 404: <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Page not found</title>
-    <style>
-      :root {
-        --colorRgbFacetsTeal600: 2 128 125;
-        --colorTealAction: var(--colorRgbFacetsTeal600);
-        --colorRgbFacetsNeutralLight200: 233 235 237;
-        --colorHr: var(--colorRgbFacetsNeutralLight200);
-        --colorRgbFacetsNeutralLight700: 53 58 62;
-        --colorGrayDarkest: var(--colorRgbFacetsNeutralLight700);
-        --colorGrayLighter: var(--colorRgbFacetsNeutralLight200);
-        --colorText: var(--colorGrayDarkest);
-        --effectShadowLightShallow: 0 1px 10px 0 rgb(53 58 62 / 6%),
-          0 2px 4px 0 rgb(53 58 62 / 8%);
-        --colorRgbFacetsNeutralDark900: 6 11 16;
-      }
-      body {
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-          Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji",
-          "Segoe UI Emoji", "Segoe UI Symbol";
-        background: white;
-        overflow: hidden;
-        margin: 0;
-        padding: 0;
-        line-height: 1.5;
-        color: rgb(var(--colorText));
-      }
-
-      @media (prefers-color-scheme: dark) {
-        body {
-          background: rgb(var(--colorRgbFacetsNeutralDark900));
-        }
-      }
-
-      h1 {
-        margin: 0;
-        font-size: 1.375rem;
-        line-height: 1;
-      }
-
-      h1 + p {
-        margin-top: 8px;
-      }
-
-      .main {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-        width: 100vw;
-      }
-
-      .card {
-        position: relative;
-        width: 75%;
-        max-width: 364px;
-        padding: 24px;
-        background: white;
-        border-radius: 8px;
-        box-shadow: var(--effectShadowLightShallow);
-        border: 1px solid rgb(var(--colorGrayLighter));
-      }
-
-      a {
-        margin: 0;
-        font-weight: 600;
-        color: rgb(var(--colorTealAction));
-        text-decoration-skip-ink: all;
-        text-decoration-thickness: 1px;
-        text-underline-offset: 2px;
-        text-decoration-color: rgb(var(--colorTealAction) / 0.5);
-        transition: text-decoration-color 0.15s ease-in-out;
-      }
-
-      a:hover,
-      a:focus-visible {
-        text-decoration-color: rgb(var(--colorTealAction));
-      }
-
-      p:last-of-type {
-        margin-bottom: 0;
-      }
-
-      hr {
-        border: 0;
-        height: 1px;
-        background: rgb(var(--colorHr));
-        margin-top: 16px;
-        margin-bottom: 16px;
-      }
-
-      .your-site {
-        font-size: 0.875rem;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="main">
-      <div class="card">
-        <h1>Page not found</h1>
-        <p>
-          Looks like you’ve followed a broken link or entered a URL that doesn’t
-          exist on this site.
-        </p>
-        <hr />
-        <p class="your-site">
-          If this is your site, and you weren’t expecting a 404 for this path,
-          please visit Netlify’s
-          <a
-            href="https://answers.netlify.com/t/support-guide-i-ve-deployed-my-site-but-i-sti…-see-page-not-found/125?utm_source=404page&utm_campaign=community_tracking"
-            >“page not found” support guide</a
-          >
-          for troubleshooting tips.
-        </p>
-      </div>
-    </div>
-  </body>
-</html>
-
-    at validateCredentials (admin/:214:27)
-    at async HTMLFormElement.<anonymous> (admin/:240:36)
+6:40:44 PM: Netlify Build                                                 
+6:40:44 PM: ────────────────────────────────────────────────────────────────
+6:40:44 PM: ​
+6:40:44 PM: ❯ Version
+6:40:44 PM:   @netlify/build 35.0.5
+6:40:44 PM: ​
+6:40:44 PM: ❯ Flags
+6:40:44 PM:   accountId: 6879a2cb1d0dd46006f4f05a
+6:40:44 PM:   baseRelDir: true
+6:40:44 PM:   buildId: 689d226bdebb08d41369defc
+6:40:44 PM:   deployId: 689d226bdebb08d41369defe
+6:40:44 PM: ​
+6:40:44 PM: ❯ Current directory
+6:40:44 PM:   /opt/build/repo
+6:40:44 PM: ​
+6:40:44 PM: ❯ Config file
+6:40:44 PM:   /opt/build/repo/netlify.toml
+6:40:44 PM: ​
+6:40:44 PM: ❯ Context
+6:40:44 PM:   production
+6:40:44 PM: ​
+6:40:44 PM: build.command from netlify.toml                               
+6:40:44 PM: ────────────────────────────────────────────────────────────────
+6:40:44 PM: ​
+6:40:44 PM: $ npm install && npm run build
+6:40:45 PM: up to date, audited 115 packages in 934ms
+6:40:45 PM: 37 packages are looking for funding
+6:40:45 PM:   run `npm fund` for details
+6:40:45 PM: 3 low severity vulnerabilities
+6:40:45 PM: To address all issues (including breaking changes), run:
+6:40:45 PM:   npm audit fix --force
+6:40:45 PM: Run `npm audit` for details.
+6:40:45 PM: > ****@1.0.0 build
+6:40:45 PM: > node build.js
+6:40:45 PM: 🔧 Building site with environment variables...
+6:40:45 PM: 📦 Injecting Shopify environment variables...
+6:40:45 PM: ✅ Environment variables injected successfully!
+6:40:45 PM: 🎉 Build complete!
+6:40:45 PM: ​
+6:40:45 PM: (build.command completed in 1.1s)
+6:40:45 PM: ​
+6:40:45 PM: Functions bundling                                            
+6:40:45 PM: ────────────────────────────────────────────────────────────────
+6:40:45 PM: ​
+6:40:45 PM: Packaging Functions from .netlify/functions directory:
+6:40:45 PM:  - admin-auth.js
+6:40:45 PM:  - github-api.js
+6:40:45 PM:  - stripe-checkout.js
+6:40:45 PM:  - stripe-webhook.js
+6:40:45 PM: ​
+6:40:46 PM: Failed during stage 'building site': Build script returned non-zero exit code: 2 (https://ntl.fyi/exit-code-2)
+6:40:46 PM: ​
+6:40:46 PM: (Functions bundling completed in 605ms)
+6:40:46 PM: ​
+6:40:46 PM: Scanning for secrets in code and build output.                
+6:40:46 PM: ────────────────────────────────────────────────────────────────
+6:40:46 PM: ​
+6:40:46 PM: ​
+6:40:46 PM: ❯ Scanning complete. 44 file(s) scanned. Secrets scanning found 1 instance(s) of secrets in build output or repo code.
+6:40:46 PM: ​
+6:40:46 PM: Secret env var "ADMIN_PASSWORD"'s value detected:
+  found value at line 35 in .netlify/functions/admin-auth.js
+6:40:46 PM:   found value at line 26 in SECURE_ADMIN_SETUP.md
+6:40:46 PM:   found value at line 41 in SECURE_ADMIN_SETUP.md
+6:40:46 PM:   found value at line 66 in SECURE_ADMIN_SETUP.md
+6:40:46 PM:   found value at line 61 in SECURITY.md
+6:40:46 PM:   found value at line 94 in STRIPE_SETUP.md
+6:40:46 PM:   found value at line 17 in netlify.toml
+6:40:46 PM: ​
+6:40:46 PM: To prevent exposing secrets, the build will fail until these secret values are not found in build output or repo files.
+6:40:46 PM: ​
+6:40:46 PM: If these are expected, use SECRETS_SCAN_OMIT_PATHS, SECRETS_SCAN_OMIT_KEYS, or SECRETS_SCAN_ENABLED to prevent detecting.
+6:40:46 PM: ​
+6:40:46 PM: For more information on secrets scanning, see the Netlify Docs: https://ntl.fyi/configure-secrets-scanning
+6:40:46 PM: ​
+6:40:46 PM: Secrets scanning detected secrets in files during build.      
+6:40:46 PM: ────────────────────────────────────────────────────────────────
+6:40:46 PM: ​
+6:40:46 PM:   Error message
+6:40:46 PM:   Secrets scanning found secrets in build.
+6:40:46 PM: ​
+6:40:46 PM:   Resolved config
+6:40:46 PM:   build:
+6:40:46 PM:     command: npm install && npm run build
+6:40:46 PM:     commandOrigin: config
+6:40:46 PM:     environment:
+6:40:46 PM:       - ADMIN_PASSWORD
+6:40:46 PM:       - ADMIN_USERNAME
+6:40:46 PM:       - GITHUB_BRANCH
+6:40:46 PM:       - GITHUB_OWNER
+6:40:46 PM:       - GITHUB_REPO
+6:40:46 PM:       - GITHUB_TOKEN
+6:40:46 PM:       - SHOPIFY_STOREFRONT_TOKEN
+6:40:46 PM:       - SHOPIFY_STORE_DOMAIN
+6:40:46 PM:       - SHOPIFY_STORE_URL
+6:40:46 PM:       - STRIPE_PUBLISHABLE_KEY
+6:40:46 PM:       - STRIPE_SECRET_KEY
+6:40:46 PM:       - STRIPE_WEBHOOK_SECRET
+6:40:46 PM:       - NODE_VERSION
+6:40:46 PM:     publish: /opt/build/repo
+6:40:46 PM:     publishOrigin: config
+6:40:46 PM:   functionsDirectory: /opt/build/repo/.netlify/functions
+6:40:46 PM:   headers:
+6:40:46 PM:     - for: /*
+      values:
+        Referrer-Policy: strict-origin-when-cross-origin
+        X-Content-Type-Options: nosniff
+        X-Frame-Options: DENY
+    - for: /shopify-api.js
+      values:
+        Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'
+          https://cdn.skypack.dev; connect-src 'self' https://*.myshopify.com
+          https://cdn.skypack.dev;
+    - for: /.netlify/functions/stripe-checkout
+      values:
+        Access-Control-Allow-Headers: Content-Type
+        Access-Control-Allow-Methods: POST, OPTIONS
+        Access-Control-Allow-Origin: https://****.com
+    - for: "*.css"
+      values:
+        Cache-Control: public, max-age=31536000
+    - for: "*.js"
+      values:
+        Cache-Control: public, max-age=31536000
+    - for: "*.json"
+      values:
+        Cache-Control: public, max-age=300
+  headersOrigin: config
+  redirects:
+    - from: /admin
+      status: 200
+      to: /admin/index.html
+    - force: true
+      from: /contact
+      status: 200
+      to: /.netlify/functions/contact
+    - from: /admin-dashboard.html
+      status: 200
+      to: /admin-dashboard.html
+    - from: /shop.html
+      status: 200
+      to: /shop.html
+    - from: /about.html
+      status: 200
+      to: /about.html
+    - from: /cart.html
+      status: 200
+      to: /cart.html
+    - from: /product.html
+      status: 200
+      to: /product.html
+    - from: /success.html
+      status: 200
+      to: /success.html
+    - from: /*
+      status: 404
+      to: /index.html
+  redirectsOrigin: config
+6:40:46 PM: Build failed due to a user error: Build script returned non-zero exit code: 2
+6:40:46 PM: Failing build: Failed to build site
+6:40:46 PM: Finished processing build request in 18.315s

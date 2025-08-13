@@ -23,7 +23,7 @@ Value: admin
 
 ```
 Variable name: ADMIN_PASSWORD  
-Value: vintage123
+Value: [your_secure_password]
 ```
 
 ## 📋 Complete Environment Variables List
@@ -38,7 +38,7 @@ GITHUB_BRANCH = main (existing)
 STRIPE_SECRET_KEY = sk_test_... (existing)
 STRIPE_PUBLISHABLE_KEY = pk_test_... (existing)
 ADMIN_USERNAME = admin (NEW)
-ADMIN_PASSWORD = vintage123 (NEW)
+ADMIN_PASSWORD = [your_secure_password] (NEW)
 ```
 
 ## 🚀 How It Works Now
@@ -63,7 +63,7 @@ ADMIN_PASSWORD = vintage123 (NEW)
 After setting the environment variables and deploying:
 
 1. Go to **https://iamlookingforvintage.com/admin-login.html**
-2. Use credentials: **admin** / **vintage123**
+2. Use credentials: **admin** / **[your_secure_password]**
 3. Should authenticate successfully and redirect to dashboard
 4. **Inspect page source** - no credentials visible in code!
 

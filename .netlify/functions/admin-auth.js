@@ -32,7 +32,7 @@ exports.handler = async (event, context) => {
         
         // Get credentials from environment variables
         const validUsername = process.env.ADMIN_USERNAME || 'admin';
-        const validPassword = process.env.ADMIN_PASSWORD || 'vintage123';
+        const validPassword = process.env.ADMIN_PASSWORD;
         
         console.log('🔍 Validating credentials for user:', username);
         

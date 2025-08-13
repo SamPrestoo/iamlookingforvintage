@@ -90,8 +90,8 @@ Set up webhook endpoints to handle payment events:
 
 ## Admin System Features
 
-### Admin Dashboard (`admin-login.html`)
-- **Login**: Username: `admin`, Password: `vintage123`
+### Admin Dashboard (`/admin`)
+- **Login**: Admin credentials stored securely in environment variables
 - **Security**: Session-based authentication (2-hour timeout)
 - **Access**: Manage inventory, add/remove products
 

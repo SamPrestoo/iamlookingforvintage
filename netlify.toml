@@ -14,7 +14,7 @@
 # STRIPE_SECRET_KEY = sk_test_... (or sk_live_... for production)
 # STRIPE_PUBLISHABLE_KEY = pk_test_... (or pk_live_... for production)
 # ADMIN_USERNAME = admin
-# ADMIN_PASSWORD = vintage123
+# ADMIN_PASSWORD = [your_secure_password]
 
 # Redirect /admin to admin login page
 [[redirects]]

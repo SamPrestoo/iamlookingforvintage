@@ -57,8 +57,7 @@ This admin system is implemented for demonstration purposes only and contains se
 5. **Security Headers**: Helmet.js or equivalent for security headers
 6. **Monitoring**: Log authentication attempts and admin actions
 
-## Demo Credentials (DO NOT USE IN PRODUCTION):
-- Username: admin / Password: vintage123
-- Username: manager / Password: store456
-
-These credentials are for demonstration only and should never be used in a production environment.
+## Admin Credentials:
+- Admin credentials are now stored securely in environment variables
+- Set ADMIN_USERNAME and ADMIN_PASSWORD in your deployment platform
+- No hardcoded credentials exist in the codebase for security
