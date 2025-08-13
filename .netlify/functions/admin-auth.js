@@ -31,7 +31,7 @@ exports.handler = async (event, context) => {
         const { username, password } = JSON.parse(event.body);
         
         // Get credentials from environment variables
-        const validUsername = process.env.ADMIN_USERNAME || 'admin';
+        const validUsername = process.env.ADMIN_USERNAME;
         const validPassword = process.env.ADMIN_PASSWORD;
         
         console.log('🔍 Validating credentials for user:', username);

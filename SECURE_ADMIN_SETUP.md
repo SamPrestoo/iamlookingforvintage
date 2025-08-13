@@ -37,7 +37,7 @@ GITHUB_REPO = iamlookingforvintage (existing)
 GITHUB_BRANCH = main (existing)
 STRIPE_SECRET_KEY = sk_test_... (existing)
 STRIPE_PUBLISHABLE_KEY = pk_test_... (existing)
-ADMIN_USERNAME = admin (NEW)
+ADMIN_USERNAME = [your_admin_username] (NEW)
 ADMIN_PASSWORD = [your_secure_password] (NEW)
 ```
 
@@ -63,7 +63,7 @@ ADMIN_PASSWORD = [your_secure_password] (NEW)
 After setting the environment variables and deploying:
 
 1. Go to **https://iamlookingforvintage.com/admin-login.html**
-2. Use credentials: **admin** / **[your_secure_password]**
+2. Use credentials: **[your_admin_username]** / **[your_secure_password]**
 3. Should authenticate successfully and redirect to dashboard
 4. **Inspect page source** - no credentials visible in code!
 
