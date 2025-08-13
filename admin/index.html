@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login - iamlookingforvintage</title>
-    <link rel="icon" type="image/png" href="iamlookingforvintageicon.png">
-    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="../iamlookingforvintageicon.png">
+    <link rel="stylesheet" href="../style.css">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -39,6 +39,13 @@
             color: #8b7355;
             margin-bottom: 8px;
             font-size: 28px;
+            font-family: "Workbench", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: normal;
+            font-variation-settings:
+              "BLED" 0,
+              "SCAN" 0;
         }
         
         .login-header p {
@@ -65,6 +72,13 @@
             font-size: 16px;
             transition: border-color 0.3s;
             box-sizing: border-box;
+            font-family: "Workbench", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: normal;
+            font-variation-settings:
+              "BLED" 0,
+              "SCAN" 0;
         }
         
         .form-group input:focus {
@@ -86,6 +100,12 @@
             transition: background-color 0.3s;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            font-family: "Workbench", sans-serif;
+            font-optical-sizing: auto;
+            font-style: normal;
+            font-variation-settings:
+              "BLED" 0,
+              "SCAN" 0;
         }
         
         .login-btn:hover {
@@ -172,6 +192,8 @@
         // Secure admin authentication using Netlify Functions
         async function validateCredentials(username, password) {
             try {
+                console.log('🔐 Attempting authentication for:', username);
+                
                 const response = await fetch('/.netlify/functions/admin-auth', {
                     method: 'POST',
                     headers: {
@@ -183,10 +205,20 @@
                     })
                 });
 
+                console.log('📡 Response status:', response.status);
+                console.log('📡 Response headers:', response.headers);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('❌ Response not OK:', response.status, errorText);
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+
                 const data = await response.json();
+                console.log('📄 Response data:', data);
                 return data.success ? data : false;
             } catch (error) {
-                console.error('Authentication error:', error);
+                console.error('❌ Authentication error:', error);
                 return false;
             }
         }
