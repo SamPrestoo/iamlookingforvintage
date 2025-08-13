@@ -717,7 +717,7 @@
             if (sessionStorage.getItem('adminAuthenticated') !== 'true') {
                 console.log('Not authenticated, redirecting to login');
                 alert('You must be logged in as admin to add products. Redirecting to login...');
-                window.location.href = 'admin-login.html';
+                window.location.href = '/admin';
                 return false;
             }
             
@@ -754,7 +754,7 @@
             // fetch('/admin/logout', { method: 'POST' });
             
             // Redirect to login
-            window.location.href = 'admin-login.html';
+            window.location.href = '/admin';
         }
         
         function testAuth() {

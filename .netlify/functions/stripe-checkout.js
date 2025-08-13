@@ -1,177 +1,122 @@
-/**
- * Netlify Function for Stripe Checkout
- * Creates a Stripe checkout session for vintage items
- */
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 exports.handler = async (event, context) => {
-  console.log('🛒 Stripe checkout function called');
-  console.log('📍 HTTP Method:', event.httpMethod);
-  
-  // Debug environment variables
-  console.log('🔑 Environment check:');
-  console.log('- STRIPE_SECRET_KEY exists:', !!process.env.STRIPE_SECRET_KEY);
-  console.log('- STRIPE_SECRET_KEY length:', process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY.length : 0);
-  console.log('- STRIPE_SECRET_KEY starts with sk_:', process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY.startsWith('sk_') : false);
-  
-  if (!process.env.STRIPE_SECRET_KEY) {
-    console.error('❌ STRIPE_SECRET_KEY not found in environment variables');
-    return {
-      statusCode: 500,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ 
-        error: 'Stripe configuration missing',
-        message: 'STRIPE_SECRET_KEY environment variable not found'
-      })
-    };
-  }
-
-  const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-  
-  // Add CORS headers
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Content-Type': 'application/json'
-  };
-
-  // Handle preflight requests
-  if (event.httpMethod === 'OPTIONS') {
-    return {
-      statusCode: 200,
-      headers,
-      body: ''
-    };
-  }
-
-  // Only allow POST requests
-  if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      headers,
-      body: JSON.stringify({ error: 'Method not allowed' })
-    };
-  }
-
-  try {
-    // Validate request body
-    if (!event.body) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ error: 'Request body is required' })
-      };
+    console.log('🛒 Stripe checkout function called');
+    
+    // Only allow POST requests
+    if (event.httpMethod !== 'POST') {
+        return {
+            statusCode: 405,
+            headers: {
+                'Access-Control-Allow-Origin': 'https://iamlookingforvintage.com',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Methods': 'POST, OPTIONS'
+            },
+            body: JSON.stringify({ error: 'Method not allowed' })
+        };
     }
 
-    let requestData;
+    // Handle OPTIONS request for CORS
+    if (event.httpMethod === 'OPTIONS') {
+        return {
+            statusCode: 200,
+            headers: {
+                'Access-Control-Allow-Origin': 'https://iamlookingforvintage.com',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Methods': 'POST, OPTIONS'
+            },
+            body: ''
+        };
+    }
+
     try {
-      requestData = JSON.parse(event.body);
-    } catch (parseError) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ error: 'Invalid JSON in request body' })
-      };
-    }
-
-    const { items, customerEmail, successUrl, cancelUrl } = requestData;
-    
-    if (!items || !Array.isArray(items) || items.length === 0) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ error: 'Items array is required and cannot be empty' })
-      };
-    }
-
-    console.log('🛍️ Processing checkout for', items.length, 'items');
-    console.log('📧 Customer email:', customerEmail);
-
-    // Transform cart items to Stripe line items
-    const lineItems = items.map(item => {
-      // Validate required fields
-      if (!item.name || !item.price || !item.id) {
-        throw new Error(`Invalid item: ${JSON.stringify(item)}`);
-      }
-
-      return {
-        price_data: {
-          currency: 'usd',
-          product_data: {
-            name: item.name,
-            description: `Vintage ${item.type || 'item'} • ${item.size || 'One size'}`,
-            images: item.image ? [item.image] : [],
-            metadata: {
-              productId: item.id,
-              category: item.category || 'vintage',
-              type: item.type || 'item',
-              size: item.size || 'N/A'
-            }
-          },
-          unit_amount: Math.round(item.price * 100) // Convert to cents
-        },
-        quantity: 1
-      };
-    });
-
-    console.log('💰 Total line items:', lineItems.length);
-    console.log('💰 Total amount:', lineItems.reduce((sum, item) => sum + item.price_data.unit_amount, 0) / 100);
-
-    // Create Stripe checkout session
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: lineItems,
-      mode: 'payment',
-      customer_email: customerEmail || undefined,
-      success_url: successUrl || `${event.headers.origin || 'https://iamlookingforvintage.netlify.app'}/success.html?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: cancelUrl || `${event.headers.origin || 'https://iamlookingforvintage.netlify.app'}/cart.html`,
-      metadata: {
-        customerEmail: customerEmail || 'not-provided',
-        itemCount: items.length.toString(),
-        itemIds: items.map(item => item.id).join(','),
-        source: 'iamlookingforvintage'
-      },
-      shipping_address_collection: {
-        allowed_countries: ['US', 'CA'],
-      },
-      billing_address_collection: 'required',
-      payment_intent_data: {
-        metadata: {
-          customerEmail: customerEmail || 'not-provided',
-          itemIds: items.map(item => item.id).join(','),
-          source: 'iamlookingforvintage'
+        const { items, successUrl, cancelUrl } = JSON.parse(event.body);
+        
+        console.log('📦 Processing checkout for items:', items.length);
+        
+        if (!items || items.length === 0) {
+            throw new Error('No items provided for checkout');
         }
-      }
-    });
 
-    console.log('✅ Stripe session created:', session.id);
-    console.log('🔗 Checkout URL:', session.url);
+        // Convert items to Stripe line items format
+        // Limit description length to prevent URL issues
+        const line_items = items.map(item => {
+            // Truncate long descriptions to prevent URL length issues
+            const truncatedDescription = item.description && item.description.length > 100 
+                ? item.description.substring(0, 100) + '...' 
+                : item.description || 'Vintage item';
 
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({
-        success: true,
-        sessionId: session.id,
-        url: session.url
-      })
-    };
+            return {
+                price_data: {
+                    currency: 'usd',
+                    product_data: {
+                        name: item.name,
+                        description: truncatedDescription,
+                        // Don't include images in line items to reduce URL length
+                    },
+                    unit_amount: Math.round(item.price * 100), // Convert to cents
+                },
+                quantity: 1,
+            };
+        });
 
-  } catch (error) {
-    console.error('❌ Stripe checkout error:', error);
-    console.error('❌ Error stack:', error.stack);
-    
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({
-        error: 'Failed to create checkout session',
-        message: error.message,
-        details: process.env.NODE_ENV === 'development' ? error.stack : undefined
-      })
-    };
-  }
+        // Create Stripe checkout session
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: line_items,
+            mode: 'payment',
+            success_url: successUrl,
+            cancel_url: cancelUrl,
+            
+            // Configure customer email collection - set to 'never' to remove prompt
+            customer_creation: 'if_required',
+            // Remove email collection prompt
+            
+            // Shipping configuration for physical products
+            shipping_address_collection: {
+                allowed_countries: ['US', 'CA'], // Add countries as needed
+            },
+            
+            // Set automatic tax calculation if configured
+            automatic_tax: { enabled: false }, // Set to true if you have tax configured
+            
+            // Add metadata for tracking
+            metadata: {
+                source: 'iamlookingforvintage_website',
+                item_count: items.length.toString(),
+            }
+        });
+
+        console.log('✅ Checkout session created:', session.id);
+
+        return {
+            statusCode: 200,
+            headers: {
+                'Access-Control-Allow-Origin': 'https://iamlookingforvintage.com',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Methods': 'POST, OPTIONS'
+            },
+            body: JSON.stringify({ 
+                success: true, 
+                url: session.url,
+                sessionId: session.id 
+            })
+        };
+
+    } catch (error) {
+        console.error('❌ Stripe checkout error:', error);
+        
+        return {
+            statusCode: 500,
+            headers: {
+                'Access-Control-Allow-Origin': 'https://iamlookingforvintage.com',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Methods': 'POST, OPTIONS'
+            },
+            body: JSON.stringify({ 
+                success: false, 
+                message: error.message || 'Internal server error' 
+            })
+        };
+    }
 };

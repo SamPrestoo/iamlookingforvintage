@@ -108,4 +108,16 @@ ehthumbs.db
 Thumbs.db
 
 # TinaCMS
-.tina/ 
+.tina/
+
+# Netlify build directory
+.netlify/
+
+# Sensitive files
+*secret*
+*private*
+*confidential*
+*.key
+*.pem
+*.p12
+*.p8 

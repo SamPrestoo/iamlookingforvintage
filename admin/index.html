@@ -3,481 +3,268 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Vintage Clothing Management</title>
+    <title>Admin Login - iamlookingforvintage</title>
+    <link rel="icon" type="image/png" href="iamlookingforvintageicon.png">
+    <link rel="stylesheet" href="style.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jacquard+12&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Workbench&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Workbench', Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background: #f5f5f5;
-            color: #333;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .header {
-            background: #8b7355;
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
+        .admin-login-container {
+            min-height: 100vh;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-        }
-        .logout-btn {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            padding: 8px 15px;
-            border: 1px solid rgba(255,255,255,0.3);
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-        .logout-btn:hover {
-            background: rgba(255,255,255,0.3);
-        }
-        .btn {
-            background: #8b7355;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            margin: 5px;
-        }
-        .btn:hover {
-            background: #6d5a42;
-        }
-        .btn-danger {
-            background: #dc3545;
-        }
-        .btn-danger:hover {
-            background: #c82333;
-        }
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-        .product-card {
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            background: #fafafa;
-        }
-        .product-card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-        .product-form {
-            background: #e8f5e8;
+            justify-content: center;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
             padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: none;
         }
+        
+        .login-card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .login-header h1 {
+            color: #8b7355;
+            margin-bottom: 8px;
+            font-size: 28px;
+        }
+        
+        .login-header p {
+            color: #666;
+            font-size: 14px;
+        }
+        
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
+        
         .form-group label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
         }
-        .form-group input, .form-group select, .form-group textarea {
+        
+        .form-group input {
             width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-family: inherit;
-        }
-        .image-upload-section {
-            border: 2px dashed #8b7355;
-            padding: 20px;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
             border-radius: 8px;
-            text-align: center;
-            margin-bottom: 15px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
         }
-        .image-preview {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 10px;
-            margin-top: 15px;
-        }
-        .image-preview-item {
-            position: relative;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-        .image-preview-item img {
-            width: 100%;
-            height: 80px;
-            object-fit: cover;
-        }
-        .image-preview-item.thumbnail {
+        
+        .form-group input:focus {
+            outline: none;
             border-color: #8b7355;
-            border-width: 3px;
+            box-shadow: 0 0 0 3px rgba(139, 115, 85, 0.1);
         }
-        .image-preview-item .remove-btn {
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            background: #dc3545;
+        
+        .login-btn {
+            width: 100%;
+            background-color: #8b7355;
             color: white;
+            padding: 14px;
             border: none;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            font-size: 12px;
-            cursor: pointer;
-        }
-        .image-preview-item .thumbnail-btn {
-            position: absolute;
-            bottom: 2px;
-            left: 2px;
-            background: #28a745;
-            color: white;
-            border: none;
-            border-radius: 3px;
-            padding: 2px 5px;
-            font-size: 10px;
-            cursor: pointer;
-        }
-        .instructions {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-        .download-section {
-            background: #d4edda;
-            padding: 20px;
             border-radius: 8px;
-            margin-top: 20px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .login-btn:hover {
+            background-color: #6d5a43;
+        }
+        
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
             text-align: center;
+            display: none;
+        }
+        
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .back-link a {
+            color: #8b7355;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 30px 20px;
+            }
+            
+            .login-header h1 {
+                font-size: 24px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div>
-                <h1>🎽 Vintage Clothing Admin</h1>
-                <p>Product Management Dashboard</p>
+    <div class="admin-login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>Admin Access</h1>
+                <p>Manage your vintage inventory</p>
             </div>
-            <a href="#" class="logout-btn" onclick="logout()">🚪 Logout</a>
-        </div>
-
-        <div class="instructions">
-            <h3>📋 Image Management:</h3>
-            <ul>
-                <li>Upload up to 10 images per product</li>
-                <li>Click "Set as Thumbnail" to choose the main image for shop display</li>
-                <li>Images are stored in your browser and included in the download</li>
-                <li>Supported formats: JPG, PNG, WebP (max 5MB each)</li>
-            </ul>
-        </div>
-
-        <div class="controls">
-            <button class="btn" onclick="showAddForm()">➕ Add New Product</button>
-            <button class="btn" onclick="loadProducts()">🔄 Refresh Products</button>
-            <a href="/" class="btn">🏠 Back to Website</a>
-        </div>
-
-        <div id="addProductForm" class="product-form">
-            <h3>Add New Product</h3>
-            <form id="productForm">
+            
+            <div id="errorMessage" class="error-message">
+                Invalid credentials. Please try again.
+            </div>
+            
+            <form id="adminLoginForm">
                 <div class="form-group">
-                    <label>Product ID:</label>
-                    <input type="text" id="productId" required readonly>
-                </div>
-                <div class="form-group">
-                    <label>Product Name:</label>
-                    <input type="text" id="productName" required>
-                </div>
-                <div class="form-group">
-                    <label>Description:</label>
-                    <textarea id="productDescription" rows="3" placeholder="Detailed product description..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Price ($):</label>
-                    <input type="number" id="productPrice" step="0.01" required>
-                </div>
-                <div class="form-group">
-                    <label>Category:</label>
-                    <select id="productCategory" required>
-                        <option value="">Select Category</option>
-                        <option value="clothing">Clothing</option>
-                        <option value="accessories">Accessories</option>
-                        <option value="collectibles">Collectibles</option>
-                    </select>
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required autocomplete="username">
                 </div>
                 
                 <div class="form-group">
-                    <label>Product Images:</label>
-                    <div class="image-upload-section">
-                        <p>📷 Click to upload images or drag & drop (max 10 images)</p>
-                        <input type="file" id="imageUpload" multiple accept="image/*" style="display: none;">
-                        <button type="button" onclick="document.getElementById('imageUpload').click()" class="btn">Choose Images</button>
-                    </div>
-                    <div id="imagePreview" class="image-preview"></div>
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required autocomplete="current-password">
                 </div>
                 
-                <button type="submit" class="btn">💾 Save Product</button>
-                <button type="button" class="btn" onclick="hideAddForm()">❌ Cancel</button>
+                <button type="submit" class="login-btn" id="loginBtn">
+                    Access Admin Dashboard
+                </button>
             </form>
-        </div>
-
-        <div class="download-section">
-            <h3>📥 Download Updated Data</h3>
-            <p>After making changes, download the updated files:</p>
-            <button class="btn" onclick="downloadProducts()" id="downloadBtn" disabled>📥 Download Updated products.json</button>
-        </div>
-
-        <div id="productsContainer">
-            <h3>Current Products</h3>
-            <div id="productsList" class="product-grid"></div>
+            
+            <div class="back-link">
+                <a href="index.html">← Back to Store</a>
+            </div>
         </div>
     </div>
-
+    
     <script>
-        let products = [];
-        let hasChanges = false;
-        let currentProductImages = [];
-        let thumbnailIndex = 0;
-
-        // Check authentication on page load
-        window.addEventListener('load', function() {
-            checkAuth();
-            loadProducts();
-        });
-
-        function checkAuth() {
-            const isAuthenticated = sessionStorage.getItem('adminAuthenticated');
-            const loginTime = sessionStorage.getItem('adminLoginTime');
-            
-            // Check if logged in and session is less than 24 hours old
-            const now = Date.now();
-            const sessionExpiry = 24 * 60 * 60 * 1000; // 24 hours
-            
-            if (!isAuthenticated || !loginTime || (now - parseInt(loginTime)) > sessionExpiry) {
-                window.location.href = 'login.html';
-                return;
-            }
-        }
-
-        function logout() {
-            sessionStorage.removeItem('adminAuthenticated');
-            sessionStorage.removeItem('adminLoginTime');
-            window.location.href = 'login.html';
-        }
-
-        // Image upload handling
-        document.getElementById('imageUpload').addEventListener('change', function(e) {
-            handleImageUpload(e.target.files);
-        });
-
-        function handleImageUpload(files) {
-            if (currentProductImages.length + files.length > 10) {
-                alert('Maximum 10 images per product allowed!');
-                return;
-            }
-
-            Array.from(files).forEach(file => {
-                if (file.size > 5 * 1024 * 1024) {
-                    alert(`File ${file.name} is too large. Maximum 5MB per image.`);
-                    return;
-                }
-
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    currentProductImages.push({
-                        data: e.target.result,
-                        name: file.name,
-                        size: file.size
-                    });
-                    updateImagePreview();
-                };
-                reader.readAsDataURL(file);
-            });
-        }
-
-        function updateImagePreview() {
-            const preview = document.getElementById('imagePreview');
-            preview.innerHTML = currentProductImages.map((img, index) => `
-                <div class="image-preview-item ${index === thumbnailIndex ? 'thumbnail' : ''}">
-                    <img src="${img.data}" alt="${img.name}">
-                    <button class="remove-btn" onclick="removeImage(${index})">×</button>
-                    <button class="thumbnail-btn" onclick="setThumbnail(${index})">📌</button>
-                </div>
-            `).join('');
-        }
-
-        function removeImage(index) {
-            currentProductImages.splice(index, 1);
-            if (thumbnailIndex >= currentProductImages.length) {
-                thumbnailIndex = Math.max(0, currentProductImages.length - 1);
-            }
-            updateImagePreview();
-        }
-
-        function setThumbnail(index) {
-            thumbnailIndex = index;
-            updateImagePreview();
-        }
-
-        async function loadProducts() {
+        // Secure admin authentication using Netlify Functions
+        async function validateCredentials(username, password) {
             try {
-                const response = await fetch('/products.json');
+                const response = await fetch('/.netlify/functions/admin-auth', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+                });
+
                 const data = await response.json();
-                products = data.products || [];
-                displayProducts();
+                return data.success ? data : false;
             } catch (error) {
-                console.error('Error loading products:', error);
-                document.getElementById('productsList').innerHTML = '<p>Error loading products. Make sure products.json exists.</p>';
+                console.error('Authentication error:', error);
+                return false;
             }
         }
-
-        function displayProducts() {
-            const container = document.getElementById('productsList');
-            if (products.length === 0) {
-                container.innerHTML = '<p>No products found. Add your first product above!</p>';
-                return;
-            }
-
-            container.innerHTML = products.map(product => {
-                const thumbnailImage = product.images && product.images.length > 0 
-                    ? product.images[product.thumbnailIndex || 0].data 
-                    : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik04NyA3NEg2NEMlOC42IDc0IDU0IDc4LjYgNTQgODRWMTM2QzU0IDE0MS40IDU4LjYgMTQ2IDY0IDE0Nkg4N0M5Mi40IDE0NiA5NyAxNDEuNCA5NyAxMzZWODRDOTcgNzguNiA5Mi40IDc0IDg3IDc0WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K';
-                
-                return `
-                    <div class="product-card">
-                        <img src="${thumbnailImage}" alt="${product.name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik04NyA3NEg2NEMlOC42IDc0IDU0IDc4LjYgNTQgODRWMTM2QzU0IDE0MS40IDU4LjYgMTQ2IDY0IDE0Nkg4N0M5Mi40IDE0NiA5NyAxNDEuNCA5NyAxMzZWODRDOTcgNzguNiA5Mi40IDc0IDg3IDc0WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K'">
-                        <h4>${product.name}</h4>
-                        <p><strong>ID:</strong> ${product.id}</p>
-                        <p><strong>Price:</strong> $${product.price}</p>
-                        <p><strong>Category:</strong> ${product.category}</p>
-                        <p><strong>Images:</strong> ${product.images ? product.images.length : 0}/10</p>
-                        <p><strong>Description:</strong> ${product.description ? product.description.substring(0, 100) + '...' : 'No description'}</p>
-                        <button class="btn" onclick="editProduct('${product.id}')">✏️ Edit</button>
-                        <button class="btn btn-danger" onclick="deleteProduct('${product.id}')">🗑️ Delete</button>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function showAddForm() {
-            document.getElementById('addProductForm').style.display = 'block';
-            document.getElementById('productForm').reset();
-            currentProductImages = [];
-            thumbnailIndex = 0;
-            updateImagePreview();
-            // Generate unique ID
-            document.getElementById('productId').value = 'product_' + Date.now();
-        }
-
-        function hideAddForm() {
-            document.getElementById('addProductForm').style.display = 'none';
-            currentProductImages = [];
-            thumbnailIndex = 0;
-        }
-
-        function editProduct(id) {
-            const product = products.find(p => p.id === id);
-            if (product) {
-                document.getElementById('productId').value = product.id;
-                document.getElementById('productName').value = product.name;
-                document.getElementById('productDescription').value = product.description || '';
-                document.getElementById('productPrice').value = product.price;
-                document.getElementById('productCategory').value = product.category;
-                
-                currentProductImages = product.images || [];
-                thumbnailIndex = product.thumbnailIndex || 0;
-                updateImagePreview();
-                
-                showAddForm();
-            }
-        }
-
-        function deleteProduct(id) {
-            if (confirm('Are you sure you want to delete this product?')) {
-                products = products.filter(p => p.id !== id);
-                displayProducts();
-                markChanges();
-            }
-        }
-
-        document.getElementById('productForm').addEventListener('submit', function(e) {
+        
+        document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            if (currentProductImages.length === 0) {
-                alert('Please add at least one product image.');
-                return;
-            }
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const errorMessage = document.getElementById('errorMessage');
             
-            const productData = {
-                id: document.getElementById('productId').value,
-                name: document.getElementById('productName').value,
-                description: document.getElementById('productDescription').value,
-                price: parseFloat(document.getElementById('productPrice').value),
-                category: document.getElementById('productCategory').value,
-                images: currentProductImages,
-                thumbnailIndex: thumbnailIndex
-            };
-
-            // Check if editing existing product
-            const existingIndex = products.findIndex(p => p.id === productData.id);
-            if (existingIndex !== -1) {
-                products[existingIndex] = productData;
-            } else {
-                products.push(productData);
+            // Show loading state
+            loginBtn.textContent = 'Authenticating...';
+            loginBtn.disabled = true;
+            errorMessage.style.display = 'none';
+            
+            try {
+                const authResult = await validateCredentials(username, password);
+                
+                if (authResult && authResult.success) {
+                    // Set secure session data using server response
+                    const authData = {
+                        authenticated: 'true',
+                        loginTime: authResult.loginTime,
+                        user: authResult.user,
+                        sessionToken: authResult.sessionToken
+                    };
+                    
+                    sessionStorage.setItem('adminAuthenticated', authData.authenticated);
+                    sessionStorage.setItem('adminLoginTime', authData.loginTime);
+                    sessionStorage.setItem('adminUser', authData.user);
+                    sessionStorage.setItem('adminSessionToken', authData.sessionToken);
+                    
+                    // Also store in localStorage for cross-tab access (View Store functionality)
+                    localStorage.setItem('adminAuthenticated', authData.authenticated);
+                    localStorage.setItem('adminLoginTime', authData.loginTime);
+                    localStorage.setItem('adminUser', authData.user);
+                    localStorage.setItem('adminSessionToken', authData.sessionToken);
+                    
+                    // Redirect to admin dashboard
+                    window.location.href = 'admin-dashboard.html';
+                } else {
+                    // Show error
+                    errorMessage.style.display = 'block';
+                    loginBtn.textContent = 'Access Admin Dashboard';
+                    loginBtn.disabled = false;
+                    
+                    // Clear form
+                    document.getElementById('password').value = '';
+                    document.getElementById('username').focus();
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = 'Login failed. Please try again.';
+                loginBtn.textContent = 'Access Admin Dashboard';
+                loginBtn.disabled = false;
+                
+                // Clear form
+                document.getElementById('password').value = '';
+                document.getElementById('username').focus();
             }
-
-            displayProducts();
-            hideAddForm();
-            markChanges();
         });
-
-        function markChanges() {
-            hasChanges = true;
-            document.getElementById('downloadBtn').disabled = false;
-            document.getElementById('downloadBtn').textContent = '📥 Download Updated products.json ⚡';
-        }
-
-        function downloadProducts() {
-            const data = {
-                products: products
-            };
+        
+        // Check if already logged in with enhanced security
+        if (sessionStorage.getItem('adminAuthenticated') === 'true') {
+            const loginTime = parseInt(sessionStorage.getItem('adminLoginTime'));
+            const currentTime = Date.now();
+            const sessionDuration = 2 * 60 * 60 * 1000; // 2 hours
             
-            const blob = new Blob([JSON.stringify(data, null, 2)], {
-                type: 'application/json'
-            });
-            
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'products.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            hasChanges = false;
-            document.getElementById('downloadBtn').textContent = '📥 Download Updated products.json';
+            if (currentTime - loginTime < sessionDuration) {
+                // In production: verify session with server before redirecting
+                window.location.href = 'admin-dashboard.html';
+            } else {
+                // Session expired - clear all data
+                sessionStorage.clear();
+            }
         }
     </script>
 </body>

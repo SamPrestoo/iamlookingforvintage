@@ -16,15 +16,9 @@
 # ADMIN_USERNAME = admin
 # ADMIN_PASSWORD = vintage123
 
-# Redirect /admin to TinaCMS admin
+# Redirect /admin to admin login page
 [[redirects]]
   from = "/admin"
-  to = "/admin/index.html"
-  status = 200
-
-# Handle client-side routing for the admin panel
-[[redirects]]
-  from = "/admin/*"
   to = "/admin/index.html"
   status = 200
 
