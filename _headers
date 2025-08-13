@@ -7,3 +7,9 @@
 # Allow Shopify API calls
 /shopify-api.js
   Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.skypack.dev; connect-src 'self' https://*.myshopify.com https://cdn.skypack.dev;
+
+# Allow Stripe API calls
+/.netlify/functions/stripe-checkout
+  Access-Control-Allow-Origin: https://iamlookingforvintage.com
+  Access-Control-Allow-Methods: POST, OPTIONS
+  Access-Control-Allow-Headers: Content-Type

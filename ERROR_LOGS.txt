@@ -1,9 +1,19 @@
 🕰️ iamlookingforvintage website loaded successfully!
-cart:311 📦 Loaded 6 products for cart image lookup
-cart:320 🛒 Cart item 0: Object
-cart:350 ✅ Retrieved image from products data for: Blue Tee
-cart:449 🛒 Starting checkout process...
-cart:489 💳 Creating Stripe checkout session...
+coming-soon-check.js:74 🏪 Checking store status...
+coming-soon-check.js:36 🏪 Auth check - adminAuth: null loginTime: null user: null
+coming-soon-check.js:39 🏪 Admin not authenticated or missing login time
+coming-soon-check.js:84 🏪 Admin check attempt 1 failed, retrying...
+coming-soon-check.js:36 🏪 Auth check - adminAuth: null loginTime: null user: null
+coming-soon-check.js:39 🏪 Admin not authenticated or missing login time
+coming-soon-check.js:84 🏪 Admin check attempt 2 failed, retrying...
+coming-soon-check.js:36 🏪 Auth check - adminAuth: null loginTime: null user: null
+coming-soon-check.js:39 🏪 Admin not authenticated or missing login time
+coming-soon-check.js:108 🏪 Store status: Object
+coming-soon-check.js:130 🏪 Store is live - allowing access
+cart:350 📦 Loaded 6 products for cart image lookup
+cart:359 🛒 Cart item 0: Object
+cart:488 🛒 Starting checkout process...
+cart:528 💳 Creating Stripe checkout session...
 .netlify/functions/stripe-checkout:1  Failed to load resource: the server responded with a status of 500 ()Understand this error
-cart:515 ❌ Checkout error: Error: You did not provide an API key. You need to provide your API key in the Authorization header, using Bearer auth (e.g. 'Authorization: Bearer YOUR_SECRET_KEY'). See https://stripe.com/docs/api#authentication for details, or we can help at https://support.stripe.com/.
-    at proceedToCheckout (cart:511:27)
+cart:554 ❌ Checkout error: Error: Invalid URL: URL must be 2048 characters or less.
+    at proceedToCheckout (cart:550:27)

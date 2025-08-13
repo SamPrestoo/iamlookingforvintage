@@ -515,9 +515,6 @@
                 loadCartItems(); // Refresh display
             }
             
-            // Get customer email (optional)
-            const customerEmail = prompt('Enter your email address (optional):');
-            
             // Update button state
             const checkoutBtn = document.getElementById('checkoutBtn');
             const originalText = checkoutBtn.textContent;
@@ -534,9 +531,8 @@
                     },
                     body: JSON.stringify({
                         items: availableItems,
-                        customerEmail: customerEmail || undefined,
-                        successUrl: `${window.location.origin}/success.html?session_id={CHECKOUT_SESSION_ID}`,
-                        cancelUrl: `${window.location.origin}/cart.html`
+                        successUrl: `https://iamlookingforvintage.com/success.html?session_id={CHECKOUT_SESSION_ID}`,
+                        cancelUrl: `https://iamlookingforvintage.com/cart.html`
                     })
                 });
                 

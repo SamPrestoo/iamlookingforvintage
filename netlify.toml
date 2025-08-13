@@ -11,6 +11,8 @@
 # GITHUB_OWNER = SamPrestoo  
 # GITHUB_REPO = iamlookingforvintage
 # GITHUB_BRANCH = main
+# STRIPE_SECRET_KEY = sk_test_... (or sk_live_... for production)
+# STRIPE_PUBLISHABLE_KEY = pk_test_... (or pk_live_... for production)
 
 # Redirect /admin to TinaCMS admin
 [[redirects]]
