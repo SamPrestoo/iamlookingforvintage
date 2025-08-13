@@ -63,7 +63,7 @@
 # Default fallback for any other routes (must be last)
 [[redirects]]
   from = "/*"
-  to = "/index.html"
+  to = "/404.html"
   status = 404
 
 # Headers for better performance
