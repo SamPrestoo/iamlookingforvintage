@@ -110,8 +110,10 @@ Thumbs.db
 # TinaCMS
 .tina/
 
-# Netlify build directory
-.netlify/
+# Netlify build cache (but allow functions)
+.netlify/state.json
+.netlify/edge-functions/
+.netlify/blobs/
 
 # Sensitive files
 *secret*
