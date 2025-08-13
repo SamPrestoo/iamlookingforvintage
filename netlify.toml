@@ -29,7 +29,38 @@
   status = 200
   force = true
 
-# Default fallback for any other routes
+# Allow specific HTML pages to load correctly
+[[redirects]]
+  from = "/admin-dashboard.html"
+  to = "/admin-dashboard.html"
+  status = 200
+
+[[redirects]]
+  from = "/shop.html"
+  to = "/shop.html"
+  status = 200
+
+[[redirects]]
+  from = "/about.html"
+  to = "/about.html"
+  status = 200
+
+[[redirects]]
+  from = "/cart.html"
+  to = "/cart.html"
+  status = 200
+
+[[redirects]]
+  from = "/product.html"
+  to = "/product.html"
+  status = 200
+
+[[redirects]]
+  from = "/success.html"
+  to = "/success.html"
+  status = 200
+
+# Default fallback for any other routes (must be last)
 [[redirects]]
   from = "/*"
   to = "/index.html"
