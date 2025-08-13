@@ -13,7 +13,7 @@ coming-soon-check.js:130 🏪 Store is live - allowing access
 cart:350 📦 Loaded 6 products for cart image lookup
 cart:359 🛒 Cart item 0: Object
 cart:488 🛒 Starting checkout process...
-cart:528 💳 Creating Stripe checkout session...
+cart:525 💳 Creating Stripe checkout session...
 .netlify/functions/stripe-checkout:1  Failed to load resource: the server responded with a status of 500 ()Understand this error
-cart:554 ❌ Checkout error: Error: Invalid URL: URL must be 2048 characters or less.
-    at proceedToCheckout (cart:550:27)
+cart:550 ❌ Checkout error: Error: Invalid URL: URL must be 2048 characters or less.
+    at proceedToCheckout (cart:546:27)

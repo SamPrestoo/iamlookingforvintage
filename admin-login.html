@@ -169,19 +169,29 @@
     </div>
     
     <script>
-        // Admin authentication - credentials should be verified server-side in production
-        // For demo purposes only - DO NOT use hardcoded credentials in production
-        function validateCredentials(username, password) {
-            // In production, this should make an API call to server for authentication
-            // This is a placeholder for demo purposes only
-            const validUsers = {
-                'admin': 'vintage123',
-                'manager': 'store456'
-            };
-            return validUsers[username] === password;
+        // Secure admin authentication using Netlify Functions
+        async function validateCredentials(username, password) {
+            try {
+                const response = await fetch('/.netlify/functions/admin-auth', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+                return data.success ? data : false;
+            } catch (error) {
+                console.error('Authentication error:', error);
+                return false;
+            }
         }
         
-        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+        document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const username = document.getElementById('username').value;
@@ -194,32 +204,28 @@
             loginBtn.disabled = true;
             errorMessage.style.display = 'none';
             
-            // Simulate authentication delay
-            setTimeout(() => {
-                if (validateCredentials(username, password)) {
-                    // Set secure session data in both sessionStorage and localStorage
-                    // sessionStorage for current tab, localStorage for cross-tab access
+            try {
+                const authResult = await validateCredentials(username, password);
+                
+                if (authResult && authResult.success) {
+                    // Set secure session data using server response
                     const authData = {
                         authenticated: 'true',
-                        loginTime: Date.now(),
-                        user: username
+                        loginTime: authResult.loginTime,
+                        user: authResult.user,
+                        sessionToken: authResult.sessionToken
                     };
                     
                     sessionStorage.setItem('adminAuthenticated', authData.authenticated);
                     sessionStorage.setItem('adminLoginTime', authData.loginTime);
                     sessionStorage.setItem('adminUser', authData.user);
+                    sessionStorage.setItem('adminSessionToken', authData.sessionToken);
                     
                     // Also store in localStorage for cross-tab access (View Store functionality)
                     localStorage.setItem('adminAuthenticated', authData.authenticated);
                     localStorage.setItem('adminLoginTime', authData.loginTime);
                     localStorage.setItem('adminUser', authData.user);
-                    
-                    // In production: create server-side session
-                    // const response = await fetch('/admin/create-session', {
-                    //     method: 'POST',
-                    //     headers: { 'Content-Type': 'application/json' },
-                    //     body: JSON.stringify({ username, password })
-                    // });
+                    localStorage.setItem('adminSessionToken', authData.sessionToken);
                     
                     // Redirect to admin dashboard
                     window.location.href = 'admin-dashboard.html';
@@ -233,7 +239,17 @@
                     document.getElementById('password').value = '';
                     document.getElementById('username').focus();
                 }
-            }, 1000);
+            } catch (error) {
+                console.error('Login error:', error);
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = 'Login failed. Please try again.';
+                loginBtn.textContent = 'Access Admin Dashboard';
+                loginBtn.disabled = false;
+                
+                // Clear form
+                document.getElementById('password').value = '';
+                document.getElementById('username').focus();
+            }
         });
         
         // Check if already logged in with enhanced security
