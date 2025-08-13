@@ -523,6 +523,7 @@
             
             try {
                 console.log('💳 Creating Stripe checkout session...');
+                console.log('🛒 Cart items to checkout:', availableItems.length, availableItems);
                 
                 const response = await fetch('/.netlify/functions/stripe-checkout', {
                     method: 'POST',
@@ -530,7 +531,16 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        items: availableItems,
+                        items: availableItems.map(item => ({
+                            id: item.id,
+                            name: item.name,
+                            price: item.price,
+                            description: item.description,
+                            category: item.category,
+                            type: item.type,
+                            size: item.size
+                            // Exclude images and other large data
+                        })),
                         successUrl: `https://iamlookingforvintage.com/success.html?session_id={CHECKOUT_SESSION_ID}`,
                         cancelUrl: `https://iamlookingforvintage.com/cart.html`
                     })
