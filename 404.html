@@ -16,16 +16,16 @@
     
     <style>
         .error-container {
-            min-height: 80vh;
+            min-height: 70vh;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 40px 20px;
+            padding: 60px 20px;
         }
         
         .error-content {
-            max-width: 600px;
+            max-width: 700px;
             margin: 0 auto;
         }
         
@@ -37,11 +37,15 @@
             font-variation-settings:
               "BLED" 0,
               "SCAN" 0;
-            font-size: 120px;
+            font-size: 140px;
             color: #8b7355;
             margin: 0;
-            line-height: 1;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            line-height: 0.9;
+            text-shadow: 4px 4px 0px #e0e0e0, 8px 8px 0px #d0d0d0;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            letter-spacing: -5px;
         }
         
         .error-title {
@@ -52,126 +56,125 @@
             font-variation-settings:
               "BLED" 0,
               "SCAN" 0;
-            font-size: 32px;
+            font-size: 28px;
             color: #2c2c2c;
-            margin: 20px 0 15px 0;
-        }
-        
-        .error-message {
-            font-size: 18px;
-            color: #6a6a6a;
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-        
-        .error-actions {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 40px;
-        }
-        
-        .error-button {
-            display: inline-block;
-            background-color: #8b7355;
-            color: #ffffff;
-            padding: 12px 24px;
-            text-decoration: none;
-            border: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            font-size: 14px;
-            border-radius: 4px;
-            font-family: "Workbench", sans-serif;
-            font-optical-sizing: auto;
-            font-style: normal;
-            font-variation-settings:
-              "BLED" 0,
-              "SCAN" 0;
-            letter-spacing: 0.5px;
-        }
-        
-        .error-button:hover {
-            background-color: #6d5a43;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(139, 115, 85, 0.3);
-        }
-        
-        .error-button.secondary {
-            background-color: transparent;
-            color: #8b7355;
-            border: 2px solid #8b7355;
-        }
-        
-        .error-button.secondary:hover {
-            background-color: #8b7355;
-            color: #ffffff;
+            margin: 40px 0 60px 0;
+            text-shadow: 1px 1px 0px #f0f0f0;
         }
         
         .vintage-quote {
-            margin-top: 50px;
-            padding: 30px;
-            background-color: #f9f9f9;
-            border-left: 4px solid #8b7355;
-            border-radius: 0 8px 8px 0;
+            margin-top: 80px;
+            padding: 40px;
+            background: 
+                linear-gradient(0deg, transparent 24%, rgba(0,0,0,.02) 25%, rgba(0,0,0,.02) 26%, transparent 27%, transparent 74%, rgba(0,0,0,.02) 75%, rgba(0,0,0,.02) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, rgba(0,0,0,.02) 25%, rgba(0,0,0,.02) 26%, transparent 27%, transparent 74%, rgba(0,0,0,.02) 75%, rgba(0,0,0,.02) 76%, transparent 77%, transparent),
+                linear-gradient(135deg, #fafafa 0%, #f0f0f0 100%);
+            background-size: 4px 4px, 4px 4px, 100% 100%;
+            border: 3px solid #8b7355;
+            border-radius: 0;
             font-style: italic;
-            color: #6a6a6a;
+            color: #4a4a4a;
             position: relative;
+            box-shadow: 
+                inset 1px 1px 0px rgba(255,255,255,0.3),
+                inset -1px -1px 0px rgba(0,0,0,0.1),
+                8px 8px 0px #e0e0e0,
+                12px 12px 0px #d0d0d0;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
         }
         
         .vintage-quote::before {
-            content: '"';
-            font-size: 60px;
-            color: #8b7355;
+            content: '';
+            width: 32px;
+            height: 32px;
+            background-color: #8b7355;
+            background-image: 
+                linear-gradient(0deg, transparent 24%, rgba(0,0,0,.05) 25%, rgba(0,0,0,.05) 26%, transparent 27%, transparent 74%, rgba(0,0,0,.05) 75%, rgba(0,0,0,.05) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, rgba(0,0,0,.05) 25%, rgba(0,0,0,.05) 26%, transparent 27%, transparent 74%, rgba(0,0,0,.05) 75%, rgba(0,0,0,.05) 76%, transparent 77%, transparent),
+                conic-gradient(from 45deg at 16px 16px, #8b7355 0deg, #7a6249 90deg, #8b7355 180deg, #9e8160 270deg);
+            background-size: 8px 8px, 8px 8px, 32px 32px;
             position: absolute;
-            top: -10px;
-            left: 10px;
-            font-family: serif;
+            top: -16px;
+            left: 20px;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            border: 2px solid #6b5841;
+            box-shadow: 2px 2px 0px #5a4a35, 4px 4px 0px #4a3a25;
         }
         
         .vintage-quote p {
             margin: 0;
-            font-size: 16px;
-            line-height: 1.6;
+            font-size: 18px;
+            line-height: 1.7;
+            font-family: "Workbench", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: italic;
+            font-variation-settings:
+              "BLED" 0,
+              "SCAN" 0;
         }
         
         .vintage-quote .quote-author {
             text-align: right;
-            margin-top: 15px;
-            font-size: 14px;
+            margin-top: 20px;
+            font-size: 16px;
             color: #8b7355;
             font-weight: 500;
+            font-style: normal;
+            text-shadow: 1px 1px 0px #f0f0f0;
         }
         
         @media (max-width: 768px) {
+            .error-container {
+                min-height: 60vh;
+                padding: 40px 20px;
+            }
+            
             .error-code {
-                font-size: 80px;
+                font-size: 100px;
+                text-shadow: 3px 3px 0px #e0e0e0, 6px 6px 0px #d0d0d0;
+                letter-spacing: -3px;
             }
             
             .error-title {
-                font-size: 24px;
-            }
-            
-            .error-message {
-                font-size: 16px;
-            }
-            
-            .error-actions {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .error-button {
-                width: 100%;
-                max-width: 300px;
-                text-align: center;
+                font-size: 22px;
+                margin: 30px 0 50px 0;
             }
             
             .vintage-quote {
-                padding: 20px;
-                margin-top: 30px;
+                padding: 30px 25px;
+                margin-top: 60px;
+                box-shadow: 6px 6px 0px #e0e0e0;
+            }
+            
+            .vintage-quote p {
+                font-size: 16px;
+            }
+            
+            .vintage-quote .quote-author {
+                font-size: 14px;
+                margin-top: 15px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .error-code {
+                font-size: 80px;
+                text-shadow: 2px 2px 0px #e0e0e0, 4px 4px 0px #d0d0d0;
+                letter-spacing: -2px;
+            }
+            
+            .error-title {
+                font-size: 20px;
+            }
+            
+            .vintage-quote {
+                padding: 25px 20px;
+                box-shadow: 4px 4px 0px #e0e0e0;
             }
         }
     </style>
@@ -204,16 +207,6 @@
                 <div class="error-content">
                     <h1 class="error-code">404</h1>
                     <h2 class="error-title">Oops! This vintage find is missing</h2>
-                    <p class="error-message">
-                        It looks like the page you're searching for has wandered off into the vintage ether. 
-                        Don't worry though – there are plenty of other amazing finds waiting for you!
-                    </p>
-                    
-                    <div class="error-actions">
-                        <a href="index.html" class="error-button">Return Home</a>
-                        <a href="shop.html" class="error-button">Browse Collection</a>
-                        <a href="about.html" class="error-button secondary">About Us</a>
-                    </div>
                     
                     <div class="vintage-quote">
                         <p>Sometimes the best treasures are found when you're not looking for them. Every detour leads to a new discovery.</p>
