@@ -42,6 +42,8 @@ exports.handler = async (event, context) => {
         return await updateSoldStatus(data, { apiBase, headers, owner, repo, branch });
       case 'delete_product':
         return await deleteProduct(data, { apiBase, headers, owner, repo, branch });
+      case 'update_store_status':
+        return await updateStoreStatus(data, { apiBase, headers, owner, repo, branch });
       case 'test_connection':
         return {
           statusCode: 200,
@@ -212,6 +214,59 @@ async function deleteProduct(deleteData, config) {
       body: JSON.stringify({ 
         success: true, 
         message: `Product "${productName}" deleted from repository` 
+      })
+    };
+    
+  } catch (error) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: error.message })
+    };
+  }
+}
+
+async function updateStoreStatus(statusData, config) {
+  try {
+    // Get current store-status.json file
+    const fileResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/store-status.json`, {
+      headers: config.headers
+    });
+    
+    if (!fileResponse.ok) {
+      throw new Error(`Failed to fetch store-status.json: ${fileResponse.statusText}`);
+    }
+    
+    const fileData = await fileResponse.json();
+    
+    // Update the status with current timestamp
+    const updatedStatus = {
+      ...statusData,
+      lastUpdated: new Date().toISOString()
+    };
+    
+    // Commit the updated file
+    const commitResponse = await fetch(`${config.apiBase}/repos/${config.owner}/${config.repo}/contents/store-status.json`, {
+      method: 'PUT',
+      headers: config.headers,
+      body: JSON.stringify({
+        message: `Update store status: ${updatedStatus.isComingSoon ? 'Coming Soon' : 'Live and Open'}`,
+        content: Buffer.from(JSON.stringify(updatedStatus, null, 2)).toString('base64'),
+        sha: fileData.sha,
+        branch: config.branch
+      })
+    });
+    
+    if (!commitResponse.ok) {
+      const error = await commitResponse.json();
+      throw new Error(`Failed to commit: ${error.message}`);
+    }
+    
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ 
+        success: true, 
+        message: `Store status updated to: ${updatedStatus.isComingSoon ? 'Coming Soon' : 'Live and Open'}`,
+        data: updatedStatus
       })
     };
     
