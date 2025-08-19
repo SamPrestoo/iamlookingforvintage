@@ -29,7 +29,12 @@
   status = 200
   force = true
 
-# Allow specific HTML pages to load correctly
+# Allow all existing HTML files to load correctly
+[[redirects]]
+  from = "/admin/index.html"
+  to = "/admin/index.html"
+  status = 200
+
 [[redirects]]
   from = "/admin-dashboard.html"
   to = "/admin-dashboard.html"
@@ -58,6 +63,26 @@
 [[redirects]]
   from = "/success.html"
   to = "/success.html"
+  status = 200
+
+[[redirects]]
+  from = "/checkout.html"
+  to = "/checkout.html"
+  status = 200
+
+[[redirects]]
+  from = "/coming-soon.html"
+  to = "/coming-soon.html"
+  status = 200
+
+[[redirects]]
+  from = "/rolling-logo.html"
+  to = "/rolling-logo.html"
+  status = 200
+
+[[redirects]]
+  from = "/spinning-logo.html"
+  to = "/spinning-logo.html"
   status = 200
 
 # Default fallback for any other routes (must be last)
