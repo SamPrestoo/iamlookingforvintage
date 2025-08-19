@@ -243,7 +243,7 @@
 </head>
 <body>
     <div class="matrix-container" id="container">
-        <a href="admin-login.html" class="admin-link">Coming Soon</a>
+        <a href="/admin" class="admin-link">Coming Soon</a>
     </div>
 
     <script>
@@ -391,7 +391,7 @@
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(() => {
-                container.innerHTML = '<a href="admin-login.html" class="admin-link">Coming Soon</a>';
+                container.innerHTML = '<a href="/admin" class="admin-link">Coming Soon</a>';
                 initializeColumns();
             }, 250);
         });
